@@ -44,7 +44,7 @@ public class test {
             System.out.println(aClass);
         }
 
-        org.springframework.util.MultiValueMap<String, Object> allAnnotationAttributes = org.springframework.core.annotation.AnnotatedElementUtils.getAllAnnotationAttributes(tess, Tess.class.getName());
+//        org.springframework.util.MultiValueMap<String, Object> allAnnotationAttributes = org.springframework.core.annotation.AnnotatedElementUtils.getAllAnnotationAttributes(tess, Tess.class.getName());
 
 //        AnnotationUtils.
 //        AnoTest.class.getD

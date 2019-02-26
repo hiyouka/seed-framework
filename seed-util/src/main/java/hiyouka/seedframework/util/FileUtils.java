@@ -21,12 +21,6 @@ public class FileUtils implements EncodeConstant {
 
     private final static int MAX_TO_CACHE_SIZE = 20240;
 
-    private final static String CLASS_PATH = "classpath:";
-
-    private final static String URL_PROTOCOL_FILE = "file";
-
-    private final static String URL_PREFIX_FILE = "file:";
-
     private final static String REPLACE_SPACE = "%20";
 
 
@@ -55,8 +49,8 @@ public class FileUtils implements EncodeConstant {
 
 
     public static File getFile(String path) throws FileNotFoundException {
-        if(path.startsWith(CLASS_PATH)){
-            path = path.substring(CLASS_PATH.length());
+        if(path.startsWith(ResourceUtils.CLASSPATH_URL_PREFIX)){
+            path = path.substring(ResourceUtils.CLASSPATH_URL_PREFIX.length());
             String description = "class path resource [" + path + "]";
             ClassLoader cl = ClassUtils.getDefaultClassLoader();
             URL url = (cl != null ? cl.getResource(path) : ClassLoader.getSystemResource(path));
@@ -66,8 +60,8 @@ public class FileUtils implements EncodeConstant {
             }
             return getFile(url);
         }
-        if(path.startsWith(URL_PREFIX_FILE) && path.indexOf(REPLACE_SPACE) > 0){
-            path = path.substring(URL_PREFIX_FILE.length());
+        if(path.startsWith(ResourceUtils.FILE_URL_PREFIX) && path.indexOf(REPLACE_SPACE) > 0){
+            path = path.substring(ResourceUtils.FILE_URL_PREFIX.length());
         }
         try {
             return getFile(new URL(path));
@@ -82,8 +76,8 @@ public class FileUtils implements EncodeConstant {
     }
 
     public static File getFile(URL resourceUrl, String description) throws FileNotFoundException {
-        Assert.notNull(resourceUrl, "Resource URL must not be null");
-        if (!URL_PROTOCOL_FILE.equals(resourceUrl.getProtocol())) {
+        Assert.notNull(resourceUrl, "resource URL must not be null");
+        if (!ResourceUtils.URL_PROTOCOL_FILE.equals(resourceUrl.getProtocol())) {
             throw new FileNotFoundException(
                     description + " cannot be resolved to absolute file path " +
                             "because it does not reside in the file system: " + resourceUrl);
@@ -94,6 +88,20 @@ public class FileUtils implements EncodeConstant {
         catch (URISyntaxException ex) {
             return new File(resourceUrl.getFile());
         }
+    }
+
+    public static File getFile(URI resourceUri) throws FileNotFoundException {
+        return getFile(resourceUri, "URI");
+    }
+
+    public static File getFile(URI resourceUri, String description) throws FileNotFoundException {
+        Assert.notNull(resourceUri, "Resource URI must not be null");
+        if (!ResourceUtils.URL_PROTOCOL_FILE.equals(resourceUri.getScheme())) {
+            throw new FileNotFoundException(
+                    description + " cannot be resolved to absolute file path " +
+                            "because it does not reside in the file system: " + resourceUri);
+        }
+        return new File(resourceUri.getSchemeSpecificPart());
     }
 
     private static URI toURI(URL url) throws URISyntaxException {
