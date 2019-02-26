@@ -1,5 +1,6 @@
 package hiyouka.seedframework.beans.definition;
 
+import com.sun.istack.internal.Nullable;
 import hiyouka.seedframework.beans.attribute.AttributeAccessor;
 
 /**
@@ -34,7 +35,7 @@ public interface BeanDefinition extends AttributeAccessor {
 
     boolean isLazyInit();
 
-    void setBeanClassName(String beanClassName);
+    void setBeanClassName(@Nullable String beanClassName);
 
     String getBeanClassName();
 
@@ -46,7 +47,7 @@ public interface BeanDefinition extends AttributeAccessor {
 
     String getScope();
 
-    void setSingleton(boolean primary);
+    void setSingleton(boolean singleton);
 
     void setPrototype(boolean prototype);
 

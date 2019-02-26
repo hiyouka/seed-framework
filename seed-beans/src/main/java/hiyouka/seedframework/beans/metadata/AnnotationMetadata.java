@@ -1,7 +1,5 @@
 package hiyouka.seedframework.beans.metadata;
 
-import org.springframework.core.type.MethodMetadata;
-
 import java.util.Set;
 
 /**

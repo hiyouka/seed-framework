@@ -18,5 +18,4 @@ public interface AnnotatedTypeMetadata {
     MultiValueMap<String, Object> getAnnotationAttributes(String annotationName);
 
 
-
 }
