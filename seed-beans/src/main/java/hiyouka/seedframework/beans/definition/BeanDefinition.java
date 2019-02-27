@@ -5,6 +5,8 @@ import hiyouka.seedframework.beans.attribute.AttributeAccessor;
 import hiyouka.seedframework.beans.metadata.MutablePropertyValues;
 
 /**
+ * bean Description
+ * {@link AnnotatedGenericBeanDefinition}
  * @author hiyouka
  * Date: 2019/1/27
  * @since JDK 1.8

@@ -37,6 +37,14 @@ public class AnnotatedGenericBeanDefinition extends GenericBeanDefinition implem
         this.metadata = metadata;
     }
 
+    public AnnotatedGenericBeanDefinition(AnnotationMetadata metadata, MethodMetadata factoryMethodMetadata) {
+        this(metadata);
+        Assert.notNull(factoryMethodMetadata, "MethodMetadata must not be null");
+        setFactoryMethodName(factoryMethodMetadata.getMethodName());
+        setFactoryBeanName(factoryMethodMetadata.getDeclaringClassName()); // 类全名
+        this.factoryMethodMetadata = factoryMethodMetadata;
+    }
+
     @Override
     public AnnotationMetadata getMetadata() {
         return this.metadata;

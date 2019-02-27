@@ -7,6 +7,7 @@ import hiyouka.seedframework.util.MultiValueMap;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -37,6 +38,7 @@ public class test {
         System.out.println(AnnotatedElementUtils.isAnnotated(tess,Tess.class));
 
         AnnotationAttributes annotationAttributes = AnnotatedElementUtils.getAnnotationAttributes(AnoTest.class, Tess.class);
+        List<Object> objects = Arrays.asList(null);
 //        for (AnnotationAttributes annotationAttributes1 : annotationAttributes){
 //            Class<? extends Annotation> aClass = annotationAttributes1.annotationType();
 //            System.out.println(aClass);

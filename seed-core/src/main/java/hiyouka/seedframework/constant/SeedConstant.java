@@ -1,7 +1,7 @@
 package hiyouka.seedframework.constant;
 
-import com.hiyouka.sources.exception.FileSizeOutException;
-import com.hiyouka.sources.util.FileUtils;
+import hiyouka.seedframework.exception.FileSizeOutException;
+import hiyouka.seedframework.util.FileUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;

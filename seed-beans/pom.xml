@@ -27,6 +27,7 @@
             <version>${junit.jupiter.version}</version>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
@@ -35,8 +36,8 @@
         </dependency>
 
         <dependency>
-            <groupId>hiyouka.seedframwork</groupId>
-            <artifactId>seed-util</artifactId>
+            <groupId>hiyouka.seedframework</groupId>
+            <artifactId>seed-core</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         
