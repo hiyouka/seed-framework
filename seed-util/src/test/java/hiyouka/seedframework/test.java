@@ -6,10 +6,8 @@ import hiyouka.seedframework.util.AnnotationUtils;
 import hiyouka.seedframework.util.MultiValueMap;
 import org.junit.jupiter.api.Test;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author hiyouka
@@ -38,11 +36,11 @@ public class test {
 
         System.out.println(AnnotatedElementUtils.isAnnotated(tess,Tess.class));
 
-        Set<AnnotationAttributes> annotationAttributes = AnnotatedElementUtils.getAnnotationAttributes(tess, Tess.class);
-        for (AnnotationAttributes annotationAttributes1 : annotationAttributes){
-            Class<? extends Annotation> aClass = annotationAttributes1.annotationType();
-            System.out.println(aClass);
-        }
+        AnnotationAttributes annotationAttributes = AnnotatedElementUtils.getAnnotationAttributes(AnoTest.class, Tess.class);
+//        for (AnnotationAttributes annotationAttributes1 : annotationAttributes){
+//            Class<? extends Annotation> aClass = annotationAttributes1.annotationType();
+//            System.out.println(aClass);
+//        }
 
 //        org.springframework.util.MultiValueMap<String, Object> allAnnotationAttributes = org.springframework.core.annotation.AnnotatedElementUtils.getAllAnnotationAttributes(tess, Tess.class.getName());
 

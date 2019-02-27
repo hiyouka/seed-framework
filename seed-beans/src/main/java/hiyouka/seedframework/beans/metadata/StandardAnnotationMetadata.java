@@ -2,10 +2,10 @@ package hiyouka.seedframework.beans.metadata;
 
 import hiyouka.seedframework.util.AnnotatedElementUtils;
 import hiyouka.seedframework.util.MultiValueMap;
-import org.springframework.core.type.MethodMetadata;
 
 import java.lang.annotation.Annotation;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -59,7 +59,14 @@ public class StandardAnnotationMetadata extends StandardClassMetadata implements
     }
 
     @Override
-    public MultiValueMap<String, Object> getAnnotationAttributes(String annotationName) {
+    public Map<String, Object> getAnnotationAttributes(String annotationName) {
+        Class<? extends Annotation> annotationType = getAnnotationType(annotationName);
+        return (this.annotations.length > 0 ? AnnotatedElementUtils.getAnnotationAttributes(
+                getIntrospectedClass(), annotationType) : null);
+    }
+
+    @Override
+    public MultiValueMap<String, Object> getAllAnnotationAttributes(String annotationName) {
         Class<? extends Annotation> annotationType = getAnnotationType(annotationName);
         return (this.annotations.length > 0 ? AnnotatedElementUtils.getAttributes(
                 getIntrospectedClass(), annotationType) : null);

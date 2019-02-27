@@ -13,7 +13,6 @@ import java.util.*;
  */
 public class AnnotatedElementUtils {
 
-    private static final AnnotationAttributesProcessor annotationAttributesProcessor = new AnnotationAttributesProcessor();
 
     private static final AlwaysTrueProcessor alwaysTrueProcessor = new AlwaysTrueProcessor();
 
@@ -50,20 +49,8 @@ public class AnnotatedElementUtils {
         return attributesMap;
     }
 
-    public static Set<AnnotationAttributes> getAnnotationAttributes(AnnotatedElement element, Class<? extends Annotation> annotationType){
-        Set<AnnotationAttributes> result = new LinkedHashSet<>();
-        searchWithFindSemantics(element, annotationType, new HashSet<>(), new Processor<Object>() {
-            @Override
-            public boolean getList() {
-                return false;
-            }
-            @Override
-            public Object process(AnnotatedElement annotatedElement, Annotation annotation) {
-                result.add(new AnnotationAttributes(annotation.annotationType(),AnnotationUtils.getAttributes(annotation)));
-                return null;
-            }
-        });
-        return result;
+    public static AnnotationAttributes getAnnotationAttributes(AnnotatedElement element, Class<? extends Annotation> annotationType){
+        return searchWithFindSemantics(element, annotationType, new HashSet<>(),new AnnotationAttributesProcessor());
     }
 
 

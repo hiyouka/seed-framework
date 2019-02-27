@@ -47,4 +47,14 @@ public class ClassUtils {
         return aClass;
     }
 
+    public static Class<?> getClass(String className){
+        Class<?> aClass;
+        try {
+            aClass = Class.forName(className);
+        } catch (ClassNotFoundException e) {
+            throw new IllegalStateException("Class can not forName : " + className);
+        }
+        return aClass;
+    }
+
 }

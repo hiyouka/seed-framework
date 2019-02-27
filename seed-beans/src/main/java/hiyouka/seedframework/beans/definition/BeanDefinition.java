@@ -2,6 +2,7 @@ package hiyouka.seedframework.beans.definition;
 
 import com.sun.istack.internal.Nullable;
 import hiyouka.seedframework.beans.attribute.AttributeAccessor;
+import hiyouka.seedframework.beans.metadata.MutablePropertyValues;
 
 /**
  * @author hiyouka
@@ -53,5 +54,34 @@ public interface BeanDefinition extends AttributeAccessor {
 
     void setLazyInit(boolean lazyInit);
 
+    void setParentName(@Nullable String parentName);
+
+    void setFactoryBeanName(@Nullable String factoryBeanName);
+
+    @Nullable
+    String getFactoryBeanName();
+
+    void setFactoryMethodName(@Nullable String factoryMethodName);
+
+    @Nullable
+    String getFactoryMethodName();
+
+    /**
+     * 父类名称
+     */
+    @Nullable
+    String getParentName();
+
+    /**
+     * Return whether this bean is "abstract", that is, not meant to be instantiated.
+     * 是否需要实例化
+     */
+    boolean isAbstract();
+
+    MutablePropertyValues getPropertyValues();
+
+    default boolean hasPropertyValues() {
+        return !getPropertyValues().isEmpty();
+    }
 
 }

@@ -3,6 +3,8 @@ package hiyouka.seedframework.beans.metadata;
 import com.sun.istack.internal.Nullable;
 import hiyouka.seedframework.util.MultiValueMap;
 
+import java.util.Map;
+
 /**
  * @author hiyouka
  * Date: 2019/2/22
@@ -15,7 +17,10 @@ public interface AnnotatedTypeMetadata {
 
 
     @Nullable
-    MultiValueMap<String, Object> getAnnotationAttributes(String annotationName);
+    Map<String, Object> getAnnotationAttributes(String annotationName);
+
+    @Nullable
+    MultiValueMap<String, Object> getAllAnnotationAttributes(String annotationName);
 
 
 }

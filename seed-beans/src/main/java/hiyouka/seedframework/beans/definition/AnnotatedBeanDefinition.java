@@ -1,6 +1,8 @@
 package hiyouka.seedframework.beans.definition;
 
+import com.sun.istack.internal.Nullable;
 import hiyouka.seedframework.beans.metadata.AnnotationMetadata;
+import hiyouka.seedframework.beans.metadata.MethodMetadata;
 
 /**
  * @author hiyouka
@@ -10,5 +12,8 @@ import hiyouka.seedframework.beans.metadata.AnnotationMetadata;
 public interface AnnotatedBeanDefinition extends BeanDefinition {
 
     AnnotationMetadata getMetadata();
+
+    @Nullable
+    MethodMetadata getFactoryMethodMetadata();
 
 }

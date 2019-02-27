@@ -1,105 +1,50 @@
 package hiyouka.seedframework.beans.definition;
 
+import com.sun.istack.internal.Nullable;
 import hiyouka.seedframework.beans.metadata.AnnotationMetadata;
+import hiyouka.seedframework.beans.metadata.MethodMetadata;
+import hiyouka.seedframework.beans.metadata.StandardAnnotationMetadata;
+import hiyouka.seedframework.util.Assert;
 
 /**
  * @author hiyouka
  * @since JDK 1.8
  */
-public class AnnotatedGenericBeanDefinition implements AnnotatedBeanDefinition {
+public class AnnotatedGenericBeanDefinition extends GenericBeanDefinition implements AnnotatedBeanDefinition {
+
+
+    private final AnnotationMetadata metadata;
+
+    /**
+     * 用于@Bean注解的方法信息
+     */
+    @Nullable
+    private MethodMetadata factoryMethodMetadata;
+
+    public AnnotatedGenericBeanDefinition(Class<?> beanClass) {
+        setBeanClass(beanClass);
+        this.metadata = new StandardAnnotationMetadata(beanClass);
+    }
+
+    public AnnotatedGenericBeanDefinition(AnnotationMetadata metadata) {
+        Assert.notNull(metadata, "AnnotationMetadata must not be null");
+        if (metadata instanceof StandardAnnotationMetadata) {
+            setBeanClass(((StandardAnnotationMetadata) metadata).getIntrospectedClass());
+        }
+        else {
+            setBeanClassName(metadata.getClassName());
+        }
+        this.metadata = metadata;
+    }
 
     @Override
     public AnnotationMetadata getMetadata() {
-        return null;
+        return this.metadata;
     }
 
     @Override
-    public boolean isPrimary() {
-        return false;
-    }
-
-    @Override
-    public boolean isSingleton() {
-        return false;
-    }
-
-    @Override
-    public boolean isPrototype() {
-        return false;
-    }
-
-    @Override
-    public boolean isLazyInit() {
-        return false;
-    }
-
-    @Override
-    public void setBeanClassName(String beanClassName) {
-
-    }
-
-    @Override
-    public String getBeanClassName() {
-        return null;
-    }
-
-    @Override
-    public void setBeanClass(Class<?> beanClass) {
-
-    }
-
-    @Override
-    public Class<?> getBeanClass() {
-        return null;
-    }
-
-    @Override
-    public void setScope(String scope) {
-
-    }
-
-    @Override
-    public String getScope() {
-        return null;
-    }
-
-    @Override
-    public void setSingleton(boolean primary) {
-
-    }
-
-    @Override
-    public void setPrototype(boolean prototype) {
-
-    }
-
-    @Override
-    public void setLazyInit(boolean lazyInit) {
-
-    }
-
-    @Override
-    public void setAttribute(String name, Object value) {
-
-    }
-
-    @Override
-    public Object getAttribute(String name) {
-        return null;
-    }
-
-    @Override
-    public Object removeAttribute(String name) {
-        return null;
-    }
-
-    @Override
-    public boolean hasAttribute(String name) {
-        return false;
-    }
-
-    @Override
-    public String[] attributeNames() {
-        return new String[0];
+    @Nullable
+    public final MethodMetadata getFactoryMethodMetadata() {
+        return this.factoryMethodMetadata;
     }
 }

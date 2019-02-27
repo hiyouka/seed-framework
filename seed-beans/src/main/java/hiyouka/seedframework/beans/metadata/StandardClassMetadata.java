@@ -107,5 +107,4 @@ public class StandardClassMetadata implements ClassMetadata {
     }
 
 
-
 }
