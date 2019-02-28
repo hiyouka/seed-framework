@@ -90,6 +90,13 @@ public class ResourceUtils {
                 URL_PROTOCOL_VFS.equals(protocol));
     }
 
+    public static boolean isJarPath(String path){
+        return path.startsWith(JAR_URL_PREFIX) && path.indexOf("!") > 0;
+    }
+
+    public static boolean isFilePath(String path){
+        return path.startsWith(FILE_URL_PREFIX);
+    }
 
     public static URL extractArchiveURL(URL jarUrl) throws MalformedURLException {
         String urlFile = jarUrl.getFile();
@@ -131,5 +138,6 @@ public class ResourceUtils {
             return jarUrl;
         }
     }
+
 
 }

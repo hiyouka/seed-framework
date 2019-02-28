@@ -1,6 +1,7 @@
 package hiyouka.seedframework.beans.definition;
 
 import com.sun.istack.internal.Nullable;
+import org.objectweb.asm.ClassReader;
 
 /**
  * @author hiyouka
@@ -10,6 +11,8 @@ public class GenericBeanDefinition extends AbstractBeanDefinition{
 
     @Nullable
     private String parentName;
+
+    private ClassReader classReader;
 
     public GenericBeanDefinition() {
         super();
@@ -51,5 +54,12 @@ public class GenericBeanDefinition extends AbstractBeanDefinition{
         return sb.toString();
     }
 
+    public ClassReader getClassReader() {
+        return classReader;
+    }
+
+    public void setClassReader(ClassReader classReader) {
+        this.classReader = classReader;
+    }
 
 }

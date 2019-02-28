@@ -19,14 +19,22 @@ import java.util.zip.ZipException;
  * @author hiyouka
  * @since JDK 1.8
  */
-public class PathMatchingResourcePatternResolver implements ResourcePatternResolver , ResourceLoader{
+public class PathMatchingResourcePatternResolver extends AbstractResourceLoader implements ResourcePatternResolver{
 
     private static final Log logger = LogFactory.getLog(PathMatchingResourcePatternResolver.class);
 
 
     private PathMatcher pathMatcher = new AntPathMatcher();
 
+    private ResourceLoader resourceLoader;
 
+    public PathMatchingResourcePatternResolver(){
+        this.resourceLoader = new DefaultResourceLoader();
+    }
+
+    public PathMatchingResourcePatternResolver(ResourceLoader resourceLoader){
+        this.resourceLoader = resourceLoader;
+    }
 
     public void setPathMatcher(PathMatcher pathMatcher) {
         Assert.notNull(pathMatcher, "PathMatcher must not be null");
@@ -35,6 +43,10 @@ public class PathMatchingResourcePatternResolver implements ResourcePatternResol
 
     public PathMatcher getPathMatcher() {
         return this.pathMatcher;
+    }
+
+    public void setResourceLoader(ResourceLoader resourceLoader){
+        this.resourceLoader = resourceLoader;
     }
 
     @Override
@@ -81,9 +93,7 @@ public class PathMatchingResourcePatternResolver implements ResourcePatternResol
         return result;
     }
 
-    protected Resource convertClassLoaderURL(URL url) {
-        return new UrlResource(url);
-    }
+
 
 //    protected resource[] findPathMatchingResources(String locationPattern) throws IOException {
 //        String subPattern = locationPattern.substring(locationPattern.length());
@@ -321,35 +331,9 @@ public class PathMatchingResourcePatternResolver implements ResourcePatternResol
     }
 
 
-
     @Override
-    public Resource getResource(String path) throws IOException {
-        Resource resource = null;
-        ClassLoader cl = ClassUtils.getDefaultClassLoader();
-        String uPath = path;
-        if (uPath.startsWith("/")) {
-            uPath = uPath.substring(1);
-        }
-        uPath = StringUtils.replace(uPath,ResourceUtils.CLASSPATH_URL_PREFIX,"");
-        Enumeration<URL> resourceUrls = (cl != null ? cl.getResources(uPath) : ClassLoader.getSystemResources(uPath));
-        while (resourceUrls.hasMoreElements()) {
-            URL url = resourceUrls.nextElement();
-            resource = convertClassLoaderURL(url);
-        }
-        if(resource == null){
-            File file = FileUtils.getFile(path);
-            if(ResourceUtils.isJarFileURL(file.toURI().toURL())){
-                resource = new UrlResource(file.toURI());
-            }else{
-                resource = new FileSystemResource(file);
-            }
-        }
-        return resource;
-    }
-
-    @Override
-    public ClassLoader getClassLoader() {
-        return ClassUtils.getDefaultClassLoader();
+    public Resource getResource(String location) throws IOException {
+        return this.resourceLoader.getResource(location);
     }
 
 }

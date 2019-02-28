@@ -1,6 +1,7 @@
 package hiyouka.seedframework.beans.test;
 
 import com.sun.org.glassfish.external.probe.provider.annotations.ProbeProvider;
+import hiyouka.seedframework.beans.annotation.Component;
 
 /**
  * @author hiyouka
@@ -10,6 +11,7 @@ import com.sun.org.glassfish.external.probe.provider.annotations.ProbeProvider;
 @ProbeProvider
 @Tell
 @Tess
+@Component("777")
 public class AnoTest extends SupClass{
 
     @Tell

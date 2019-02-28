@@ -5,7 +5,6 @@ import hiyouka.seedframework.util.AnnotatedElementUtils;
 import hiyouka.seedframework.util.Assert;
 import hiyouka.seedframework.util.MultiValueMap;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Map;
@@ -67,31 +66,20 @@ public class StandardMethodMetadata implements MethodMetadata {
 
     @Override
     public boolean isAnnotated(String annotationName) {
-        return AnnotatedElementUtils.isAnnotated(this.introspectedMethod, getAnnotation(annotationName));
+        return AnnotatedElementUtils.isAnnotated(this.introspectedMethod, annotationName);
     }
 
     @Override
     @Nullable
     public Map<String, Object> getAnnotationAttributes(String annotationName) {
-       return AnnotatedElementUtils.getAnnotationAttributes(this.introspectedMethod, getAnnotation(annotationName));
+       return AnnotatedElementUtils.getAnnotationAttributes(this.introspectedMethod, annotationName);
     }
 
 
     @Override
     @Nullable
     public MultiValueMap<String, Object> getAllAnnotationAttributes(String annotationName) {
-        return AnnotatedElementUtils.getAttributes(this.introspectedMethod,getAnnotation(annotationName));
-    }
-
-
-    private Class<? extends Annotation> getAnnotation(String annotationName){
-        Annotation[] declaredAnnotations = this.introspectedMethod.getDeclaredAnnotations();
-        for(Annotation annotation : declaredAnnotations){
-            if(annotation.getClass().getName().equals(annotationName)){
-                return annotation.getClass();
-            }
-        }
-        return null;
+        return AnnotatedElementUtils.getAttributes(this.introspectedMethod,annotationName);
     }
 
 }

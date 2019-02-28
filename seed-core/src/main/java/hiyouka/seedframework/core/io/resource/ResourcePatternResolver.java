@@ -6,10 +6,10 @@ import java.io.IOException;
  * @author hiyouka
  * @since JDK 1.8
  */
-public interface ResourcePatternResolver {
+public interface ResourcePatternResolver extends ResourceLoader{
 
     /**
-     * 使用classpath:* 可读取包含jar包在内的指定文件(扫描解析jar包)
+     * 使用classpath:* 可读取包含引入jar包在内的指定文件(扫描解析jar包)
      */
     String CLASSPATH_ALL_URL_PREFIX = "classpath*:";
 

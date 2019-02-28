@@ -19,17 +19,28 @@ public class AnnotatedElementUtils {
     /**
      * 判断某个注解是否包含type注解
      */
-    public static boolean isAnnotated(AnnotatedElement element, Class<? extends Annotation> annotationType) {
-        return Boolean.TRUE.equals(searchWithFindSemantics(element,annotationType,new HashSet<>(),alwaysTrueProcessor));
+    public static boolean isAnnotated(AnnotatedElement element, String annotationName) {
+        return Boolean.TRUE.equals(searchWithFindSemantics(element,getAnnotationType(element,annotationName),new HashSet<>(),alwaysTrueProcessor));
     }
 
     public static Object getAttribute(AnnotatedElement element,Class<? extends Annotation> annotationType, String attributeName){
         return getAttributes(element, annotationType).getFirst(attributeName);
-
     }
 
+    public static Object getAttribute(AnnotatedElement element,String annotationName, String attributeName){
+        return getAttributes(element, getAnnotationType(element,annotationName)).getFirst(attributeName);
+    }
 
-    public static MultiValueMap<String, Object> getAttributes(AnnotatedElement element, Class<? extends Annotation> annotationType){
+    public static MultiValueMap<String, Object> getAttributes(AnnotatedElement element, String annotationName){
+        return getAttributes(element,getAnnotationType(element,annotationName));
+    }
+
+    public static Class<? extends Annotation> getAnnotationType(AnnotatedElement element, String annotationName){
+        Annotation annotation = AnnotationUtils.getAnnotation(element, annotationName);
+        return annotation == null ? null : annotation.annotationType();
+    }
+
+    public static MultiValueMap<String, Object> getAttributes(AnnotatedElement element,Class<? extends Annotation> annotationType){
         final MultiValueMap<String, Object> attributesMap = new DefaultMultiValueMap<>();
         Assert.notNull(annotationType,"annotation type must not null");
         searchWithFindSemantics(element, annotationType, new HashSet<>(), new Processor<Object>() {
@@ -37,6 +48,12 @@ public class AnnotatedElementUtils {
             public boolean getList() {
                 return false;
             }
+
+            @Override
+            public boolean matchType() {
+                return true;
+            }
+
             @Override
             public Object process(AnnotatedElement annotatedElement, Annotation annotation) {
                 Map<String, Object> attributes = AnnotationUtils.getAttributes(annotation);
@@ -49,10 +66,42 @@ public class AnnotatedElementUtils {
         return attributesMap;
     }
 
+    public static AnnotationAttributes getAnnotationAttributes(AnnotatedElement element, String annotationName){
+        return searchWithFindSemantics(element, getAnnotationType(element,annotationName), new HashSet<>(),new AnnotationAttributesProcessor());
+    }
+
     public static AnnotationAttributes getAnnotationAttributes(AnnotatedElement element, Class<? extends Annotation> annotationType){
         return searchWithFindSemantics(element, annotationType, new HashSet<>(),new AnnotationAttributesProcessor());
     }
 
+    public static Set<String> getMetaAnnotationTypes(AnnotatedElement element, String annotationName) {
+        return getMetaAnnotationTypes(AnnotationUtils.getAnnotation(element, annotationName));
+    }
+
+    private static Set<String> getMetaAnnotationTypes(Annotation composed) {
+        if (composed == null) {
+            return Collections.emptySet();
+        }
+        final Set<String> types = new LinkedHashSet<>();
+        searchWithFindSemantics(composed.annotationType(), null, new HashSet<>(), new Processor<Object>() {
+            @Override
+            public Object process(AnnotatedElement element, Annotation annotation) {
+                types.add(annotation.annotationType().getName());
+                return null;
+            }
+
+            @Override
+            public boolean getList() {
+                return false;
+            }
+
+            @Override
+            public boolean matchType() {
+                return false;
+            }
+        });
+        return types;
+    }
 
 
     private static <T> T searchWithFindSemantics(AnnotatedElement element, Class<? extends Annotation> annotationType,
@@ -63,7 +112,7 @@ public class AnnotatedElementUtils {
             List<T> aggregatedResults = (processor.getList() ? new ArrayList<>() : null);
             for (Annotation annotation : annotations) {
                 if (!AnnotationUtils.isInJavaLangAnnotationPackage(annotation)) {
-                    if (annotation.annotationType() == annotationType) {
+                    if (!processor.matchType() || annotation.annotationType() == annotationType) {
                         T result = processor.process(element, annotation);
                         if (result != null) {
                             if (processor.getList()) {
@@ -75,17 +124,6 @@ public class AnnotatedElementUtils {
                             return result;
                         }
                     }
-//                        // Repeatable annotations in container?
-//                        else if (annotation.annotationType() == containerType) {
-//                            for (Annotation contained : getRawAnnotationsFromContainer(element, annotation)) {
-//                                T result = processor.process(element, contained, metaDepth);
-//                                if (result != null) {
-//                                    // No need to post-process since repeatable annotations within a
-//                                    // container cannot be composed annotations.
-//                                    aggregatedResults.add(result);
-//                                }
-//                            }
-//                        }
                 }
             }
             for (Annotation annotation : annotations) {
@@ -101,63 +139,12 @@ public class AnnotatedElementUtils {
     }
 
 
-
-//    public static boolean isAnnotated(AnnotatedElement element, String annotationName) {
-//        return Boolean.TRUE.equals(searchWithGetSemantics(element, null, annotationName, alwaysTrueAnnotationProcessor));
-//    }
-//
-//    public static <T> T searchWithGetSemantics(AnnotatedElement element, Class<? extends Annotation> annotationType,
-//                                                            String annotationName,Set<AnnotatedElement> visited){
-//        if(visited.add(element)){
-//            List<Annotation> declaredAnnotations = Arrays.asList(element.getDeclaredAnnotations());
-//            if(element instanceof Class){
-//
-//            }
-//        }
-//    }
-//
-//
-//    private static  <T> T  TsearchWithGetSemanticsInAnnotations (AnnotatedElement element,List<Annotation> annotations,
-//                         Class<? extends Annotation> annotationType,String annotationName,Set<AnnotatedElement> visited){
-//        // Search in annotations
-//        for (Annotation annotation : annotations) {
-//            Class<? extends Annotation> currentAnnotationType = annotation.annotationType();
-//            if (!AnnotationUtils.isInJavaLangAnnotationPackage(currentAnnotationType)) {
-//                if (currentAnnotationType == annotationType ||
-//                        currentAnnotationType.getName().equals(annotationName) ||
-//                        processor.alwaysProcesses()) {
-//                    T result = processor.process(element, annotation, metaDepth);
-//                    if (result != null) {
-//                        if (processor.aggregates() && metaDepth == 0) {
-//                            processor.getAggregatedResults().add(result);
-//                        }
-//                        else {
-//                            return result;
-//                        }
-//                    }
-//                }
-//                // Repeatable annotations in container?
-//                else if (currentAnnotationType == containerType) {
-//                    for (Annotation contained : getRawAnnotationsFromContainer(element, annotation)) {
-//                        T result = processor.process(element, contained, metaDepth);
-//                        if (result != null) {
-//                            // No need to post-process since repeatable annotations within a
-//                            // container cannot be composed annotations.
-//                            processor.getAggregatedResults().add(result);
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    }
-
-
-
     private interface Processor<T>{
         T process(AnnotatedElement element, Annotation annotation);
 
         boolean getList();
 
+        boolean matchType();
 
     }
 
@@ -171,6 +158,11 @@ public class AnnotatedElementUtils {
         public boolean getList() {
             return false;
         }
+
+        @Override
+        public boolean matchType() {
+            return true;
+        }
     }
 
     static class AnnotationAttributesProcessor implements Processor<AnnotationAttributes>{
@@ -183,9 +175,12 @@ public class AnnotatedElementUtils {
         public boolean getList() {
             return true;
         }
+
+        @Override
+        public boolean matchType() {
+            return true;
+        }
     }
-
-
 
 
 }

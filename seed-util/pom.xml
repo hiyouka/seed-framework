@@ -41,12 +41,19 @@
             <artifactId>commons-logging</artifactId>
             <version>1.2</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/cglib/cglib -->
+        <dependency>
+            <groupId>cglib</groupId>
+            <artifactId>cglib</artifactId>
+            <version>3.2.10</version>
+        </dependency>
 
-        <!--<dependency>-->
-            <!--<groupId>com.synapse.common</groupId>-->
-            <!--<artifactId>likesoft-sso</artifactId>-->
-            <!--<version>0.0.1-SNAPSHOT</version>-->
-        <!--</dependency>-->
+
+        <dependency>
+            <groupId>com.synapse.common</groupId>
+            <artifactId>likesoft-sso</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
 
 
         <!-- https://mvnrepository.com/artifact/org.springframework/spring-core -->

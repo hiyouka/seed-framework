@@ -12,10 +12,16 @@ public class BeanDefinitionStoreException extends SeedCoreException {
         super(message);
     }
 
+    public BeanDefinitionStoreException(String message, Exception e) {
+        super(message, e);
+    }
+
     public BeanDefinitionStoreException(String beanName, String msg) {
         super(msg);
         this.beanName = beanName;
     }
+
+
 
 
     public String getBeanName(){

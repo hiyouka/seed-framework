@@ -1,6 +1,7 @@
 package hiyouka.seedframework.util;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -75,6 +76,15 @@ public class AnnotationUtils {
         return (method != null && method.getName().equals("annotationType") && method.getParameterTypes().length == 0);
     }
 
+
+    static Annotation getAnnotation(AnnotatedElement element, String annotationName) {
+        for (Annotation annotation : element.getAnnotations()) {
+            if (annotation.annotationType().getName().equals(annotationName)) {
+                return annotation;
+            }
+        }
+        return null;
+    }
 
 
 }

@@ -1,14 +1,12 @@
 package hiyouka.seedframework;
 
-import hiyouka.seedframework.common.AnnotationAttributes;
 import hiyouka.seedframework.util.AnnotatedElementUtils;
 import hiyouka.seedframework.util.AnnotationUtils;
-import hiyouka.seedframework.util.MultiValueMap;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author hiyouka
@@ -30,15 +28,18 @@ public class test {
 //        System.out.println(value);
 
 //        Map<String, Object> attributes = AnnotationUtils.getAttributes(declaredAnnotation);
-        Object attribute = AnnotatedElementUtils.getAttributes(AnoTest.class, Tess.class);
-        Method tess = AnoTest.class.getMethod("test");
-        MultiValueMap<String, Object> attribute1 = AnnotatedElementUtils.getAttributes(tess, Tess.class);
-        Object value = AnnotatedElementUtils.getAttribute(tess, Tess.class, "value");
-
-        System.out.println(AnnotatedElementUtils.isAnnotated(tess,Tess.class));
-
-        AnnotationAttributes annotationAttributes = AnnotatedElementUtils.getAnnotationAttributes(AnoTest.class, Tess.class);
-        List<Object> objects = Arrays.asList(null);
+//        Object attribute = AnnotatedElementUtils.getAttributes(AnoTest.class, Tess.class);
+//        Method tess = AnoTest.class.getMethod("test");
+//        MultiValueMap<String, Object> attribute1 = AnnotatedElementUtils.getAttributes(tess, Tess.class);
+//        Object value = AnnotatedElementUtils.getAttribute(tess, Tess.class, "value");
+//
+//        System.out.println(AnnotatedElementUtils.isAnnotated(tess,Tess.class.getName()));
+//
+//        AnnotationAttributes annotationAttributes = AnnotatedElementUtils.getAnnotationAttributes(AnoTest.class, Tess.class);
+        Set<String> metaAnnotationTypes = AnnotatedElementUtils.getMetaAnnotationTypes(AnoTest.class, Tell.class.getName());
+        System.out.println("");
+//        System.out.println(Arrays.asList(metaAnnotationTypes.toArray()));
+//        List<Object> objects = Arrays.asList(null);
 //        for (AnnotationAttributes annotationAttributes1 : annotationAttributes){
 //            Class<? extends Annotation> aClass = annotationAttributes1.annotationType();
 //            System.out.println(aClass);

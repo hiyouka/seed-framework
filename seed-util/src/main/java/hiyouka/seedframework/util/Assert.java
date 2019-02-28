@@ -26,4 +26,13 @@ public class Assert {
             throw new IllegalArgumentException(message);
         }
     }
+
+    /**
+     * 表达式
+     */
+    public static void state(boolean expression, String message) {
+        if (!expression) {
+            throw new IllegalStateException(message);
+        }
+    }
 }

@@ -7,6 +7,16 @@ package hiyouka.seedframework.util;
  */
 public class ClassUtils {
 
+    public static final char PACKAGE_SEPARATOR = '.';
+
+    public static final char PATH_SEPARATOR = '/';
+
+    /** 目前还没使用cglib */
+    public static final String CGLIB_CLASS_SEPARATOR = "$$";
+
+    /** 内部类 */
+    public static final char INNER_CLASS_SEPARATOR = '$';
+
     /**
      * get thread ClassLoader Object
      * @param
@@ -55,6 +65,46 @@ public class ClassUtils {
             throw new IllegalStateException("Class can not forName : " + className);
         }
         return aClass;
+    }
+
+
+    public static String getShortName(String className) {
+        Assert.hasText(className, "Class name must not be empty");
+        int lastDotIndex = className.lastIndexOf(PACKAGE_SEPARATOR);
+        int nameEndIndex = className.indexOf(CGLIB_CLASS_SEPARATOR);
+        if (nameEndIndex == -1) {
+            nameEndIndex = className.length();
+        }
+        String shortName = className.substring(lastDotIndex + 1, nameEndIndex);
+        shortName = shortName.replace(INNER_CLASS_SEPARATOR, PACKAGE_SEPARATOR);
+        return shortName;
+    }
+
+    public static String convertResourcePathToClassName(String resourcePath) {
+        Assert.notNull(resourcePath, "resource path must not be null");
+        String className = "";
+        if(ResourceUtils.isJarPath(resourcePath)){
+            int separator = resourcePath.indexOf("!");
+            className = resourcePath.substring(separator + 1, resourcePath.length());
+
+        }else if(ResourceUtils.isFilePath(resourcePath)){
+            String classRootPath = getClassRootPath(null);
+            className = StringUtils.replace(resourcePath,ResourceUtils.FILE_URL_PREFIX+classRootPath,"");
+        }
+        return className.replace(PATH_SEPARATOR,PACKAGE_SEPARATOR);
+    }
+
+    public static String convertClassNameToResourcePath(String className) {
+        org.springframework.util.Assert.notNull(className, "Class name must not be null");
+        return className.replace(PACKAGE_SEPARATOR, PATH_SEPARATOR);
+    }
+
+    /**
+     * 获取class文件所在目录
+     */
+    public static String getClassRootPath(ClassLoader classLoader){
+        classLoader = (classLoader == null ? ClassUtils.class.getClassLoader() : classLoader);
+        return classLoader.getResource("").getPath();
     }
 
 }

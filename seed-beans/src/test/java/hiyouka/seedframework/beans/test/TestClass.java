@@ -1,13 +1,9 @@
 package hiyouka.seedframework.beans.test;
 
-import hiyouka.seedframework.beans.metadata.MethodMetadata;
-import hiyouka.seedframework.beans.metadata.StandardClassMetadata;
-import hiyouka.seedframework.beans.metadata.StandardMethodMetadata;
-import hiyouka.seedframework.util.AnnotatedElementUtils;
+import hiyouka.seedframework.beans.definition.AnnotatedGenericBeanDefinition;
+import hiyouka.seedframework.beans.definition.AnnotationBeanNameGenerator;
+import hiyouka.seedframework.beans.definition.BeanDefinition;
 import org.junit.jupiter.api.Test;
-
-import java.lang.reflect.Method;
-import java.util.Arrays;
 
 /**
  * @author hiyouka
@@ -18,21 +14,26 @@ public class TestClass {
 
     @Test
     public void test() throws NoSuchMethodException {
-        System.out.println(Tesscls.class.getDeclaringClass());
-        System.out.println(Tesscls.Sta.class.getDeclaringClass());
-        System.out.println(Tesscls.class.getEnclosingClass());
-        System.out.println(Tesscls.Sta.class.getEnclosingClass());
-        System.out.println(Tesscls.Sta.class.getEnclosingClass());
-        StandardClassMetadata standardClassMetadata = new StandardClassMetadata(Tesscls.class);
-        boolean independent = standardClassMetadata.isIndependent();
-
-        System.out.println(Arrays.asList(standardClassMetadata.getMemberClassNames()));
-        Method test = AnoTest.class.getDeclaredMethod("test");
-        MethodMetadata methodMetadata = new StandardMethodMetadata(test);
-        String declaringClassName = methodMetadata.getDeclaringClassName();
-        System.out.println(methodMetadata.getMethodName());
-        System.out.println(methodMetadata.getReturnTypeName());
-        System.out.println(declaringClassName);
+//        System.out.println(Tesscls.class.getDeclaringClass());
+//        System.out.println(Tesscls.Sta.class.getDeclaringClass());
+//        System.out.println(Tesscls.class.getEnclosingClass());
+//        System.out.println(Tesscls.Sta.class.getEnclosingClass());
+//        System.out.println(Tesscls.Sta.class.getEnclosingClass());
+//        StandardClassMetadata standardClassMetadata = new StandardClassMetadata(Tesscls.class);
+//        boolean independent = standardClassMetadata.isIndependent();
+//
+//        System.out.println(Arrays.asList(standardClassMetadata.getMemberClassNames()));
+//        Method test = AnoTest.class.getDeclaredMethod("test");
+//        MethodMetadata methodMetadata = new StandardMethodMetadata(test);
+//        AnnotatedElementUtils
+//        String declaringClassName = methodMetadata.getDeclaringClassName();
+//        System.out.println(methodMetadata.getMethodName());
+//        System.out.println(methodMetadata.getReturnTypeName());
+//        System.out.println(declaringClassName);
+        BeanDefinition beanDefinition = new AnnotatedGenericBeanDefinition(AnoTest.class);
+        AnnotationBeanNameGenerator annotationBeanNameGenerator = new AnnotationBeanNameGenerator();
+        String beanName = annotationBeanNameGenerator.generateBeanName(beanDefinition, null);
+        System.out.println(beanName);
     }
 
 }

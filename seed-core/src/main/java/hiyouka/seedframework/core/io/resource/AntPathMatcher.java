@@ -83,7 +83,6 @@ public class AntPathMatcher implements PathMatcher{
         String suf = pattDirs[pattIdxEnd];
         String pathSuf = pathDirs[pathIdxEnd];
         if(suf.contains("*")){
-            //classpath:hiyouka/seedframework/**/resource/*.class
             suf = StringUtils.replace(suf,"*","");
             return pathSuf.endsWith(suf);
         }else {

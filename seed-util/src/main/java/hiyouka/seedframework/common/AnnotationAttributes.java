@@ -1,5 +1,6 @@
 package hiyouka.seedframework.common;
 
+import com.sun.istack.internal.Nullable;
 import hiyouka.seedframework.util.Assert;
 
 import java.lang.annotation.Annotation;
@@ -90,6 +91,17 @@ public class AnnotationAttributes extends LinkedHashMap<String,Object>{
                     attributeName, attributeValue.getClass().getSimpleName(), expectedType.getSimpleName(),
                     this.displayName));
         }
+    }
+
+    @Nullable
+    public static AnnotationAttributes fromMap(@Nullable Map<String, Object> map) {
+        if (map == null) {
+            return null;
+        }
+        if (map instanceof AnnotationAttributes) {
+            return (AnnotationAttributes) map;
+        }
+        return new AnnotationAttributes(map);
     }
 
 }

@@ -32,7 +32,7 @@ public class StandardAnnotationMetadata extends StandardClassMetadata implements
 
     @Override
     public Set<String> getMetaAnnotationTypes(String annotationName) {
-        return null;
+        return AnnotatedElementUtils.getMetaAnnotationTypes(getIntrospectedClass(),annotationName);
     }
 
     @Override
@@ -54,33 +54,19 @@ public class StandardAnnotationMetadata extends StandardClassMetadata implements
 
     @Override
     public boolean isAnnotated(String annotationName) {
-        Class<? extends Annotation> annotationType = getAnnotationType(annotationName);
-        return AnnotatedElementUtils.isAnnotated(getIntrospectedClass(),annotationType);
+        return AnnotatedElementUtils.isAnnotated(getIntrospectedClass(),annotationName);
     }
 
     @Override
     public Map<String, Object> getAnnotationAttributes(String annotationName) {
-        Class<? extends Annotation> annotationType = getAnnotationType(annotationName);
         return (this.annotations.length > 0 ? AnnotatedElementUtils.getAnnotationAttributes(
-                getIntrospectedClass(), annotationType) : null);
+                getIntrospectedClass(), annotationName) : null);
     }
 
     @Override
     public MultiValueMap<String, Object> getAllAnnotationAttributes(String annotationName) {
-        Class<? extends Annotation> annotationType = getAnnotationType(annotationName);
         return (this.annotations.length > 0 ? AnnotatedElementUtils.getAttributes(
-                getIntrospectedClass(), annotationType) : null);
-    }
-
-    private Class<? extends Annotation> getAnnotationType(String annotationName){
-        if(annotations == null || annotations.length == 0)
-            return null;
-        Class<? extends Annotation> clazz = null;
-        for(Annotation annotation : annotations){
-            if(annotation.getClass().getName().equals(annotationName))
-                clazz = annotation.getClass();
-        }
-        return clazz;
+                getIntrospectedClass(), annotationName) : null);
     }
 
 }
