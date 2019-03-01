@@ -2,6 +2,7 @@ package hiyouka.seedframework;
 
 import hiyouka.seedframework.util.AnnotatedElementUtils;
 import hiyouka.seedframework.util.AnnotationUtils;
+import hiyouka.seedframework.util.BeanUtils;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Method;
@@ -23,6 +24,9 @@ public class test {
             System.out.println(method);
             System.out.println("======================");
         });
+
+        ThreadLocal<String> threadLocal = new ThreadLocal<>();
+        threadLocal.set("214");
 //        Tess declaredAnnotation = AnoTest.class.getDeclaredAnnotation(Tess.class);
 //        Object value = AnnotationUtils.getAttribute("ke", declaredAnnotation);
 //        System.out.println(value);
@@ -49,6 +53,9 @@ public class test {
 
 //        AnnotationUtils.
 //        AnoTest.class.getD
+        Class<AnoTest.innerClass> innerClassClass = AnoTest.innerClass.class;
+        AnoTest.innerClass innerClass = BeanUtils.instanceClass(innerClassClass);
+
 
     }
 

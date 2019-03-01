@@ -1,5 +1,7 @@
 package hiyouka.seedframework.beans.factory;
 
+import com.sun.istack.internal.Nullable;
+import hiyouka.seedframework.beans.definition.BeanDefinition;
 import hiyouka.seedframework.beans.factory.config.BeanPostProcessor;
 import hiyouka.seedframework.beans.factory.config.ConfigurableBeanFactory;
 import hiyouka.seedframework.exception.BeansException;
@@ -96,5 +98,6 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
         return null;
     }
 
+    protected abstract  <T> T createBean(String beanName, BeanDefinition beanDefinition, @Nullable Object[] args);
 
 }

@@ -46,6 +46,10 @@ public class AnnotationAttributes extends LinkedHashMap<String,Object>{
         return this.annotationType;
     }
 
+    public boolean getBoolean(String attributeName) {
+        return getRequiredAttribute(attributeName, Boolean.class);
+    }
+
     public String getString(String attributeName) {
         return getRequiredAttribute(attributeName, String.class);
     }

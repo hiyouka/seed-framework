@@ -95,7 +95,7 @@ public class ClassUtils {
     }
 
     public static String convertClassNameToResourcePath(String className) {
-        org.springframework.util.Assert.notNull(className, "Class name must not be null");
+        Assert.notNull(className, "Class name must not be null");
         return className.replace(PACKAGE_SEPARATOR, PATH_SEPARATOR);
     }
 
@@ -105,6 +105,11 @@ public class ClassUtils {
     public static String getClassRootPath(ClassLoader classLoader){
         classLoader = (classLoader == null ? ClassUtils.class.getClassLoader() : classLoader);
         return classLoader.getResource("").getPath();
+    }
+
+    public static boolean isInnerClass(Class<?> clazz){
+        Assert.notNull(clazz,"class must not be null !!");
+        return clazz.getDeclaringClass() != null;
     }
 
 }

@@ -12,6 +12,15 @@ public class BeansException extends SeedCoreException {
         super(message);
     }
 
+    public BeansException(String message, Throwable e) {
+        super(message,e);
+    }
+    public BeansException(String beanName, String message, Throwable e) {
+        super(message,e);
+        this.beanName = beanName;
+    }
+
+
     public BeansException(String message, String beanName) {
         super(message);
         this.beanName = beanName;

@@ -1,7 +1,6 @@
 package hiyouka.seedframework.beans.definition;
 
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.util.Assert;
+import hiyouka.seedframework.util.Assert;
 
 /**
  * @author hiyouka
@@ -20,7 +19,7 @@ public class BeanDefinitionHolder {
         this.beanName = beanName;
     }
 
-    public BeanDefinitionHolder(org.springframework.beans.factory.config.BeanDefinitionHolder beanDefinitionHolder) {
+    public BeanDefinitionHolder(BeanDefinitionHolder beanDefinitionHolder) {
         Assert.notNull(beanDefinitionHolder, "BeanDefinitionHolder must not be null");
         this.beanDefinition = beanDefinitionHolder.getBeanDefinition();
         this.beanName = beanDefinitionHolder.getBeanName();

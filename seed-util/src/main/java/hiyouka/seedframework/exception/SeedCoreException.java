@@ -11,7 +11,7 @@ public class SeedCoreException extends RuntimeException {
         super(message);
     }
 
-    public SeedCoreException(String message, Exception e){
+    public SeedCoreException(String message, Throwable e){
         super(message,e);
     }
 

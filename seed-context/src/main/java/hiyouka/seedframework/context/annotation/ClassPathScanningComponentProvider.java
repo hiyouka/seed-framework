@@ -1,9 +1,10 @@
 package hiyouka.seedframework.context.annotation;
 
+import hiyouka.seedframework.beans.definition.AnnotatedBeanDefinition;
 import hiyouka.seedframework.beans.definition.AnnotatedGenericBeanDefinition;
 import hiyouka.seedframework.beans.definition.AnnotationBeanNameGenerator;
 import hiyouka.seedframework.beans.definition.BeanDefinition;
-import hiyouka.seedframework.beans.definition.BeanDefinitionHolder;
+import hiyouka.seedframework.beans.metadata.AnnotationMetadata;
 import hiyouka.seedframework.core.asm.ClassReaderUtils;
 import hiyouka.seedframework.core.io.resource.Resource;
 import hiyouka.seedframework.core.io.resource.ResourceLoader;
@@ -78,7 +79,12 @@ public class ClassPathScanningComponentProvider {
                     if(isComponent(clazz)){
                         AnnotatedGenericBeanDefinition bea = new AnnotatedGenericBeanDefinition(clazz);
                         bea.setResource(resource);
-                        searchBeanDefinitions.add(bea);
+                        if(isComponent(bea)){
+                            logger.info("add BeanDefinition : " + bea.getBeanClassName());
+                            searchBeanDefinitions.add(bea);
+                        }else {
+                            logger.error("not support abstract or inner class Component class : " + bea.getBeanClassName());
+                        }
                     }
                 }
             }
@@ -90,6 +96,11 @@ public class ClassPathScanningComponentProvider {
 
     protected boolean isComponent(Class<?> clazz) {
         return AnnotatedElementUtils.isAnnotated(clazz, AnnotationBeanNameGenerator.COMPONENT_ANNOTATION_CLASSNAME);
+    }
+
+    protected boolean isComponent(AnnotatedBeanDefinition beanDefinition){
+        AnnotationMetadata metadata = beanDefinition.getMetadata();
+        return (metadata.isConcrete() && metadata.isIndependent());
     }
 
 }

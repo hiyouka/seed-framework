@@ -50,6 +50,8 @@ public interface BeanDefinition extends AttributeAccessor {
 
     String getScope();
 
+    void setPrimary(boolean primary);
+
     void setSingleton(boolean singleton);
 
     void setPrototype(boolean prototype);

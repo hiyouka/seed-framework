@@ -1,6 +1,5 @@
 package hiyouka.seedframework.beans.factory;
 
-import hiyouka.seedframework.beans.definition.AbstractBeanDefinition;
 import hiyouka.seedframework.beans.definition.BeanDefinition;
 import hiyouka.seedframework.exception.BeanDefinitionStoreException;
 import hiyouka.seedframework.exception.NoSuchBeanDefinitionException;
@@ -12,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author hiyouka
  * @since JDK 1.8
  */
-public class DefaultBenFactory extends AbstractBeanDefinition implements BeanDefinitionRegistry {
+public class DefaultBenFactory extends AbstractBeanCreateFactory implements BeanDefinitionRegistry {
 
 
     /** 是否允许重复注册 */
@@ -34,16 +33,6 @@ public class DefaultBenFactory extends AbstractBeanDefinition implements BeanDef
     private volatile Set<String> manualSingletonNames = new LinkedHashSet<>(16);
 
 
-
-    @Override
-    public void setParentName(String parentName) {
-
-    }
-
-    @Override
-    public String getParentName() {
-        return null;
-    }
 
     @Override
     public void registerBeanDefinition(String beanName, BeanDefinition beanDefinition) throws BeanDefinitionStoreException {

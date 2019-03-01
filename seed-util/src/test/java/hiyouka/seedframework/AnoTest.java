@@ -17,5 +17,9 @@ public class AnoTest {
 
     }
 
+    public class innerClass{
+
+    }
+
 
 }

@@ -49,11 +49,11 @@
         </dependency>
 
 
-        <dependency>
-            <groupId>com.synapse.common</groupId>
-            <artifactId>likesoft-sso</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.synapse.common</groupId>-->
+            <!--<artifactId>likesoft-sso</artifactId>-->
+            <!--<version>0.0.1-SNAPSHOT</version>-->
+        <!--</dependency>-->
 
 
         <!-- https://mvnrepository.com/artifact/org.springframework/spring-core -->
