@@ -31,5 +31,4 @@ public class Tests {
         Class<? extends Annotation> annotationType = AnnotatedElementUtils.getAnnotationType(ConfigClass.class, null);
     }
 
-
 }

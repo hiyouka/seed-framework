@@ -28,6 +28,7 @@ public class AbstractBeanCreateFactory extends AbstractBeanFactory implements Be
     }
 
     private Object doCreateBean(String beanName, BeanDefinition beanDefinition, Object[] args) {
+
         // 1. 创建初步的对象。。。
 
         // 2. 将初步对象放入早期对象缓存
