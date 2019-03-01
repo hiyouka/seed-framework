@@ -1,6 +1,7 @@
 package hiyouka.seedframework.context.config;
 
 import hiyouka.seedframework.beans.definition.BeanDefinition;
+import hiyouka.seedframework.beans.definition.BeanDefinitionHolder;
 import hiyouka.seedframework.beans.factory.BeanDefinitionRegistry;
 import hiyouka.seedframework.beans.factory.DefaultBenFactory;
 import hiyouka.seedframework.beans.factory.config.BeanDefinitionRegistryPostProcessor;
@@ -35,14 +36,14 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 
     public void processConfigurationBeanDefinitions(BeanDefinitionRegistry registry){
         String[] beanNames = registry.getBeanDefinitionNames();
-        Set<BeanDefinition> processBean = new LinkedHashSet<>(128);
+        Set<BeanDefinitionHolder> processBean = new LinkedHashSet<>(128);
         for(String beanName : beanNames){
             BeanDefinition beanDefinition = registry.getBeanDefinition(beanName);
             if(alreadyProcessor(beanDefinition)){
                 logger.error("this configuration bean is bean process : " + beanName );
             }
             if(ConfigurationUtils.checkConfigurationClass(beanDefinition)){
-                processBean.add(beanDefinition);
+                processBean.add(new BeanDefinitionHolder(beanDefinition,beanName));
             }
         }
         ConfigurationClassParser parser = new ConfigurationClassParser(registry);
