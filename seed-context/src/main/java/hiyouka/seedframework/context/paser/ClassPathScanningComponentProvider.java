@@ -1,4 +1,4 @@
-package hiyouka.seedframework.context.annotation;
+package hiyouka.seedframework.context.paser;
 
 import hiyouka.seedframework.beans.definition.AnnotatedBeanDefinition;
 import hiyouka.seedframework.beans.definition.AnnotatedGenericBeanDefinition;

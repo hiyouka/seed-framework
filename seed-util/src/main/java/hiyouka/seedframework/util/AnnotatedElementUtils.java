@@ -20,7 +20,7 @@ public class AnnotatedElementUtils {
      * 判断某个注解是否包含type注解
      */
     public static boolean isAnnotated(AnnotatedElement element, String annotationName) {
-        return Boolean.TRUE.equals(searchWithFindSemantics(element,getAnnotationType(element,annotationName),new HashSet<>(),alwaysTrueProcessor));
+        return Boolean.TRUE.equals(searchWithFindSemantics(element,null,annotationName,new HashSet<>(),alwaysTrueProcessor));
     }
 
     public static Object getAttribute(AnnotatedElement element,Class<? extends Annotation> annotationType, String attributeName){
@@ -43,7 +43,7 @@ public class AnnotatedElementUtils {
     public static MultiValueMap<String, Object> getAttributes(AnnotatedElement element,Class<? extends Annotation> annotationType){
         final MultiValueMap<String, Object> attributesMap = new DefaultMultiValueMap<>();
         Assert.notNull(annotationType,"annotation type must not null");
-        searchWithFindSemantics(element, annotationType, new HashSet<>(), new Processor<Object>() {
+        searchWithFindSemantics(element, annotationType,null, new HashSet<>(), new Processor<Object>() {
             @Override
             public boolean getList() {
                 return false;
@@ -67,11 +67,11 @@ public class AnnotatedElementUtils {
     }
 
     public static AnnotationAttributes getAnnotationAttributes(AnnotatedElement element, String annotationName){
-        return searchWithFindSemantics(element, getAnnotationType(element,annotationName), new HashSet<>(),new AnnotationAttributesProcessor());
+        return searchWithFindSemantics(element, null,annotationName, new HashSet<>(),new AnnotationAttributesProcessor());
     }
 
     public static AnnotationAttributes getAnnotationAttributes(AnnotatedElement element, Class<? extends Annotation> annotationType){
-        return searchWithFindSemantics(element, annotationType, new HashSet<>(),new AnnotationAttributesProcessor());
+        return searchWithFindSemantics(element, annotationType,null, new HashSet<>(),new AnnotationAttributesProcessor());
     }
 
     public static Set<String> getMetaAnnotationTypes(AnnotatedElement element, String annotationName) {
@@ -83,7 +83,7 @@ public class AnnotatedElementUtils {
             return Collections.emptySet();
         }
         final Set<String> types = new LinkedHashSet<>();
-        searchWithFindSemantics(composed.annotationType(), null, new HashSet<>(), new Processor<Object>() {
+        searchWithFindSemantics(composed.annotationType(), null,null, new HashSet<>(), new Processor<Object>() {
             @Override
             public Object process(AnnotatedElement element, Annotation annotation) {
                 types.add(annotation.annotationType().getName());
@@ -104,15 +104,15 @@ public class AnnotatedElementUtils {
     }
 
 
-    private static <T> T searchWithFindSemantics(AnnotatedElement element, Class<? extends Annotation> annotationType,
-                                                 Set<AnnotatedElement> visited, Processor<T> processor) {
+    private static <T> T searchWithFindSemantics(AnnotatedElement element, Class<? extends Annotation> annotationType,String annotationName,                                                 Set<AnnotatedElement> visited, Processor<T> processor) {
         Assert.notNull(element, "AnnotatedElement must not be null");
         if (visited.add(element)) {
             Annotation[] annotations = element.getDeclaredAnnotations();
             List<T> aggregatedResults = (processor.getList() ? new ArrayList<>() : null);
             for (Annotation annotation : annotations) {
                 if (!AnnotationUtils.isInJavaLangAnnotationPackage(annotation)) {
-                    if (!processor.matchType() || annotation.annotationType() == annotationType) {
+                    if (!processor.matchType() || annotation.annotationType() == annotationType
+                            || annotation.annotationType().getName().equals(annotationName)) {
                         T result = processor.process(element, annotation);
                         if (result != null) {
                             if (processor.getList()) {
@@ -128,7 +128,7 @@ public class AnnotatedElementUtils {
             }
             for (Annotation annotation : annotations) {
                 if (!AnnotationUtils.isInJavaLangAnnotationPackage(annotation)) {
-                    T result = searchWithFindSemantics(annotation.annotationType(), annotationType,
+                    T result = searchWithFindSemantics(annotation.annotationType(), annotationType,annotationName,
                             visited, processor);
                     if(result != null)
                         return result;

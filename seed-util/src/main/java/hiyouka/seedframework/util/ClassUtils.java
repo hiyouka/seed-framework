@@ -112,4 +112,15 @@ public class ClassUtils {
         return clazz.getDeclaringClass() != null;
     }
 
+
+    public static String getPackageName(Class<?> clazz) {
+        Assert.notNull(clazz, "Class must not be null");
+        return getPackageName(clazz.getName());
+    }
+
+    public static String getPackageName(String fqClassName) {
+        Assert.notNull(fqClassName, "Class name must not be null");
+        int lastDotIndex = fqClassName.lastIndexOf(PACKAGE_SEPARATOR);
+        return (lastDotIndex != -1 ? fqClassName.substring(0, lastDotIndex) : "");
+    }
 }

@@ -54,6 +54,10 @@ public class AnnotationAttributes extends LinkedHashMap<String,Object>{
         return getRequiredAttribute(attributeName, String.class);
     }
 
+    public String[] getStringArray(String attributeName) {
+        return getRequiredAttribute(attributeName, String[].class);
+    }
+
     public Object getValue(String attributeName){
         return getRequiredAttribute(attributeName,Object.class);
     }

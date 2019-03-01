@@ -2,6 +2,8 @@ package hiyouka.seedframework.beans.factory;
 
 import hiyouka.seedframework.util.Assert;
 import hiyouka.seedframework.util.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -11,6 +13,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * @since JDK 1.8
  */
 public class DefaultSingletonBeanRegistry implements SingletonBeanRegistry {
+
+    protected final Log logger = LogFactory.getLog(getClass());
 
     /** cache of single bean : beanName -> bean instance */
     private final Map<String, Object> singletonObjects = new ConcurrentHashMap<>(256);
@@ -108,6 +112,10 @@ public class DefaultSingletonBeanRegistry implements SingletonBeanRegistry {
             this.earlySingletonObjects.clear();
             this.registeredSingletons.clear();
         }
+    }
+
+    public void destroySingleton(String beanName) {
+        removeSingleton(beanName);
     }
 
 }

@@ -4,6 +4,7 @@ import hiyouka.seedframework.util.AnnotatedElementUtils;
 import hiyouka.seedframework.util.MultiValueMap;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
@@ -43,12 +44,27 @@ public class StandardAnnotationMetadata extends StandardClassMetadata implements
 
     @Override
     public boolean hasAnnotatedMethods(String annotationName) {
+        Method[] methods = getIntrospectedClass().getDeclaredMethods();
+        for(Method method : methods){
+            if(!method.isBridge() && method.getAnnotations().length > 0
+                    && AnnotatedElementUtils.isAnnotated(method,annotationName)){
+                return true;
+            }
+        }
         return false;
     }
 
     @Override
     public Set<MethodMetadata> getAnnotatedMethods(String annotationName) {
-        return null;
+        Set<MethodMetadata> annotatedMethods = new LinkedHashSet<>(4);
+        Method[] methods = getIntrospectedClass().getDeclaredMethods();
+        for(Method method : methods){
+            if (!method.isBridge() && method.getAnnotations().length > 0 &&
+                    AnnotatedElementUtils.isAnnotated(method, annotationName)) {
+                annotatedMethods.add(new StandardMethodMetadata(method));
+            }
+        }
+        return annotatedMethods;
     }
 
 

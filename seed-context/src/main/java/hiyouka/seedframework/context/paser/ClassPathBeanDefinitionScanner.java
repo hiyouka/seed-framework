@@ -1,4 +1,4 @@
-package hiyouka.seedframework.context.annotation;
+package hiyouka.seedframework.context.paser;
 
 import hiyouka.seedframework.beans.annotation.Lazy;
 import hiyouka.seedframework.beans.annotation.Primary;
@@ -12,8 +12,11 @@ import hiyouka.seedframework.common.AnnotationAttributes;
 import hiyouka.seedframework.exception.BeanDefinitionStoreException;
 import hiyouka.seedframework.util.Assert;
 import hiyouka.seedframework.util.BeanDefinitionReaderUtils;
+import hiyouka.seedframework.util.ClassUtils;
+import hiyouka.seedframework.util.StringUtils;
 
 import java.lang.annotation.Annotation;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -27,15 +30,24 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningComponentPr
 
     private BeanNameGenerator beanNameGenerator = new AnnotationBeanNameGenerator();
 
-
-//    public void setRegistry(BeanDefinitionRegistry registry){
-//        registry.
-//    }
-
-    public Set<BeanDefinitionHolder> parse(AnnotationAttributes scanAttributes, String declaringClass){
-        return null;
+    public ClassPathBeanDefinitionScanner(){
+        super();
     }
 
+    public ClassPathBeanDefinitionScanner(BeanDefinitionRegistry registry){
+        super();
+        this.registry = registry;
+    }
+
+    public Set<BeanDefinitionHolder> parse(AnnotationAttributes componentScan, String declaringClass){
+        Set<String> basePackages = new LinkedHashSet<>();
+        String[] packages = componentScan.getStringArray("value");
+        Collections.addAll(basePackages,packages);
+        if(packages.length == 0){
+            basePackages.add(ClassUtils.getPackageName(declaringClass));
+        }
+        return doScan(StringUtils.toStringArray(basePackages));
+    }
 
     protected Set<BeanDefinitionHolder> doScan(String... basePackages){
         Assert.notEmpty(basePackages, "At least one base package must be set");
@@ -44,7 +56,7 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningComponentPr
             Set<BeanDefinition> beanDefinitions = findBeanDefinitions(basePackage);
             for(BeanDefinition beanDefinition : beanDefinitions){
                 String beanName = this.beanNameGenerator.generateBeanName(beanDefinition, this.registry);
-                if(!checkBeanName(beanName)){
+                if(checkBeanName(beanName)){
                     throw new BeanDefinitionStoreException("this beanName is existing : " + beanName + " [ bean class : " + beanDefinition.getBeanClassName() + " ] ");
                 }
                 if(beanDefinition instanceof AnnotatedBeanDefinition){
@@ -91,5 +103,9 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningComponentPr
 
     protected static AnnotationAttributes attributesFor(AnnotatedTypeMetadata metadata, Class<? extends Annotation> annotationClass){
         return AnnotationAttributes.fromMap(metadata.getAnnotationAttributes(annotationClass.getName()));
+    }
+
+    public void setRegistry(BeanDefinitionRegistry registry) {
+        this.registry = registry;
     }
 }
