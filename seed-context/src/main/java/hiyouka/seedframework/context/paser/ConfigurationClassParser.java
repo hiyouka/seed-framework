@@ -1,14 +1,13 @@
 package hiyouka.seedframework.context.paser;
 
 import hiyouka.seedframework.beans.annotation.ComponentScan;
-import hiyouka.seedframework.beans.definition.AbstractBeanDefinition;
-import hiyouka.seedframework.beans.definition.AnnotatedBeanDefinition;
-import hiyouka.seedframework.beans.definition.BeanDefinition;
-import hiyouka.seedframework.beans.definition.BeanDefinitionHolder;
+import hiyouka.seedframework.beans.definition.*;
 import hiyouka.seedframework.beans.factory.BeanDefinitionRegistry;
 import hiyouka.seedframework.beans.metadata.AnnotationMetadata;
+import hiyouka.seedframework.beans.metadata.StandardAnnotationMetadata;
 import hiyouka.seedframework.common.AnnotationAttributes;
 import hiyouka.seedframework.context.annotation.Configuration;
+import hiyouka.seedframework.context.annotation.Import;
 import hiyouka.seedframework.context.config.ConfigurationClass;
 import hiyouka.seedframework.context.config.ConfigurationUtils;
 import hiyouka.seedframework.util.AnnotationConfigUtils;
@@ -112,6 +111,15 @@ public class ConfigurationClassParser {
     }
 
     protected void processImports(ConfigurationClass configClass){
+        AnnotationMetadata metadata = configClass.getMetadata();
+        AnnotationAttributes attributes = AnnotationConfigUtils.getAnnotationAttributes(metadata, Import.class.getName());
+        if(attributes != null){
+            Class<?>[] values = attributes.getClassArray("value");
+            for(Class clazz : values){
+                StandardAnnotationMetadata smeta = new StandardAnnotationMetadata(clazz);
+                processConfigurationClass(new ConfigurationClass(smeta,clazz.getName())); // process as configuration class
+            }
+        }
         // do something to get all @Import class
     }
 

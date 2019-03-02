@@ -7,6 +7,6 @@ import java.lang.annotation.*;
 @Documented
 public @interface Import {
 
-    Class<?> value();
+    Class<?>[] value();
 
 }
