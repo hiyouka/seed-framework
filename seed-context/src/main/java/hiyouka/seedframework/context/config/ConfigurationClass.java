@@ -78,6 +78,10 @@ public class ConfigurationClass {
         this.beanMethods.add(method);
     }
 
+    public void removeBeanMethod(BeanMethod beanMethod){
+        this.beanMethods.remove(beanMethod);
+    }
+
     public Set<BeanMethod> getBeanMethods() {
         return this.beanMethods;
     }
