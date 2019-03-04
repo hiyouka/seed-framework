@@ -82,7 +82,11 @@ public class DefaultBenFactory extends AbstractBeanCreateFactory implements Bean
 
     @Override
     public BeanDefinition getBeanDefinition(String beanName) throws NoSuchBeanDefinitionException {
-        return null;
+        BeanDefinition beanDefinition = this.beanDefinitionMap.get(beanName);
+        if(beanDefinition == null){
+            throw new NoSuchBeanDefinitionException("no bean named '" + beanName + "' found in " + this);
+        }
+        return beanDefinition;
     }
 
     @Override

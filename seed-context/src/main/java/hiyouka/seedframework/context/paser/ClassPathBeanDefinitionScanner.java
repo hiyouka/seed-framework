@@ -1,5 +1,6 @@
 package hiyouka.seedframework.context.paser;
 
+import hiyouka.seedframework.beans.annotation.Component;
 import hiyouka.seedframework.beans.annotation.Lazy;
 import hiyouka.seedframework.beans.annotation.Primary;
 import hiyouka.seedframework.beans.annotation.Scope;
@@ -9,6 +10,8 @@ import hiyouka.seedframework.beans.factory.config.ConfigurableBeanFactory;
 import hiyouka.seedframework.beans.metadata.AnnotatedTypeMetadata;
 import hiyouka.seedframework.beans.metadata.AnnotationMetadata;
 import hiyouka.seedframework.common.AnnotationAttributes;
+import hiyouka.seedframework.context.config.filter.AnnotationIncludeFilter;
+import hiyouka.seedframework.context.config.filter.ClassTypeFilter;
 import hiyouka.seedframework.exception.BeanDefinitionStoreException;
 import hiyouka.seedframework.util.Assert;
 import hiyouka.seedframework.util.BeanDefinitionReaderUtils;
@@ -43,6 +46,11 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningComponentPr
         Set<String> basePackages = new LinkedHashSet<>();
         String[] packages = componentScan.getStringArray("value");
         Collections.addAll(basePackages,packages);
+        //default
+        addExcludeFilters(new ClassTypeFilter(ClassUtils.getClass(declaringClass)));
+        //default
+        addIncludeFilters(new AnnotationIncludeFilter(Component.class));
+
         if(packages.length == 0){
             basePackages.add(ClassUtils.getPackageName(declaringClass));
         }

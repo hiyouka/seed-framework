@@ -2,15 +2,15 @@ package hiyouka.seedframework.context.paser;
 
 import hiyouka.seedframework.beans.definition.AnnotatedBeanDefinition;
 import hiyouka.seedframework.beans.definition.AnnotatedGenericBeanDefinition;
-import hiyouka.seedframework.beans.definition.AnnotationBeanNameGenerator;
 import hiyouka.seedframework.beans.definition.BeanDefinition;
 import hiyouka.seedframework.beans.metadata.AnnotationMetadata;
+import hiyouka.seedframework.beans.metadata.StandardAnnotationMetadata;
+import hiyouka.seedframework.context.config.filter.BeanTypeFilter;
 import hiyouka.seedframework.core.asm.ClassReaderUtils;
 import hiyouka.seedframework.core.io.resource.Resource;
 import hiyouka.seedframework.core.io.resource.ResourceLoader;
 import hiyouka.seedframework.core.io.resource.ResourcePatternResolver;
 import hiyouka.seedframework.exception.BeanDefinitionStoreException;
-import hiyouka.seedframework.util.AnnotatedElementUtils;
 import hiyouka.seedframework.util.Assert;
 import hiyouka.seedframework.util.ClassUtils;
 import hiyouka.seedframework.util.ResourcePatternUtils;
@@ -19,6 +19,8 @@ import org.apache.commons.logging.LogFactory;
 
 import java.io.IOException;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -34,6 +36,12 @@ public class ClassPathScanningComponentProvider {
     private ResourcePatternResolver resourcePatternResolver;
 
     private String resourcePattern = DEFAULT_RESOURCE_PATTERN;
+
+    /** 过滤符合条件的bean Resource */
+    private final List<BeanTypeFilter> excludeFilters = new LinkedList<>();
+
+    /** bean所需的条件过滤 */
+    private final List<BeanTypeFilter> includeFilters = new LinkedList<>();
 
     protected ClassPathScanningComponentProvider() {
         this(null);
@@ -76,8 +84,9 @@ public class ClassPathScanningComponentProvider {
             for(Resource resource : resources){
                 if(resource.isReadable()){
                     Class<?> clazz = ClassReaderUtils.getClassFromResource(resource);
-                    if(isComponent(clazz)){
-                        AnnotatedGenericBeanDefinition bea = new AnnotatedGenericBeanDefinition(clazz);
+                    StandardAnnotationMetadata meta = new StandardAnnotationMetadata(clazz);
+                    if(isComponent(meta)){
+                        AnnotatedGenericBeanDefinition bea = new AnnotatedGenericBeanDefinition(meta);
                         bea.setResource(resource);
                         if(isComponent(bea)){
                             logger.info("add BeanDefinition : " + bea.getBeanClassName());
@@ -94,8 +103,16 @@ public class ClassPathScanningComponentProvider {
         return searchBeanDefinitions;
     }
 
-    protected boolean isComponent(Class<?> clazz) {
-        return AnnotatedElementUtils.isAnnotated(clazz, AnnotationBeanNameGenerator.COMPONENT_ANNOTATION_CLASSNAME);
+    protected boolean isComponent(AnnotationMetadata metadata) {
+        for(BeanTypeFilter typeFilter : excludeFilters){
+            if(typeFilter.match(metadata)){
+                return false;
+            }
+        }
+        for(BeanTypeFilter typeFilter : includeFilters){
+            return typeFilter.match(metadata);
+        }
+        return false;
     }
 
     protected boolean isComponent(AnnotatedBeanDefinition beanDefinition){
@@ -103,4 +120,11 @@ public class ClassPathScanningComponentProvider {
         return (metadata.isConcrete() && metadata.isIndependent());
     }
 
+    protected boolean addExcludeFilters(BeanTypeFilter excludeFilter) {
+        return this.excludeFilters.add(excludeFilter);
+    }
+
+    protected boolean addIncludeFilters(BeanTypeFilter includeFilter) {
+        return this.includeFilters.add(includeFilter);
+    }
 }

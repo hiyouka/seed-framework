@@ -41,6 +41,8 @@ public class ConfigurationClassParser {
 
     private final ClassPathBeanDefinitionScanner componentScanParser;
 
+
+
     public ConfigurationClassParser(BeanDefinitionRegistry registry){
         this.registry = registry;
         this.componentScanParser = new ClassPathBeanDefinitionScanner(registry);
@@ -154,7 +156,6 @@ public class ConfigurationClassParser {
                         configClass.removeBeanMethod(beanMethod);
                         throw new IllegalStateException(" class not found : " + meta.getReturnTypeName());
                     }
-
                 }
             }
         }

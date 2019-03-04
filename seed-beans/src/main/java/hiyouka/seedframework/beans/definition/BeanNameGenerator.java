@@ -8,6 +8,7 @@ import hiyouka.seedframework.beans.factory.BeanDefinitionRegistry;
  * @author hiyouka
  * @since JDK 1.8
  */
+@FunctionalInterface
 public interface BeanNameGenerator {
 
 
