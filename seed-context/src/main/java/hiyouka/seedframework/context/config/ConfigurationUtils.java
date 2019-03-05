@@ -2,14 +2,14 @@ package hiyouka.seedframework.context.config;
 
 import hiyouka.seedframework.beans.annotation.Bean;
 import hiyouka.seedframework.beans.annotation.Component;
-import hiyouka.seedframework.beans.annotation.ComponentScan;
+import hiyouka.seedframework.context.annotation.ComponentScan;
 import hiyouka.seedframework.beans.definition.AbstractBeanDefinition;
 import hiyouka.seedframework.beans.definition.AnnotatedBeanDefinition;
 import hiyouka.seedframework.beans.definition.BeanDefinition;
 import hiyouka.seedframework.beans.metadata.AnnotationMetadata;
 import hiyouka.seedframework.beans.metadata.StandardAnnotationMetadata;
 import hiyouka.seedframework.context.annotation.Configuration;
-import hiyouka.seedframework.context.annotation.Import;
+import hiyouka.seedframework.beans.annotation.Import;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

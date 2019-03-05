@@ -48,11 +48,19 @@ public class ClassResource extends AbstractResource {
 
     @Override
     public boolean equals(Object obj) {
+        if(clazz == null){
+            return ((ClassResource) obj).beanName.equals(this.beanName);
+        }
         return (obj == this ||
                 (obj instanceof ClassResource && ((ClassResource) obj).clazz.equals(this.clazz)
                                 && ((ClassResource) obj).beanName.equals(this.beanName)));
     }
 
-
-
+    @Override
+    public String toString() {
+        return "ClassResource{" +
+                "beanName='" + beanName + '\'' +
+                ", clazz = " + (clazz == null ? "null" : clazz.getName())+
+                '}';
+    }
 }

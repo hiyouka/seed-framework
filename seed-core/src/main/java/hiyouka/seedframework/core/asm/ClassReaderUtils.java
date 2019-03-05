@@ -1,6 +1,9 @@
 package hiyouka.seedframework.core.asm;
 
+import hiyouka.seedframework.core.io.resource.ClassResource;
+import hiyouka.seedframework.core.io.resource.FileSystemResource;
 import hiyouka.seedframework.core.io.resource.Resource;
+import hiyouka.seedframework.core.io.resource.UrlResource;
 import hiyouka.seedframework.util.ClassUtils;
 import jdk.internal.org.objectweb.asm.ClassReader;
 
@@ -15,11 +18,17 @@ public class ClassReaderUtils {
 
 
     public static Class<?> getClassFromResource(Resource resource){
-        Class<?> aClass;
+        Class<?> aClass = null;
         String className = null;
         try {
-            className = getPackageName(resource);
-            aClass = ClassUtils.forName(className);
+            if(resource instanceof ClassResource){
+                aClass = ((ClassResource) resource).getClazz();
+            }
+            else if(resource instanceof FileSystemResource
+                    || resource instanceof UrlResource){
+                className = getPackageName(resource);
+                aClass = ClassUtils.forName(className);
+            }
         } catch (ClassNotFoundException e) {
             throw new IllegalStateException("class not found : " + className , e);
         }

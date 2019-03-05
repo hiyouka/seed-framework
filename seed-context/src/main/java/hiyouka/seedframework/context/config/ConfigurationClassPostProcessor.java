@@ -48,6 +48,10 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
         }
         ConfigurationClassParser parser = new ConfigurationClassParser(registry);
         parser.parse(processBean);
+
+        Set<ConfigurationClass> configurationClasses = parser.getConfigurationClasses();
+
+        parser.loadBeanDefinition(configurationClasses);
     }
 
 

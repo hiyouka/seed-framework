@@ -63,23 +63,33 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningComponentPr
         for(String basePackage : basePackages){
             Set<BeanDefinition> beanDefinitions = findBeanDefinitions(basePackage);
             for(BeanDefinition beanDefinition : beanDefinitions){
-                String beanName = this.beanNameGenerator.generateBeanName(beanDefinition, this.registry);
-                if(checkBeanName(beanName)){
-                    throw new BeanDefinitionStoreException("this beanName is existing : " + beanName + " [ bean class : " + beanDefinition.getBeanClassName() + " ] ");
-                }
-                if(beanDefinition instanceof AnnotatedBeanDefinition){
-                    processBeanDefinitionToPrefect((AnnotatedBeanDefinition) beanDefinition);
-                }
-                BeanDefinitionHolder definitionHolder = new BeanDefinitionHolder(beanDefinition, beanName);
+                BeanDefinitionHolder definitionHolder = registerOriginBeanDefinition(beanDefinition);
                 beanDefinitionHolders.add(definitionHolder);
-                registerBeanDefinition(definitionHolder,this.registry);
             }
         }
         return beanDefinitionHolders;
     }
 
+    protected BeanDefinitionHolder registerOriginBeanDefinition(BeanDefinition beanDefinition){
+        if(beanDefinition instanceof AnnotatedBeanDefinition){
+            processBeanDefinitionToPrefect((AnnotatedBeanDefinition) beanDefinition);
+        }
+        String beanName = generateBeanName(beanDefinition);
+        BeanDefinitionHolder definitionHolder = new BeanDefinitionHolder(beanDefinition, beanName);
+        registerBeanDefinition(definitionHolder,this.registry);
+        return definitionHolder;
+    }
+
     protected void registerBeanDefinition(BeanDefinitionHolder definitionHolder, BeanDefinitionRegistry registry) {
         BeanDefinitionReaderUtils.registerBeanDefinition(definitionHolder, registry);
+    }
+
+    protected String generateBeanName(BeanDefinition beanDefinition){
+        String beanName = this.beanNameGenerator.generateBeanName(beanDefinition, this.registry);
+        if(checkBeanName(beanName)){
+            throw new BeanDefinitionStoreException("this beanName is existing : " + beanName + " [ bean class : " + beanDefinition.getBeanClassName() + " ] ");
+        }
+        return beanName;
     }
 
     protected boolean checkBeanName(String beanName) {

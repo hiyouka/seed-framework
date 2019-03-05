@@ -41,22 +41,22 @@ public class Tests {
 //        Class<? extends Annotation> annotationType = AnnotatedElementUtils.getAnnotationType(ConfigClass.class, null);
 
 
-        List<Tes> list = new ArrayList<>();
-        list.add( new Tes(1,2));
-        list.add(new Tes(2,3));
-        list.add(new Tes(3,null));
-        list.add(new Tes(4,1));
-        List<Tes> cache = new ArrayList();
-        cache.addAll(list);
-        for(Tes tes : list){
-            tes.setChild(getChild(cache, tes.getId()));
-        }
-        for(Tes tes : cache){
-            if(tes.getPid() != null){
-                list.remove(tes);
-            }
-        }
-        System.out.println(list);
+//        List<Tes> list = new ArrayList<>();
+//        list.add( new Tes(1,2));
+//        list.add(new Tes(2,3));
+//        list.add(new Tes(3,null));
+//        list.add(new Tes(4,1));
+//        List<Tes> cache = new ArrayList();
+//        cache.addAll(list);
+//        for(Tes tes : list){
+//            tes.setChild(getChild(cache, tes.getId()));
+//        }
+//        for(Tes tes : cache){
+//            if(tes.getPid() != null){
+//                list.remove(tes);
+//            }
+//        }
+//        System.out.println(list);
     }
 
     public List<Tes> getChild(List<Tes> tes, Integer id){

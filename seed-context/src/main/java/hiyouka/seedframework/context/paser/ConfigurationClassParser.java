@@ -1,23 +1,16 @@
 package hiyouka.seedframework.context.paser;
 
 import hiyouka.seedframework.beans.annotation.Bean;
-import hiyouka.seedframework.beans.annotation.ComponentScan;
-import hiyouka.seedframework.beans.definition.AbstractBeanDefinition;
-import hiyouka.seedframework.beans.definition.AnnotatedBeanDefinition;
-import hiyouka.seedframework.beans.definition.BeanDefinition;
-import hiyouka.seedframework.beans.definition.BeanDefinitionHolder;
+import hiyouka.seedframework.context.annotation.ComponentScan;
+import hiyouka.seedframework.beans.definition.*;
 import hiyouka.seedframework.beans.factory.BeanDefinitionRegistry;
-import hiyouka.seedframework.beans.metadata.AnnotationMetadata;
-import hiyouka.seedframework.beans.metadata.MethodMetadata;
-import hiyouka.seedframework.beans.metadata.StandardAnnotationMetadata;
-import hiyouka.seedframework.beans.metadata.StandardMethodMetadata;
+import hiyouka.seedframework.beans.metadata.*;
 import hiyouka.seedframework.common.AnnotationAttributes;
 import hiyouka.seedframework.context.annotation.Configuration;
-import hiyouka.seedframework.context.annotation.Import;
+import hiyouka.seedframework.beans.annotation.Import;
 import hiyouka.seedframework.context.config.BeanMethod;
 import hiyouka.seedframework.context.config.ConfigurationClass;
 import hiyouka.seedframework.context.config.ConfigurationUtils;
-import hiyouka.seedframework.core.asm.ClassReaderUtils;
 import hiyouka.seedframework.util.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -46,6 +39,10 @@ public class ConfigurationClassParser {
     public ConfigurationClassParser(BeanDefinitionRegistry registry){
         this.registry = registry;
         this.componentScanParser = new ClassPathBeanDefinitionScanner(registry);
+    }
+
+    public Set<ConfigurationClass> getConfigurationClasses() {
+        return configurationClasses;
     }
 
     public void parse(Set<BeanDefinitionHolder> configBeanDefinitions){
@@ -101,6 +98,10 @@ public class ConfigurationClassParser {
 
     protected void  doProcessConfigurationClass(ConfigurationClass configClass){
         AnnotationMetadata metadata = configClass.getMetadata();
+        Class<?> clazz = null;
+        if(metadata instanceof StandardClassMetadata) {
+            clazz = ((StandardClassMetadata) metadata).getIntrospectedClass();
+        }
         AnnotationAttributes annotationAttributes = AnnotationConfigUtils.getAnnotationAttributes(metadata, ComponentScan.class.getName());
         if(annotationAttributes != null){
             Set<BeanDefinitionHolder> holders = this.componentScanParser.parse(annotationAttributes, metadata.getClassName());
@@ -115,7 +116,7 @@ public class ConfigurationClassParser {
 
         processBean(configClass);
 
-        processInterfaces(configClass);
+        processInterfaces(configClass, clazz);
 
     }
 
@@ -136,44 +137,102 @@ public class ConfigurationClassParser {
 
     protected void processBean(ConfigurationClass configClass){
         AnnotationMetadata metadata = configClass.getMetadata();
-        Set<MethodMetadata> annotatedMethods = metadata.getAnnotatedMethods(Bean.class.getName());
+        Set<MethodMetadata> annotatedMethods = retrieveBeanMethodMetadata(metadata);
         if(annotatedMethods.size() > 0){
             for(MethodMetadata meta : annotatedMethods){
-                if(isBeanMethod(meta) && meta instanceof StandardMethodMetadata){
-                    BeanMethod beanMethod = new BeanMethod(meta,configClass);
-                    configClass.addBeanMethod(beanMethod);
-                    AnnotationAttributes annotationAttributes =
-                            AnnotatedElementUtils.getAnnotationAttributes(((StandardMethodMetadata) meta)
-                                    .getIntrospectedMethod(), Bean.class.getName());
-                    String name = annotationAttributes.getString("name");
-                    if(!StringUtils.hasText(name)){
-                        name = meta.getMethodName();
-                    }
-                    try {
-                        //process this bean as configuration class
-                        processConfigurationClass(new ConfigurationClass(ClassUtils.forName(meta.getReturnTypeName()),name));
-                    } catch (ClassNotFoundException e) {
-                        configClass.removeBeanMethod(beanMethod);
-                        throw new IllegalStateException(" class not found : " + meta.getReturnTypeName());
-                    }
-                }
+                processBeanMethodClass(meta,configClass);
+//                configClass.addBeanMethod(new BeanMethod(meta,configClass));
             }
         }
         // do something to get this class @Bean method
     }
 
-    protected void processInterfaces(ConfigurationClass configClass){
-        Class<?> clazz = ClassReaderUtils.getClassFromResource(configClass.getResource());
+    protected void processInterfaces(ConfigurationClass configClass,Class<?> clazz){
+        if(clazz == null)
+            return;
         for(Class cla : clazz.getInterfaces()){
-            processBean(new ConfigurationClass(cla,null));
+            Set<MethodMetadata> methodMetadata = retrieveBeanMethodMetadata(new StandardAnnotationMetadata(cla));
+            for(MethodMetadata metadata : methodMetadata){
+                processBeanMethodClass(metadata,configClass);
+//                configClass.addBeanMethod(new BeanMethod(metadata,configClass));
+            }
+            processInterfaces(configClass, cla);
         }
         // do some thing to get interface @Bean method
     }
 
+    private Set<MethodMetadata> retrieveBeanMethodMetadata(AnnotationMetadata metadata){
+        Set<MethodMetadata> result = new LinkedHashSet<>();
+        Set<MethodMetadata> annotatedMethods = metadata.getAnnotatedMethods(Bean.class.getName());
+        for(MethodMetadata meta : annotatedMethods){
+            if(isBeanMethod(meta)){
+                result.add(meta);
+            }
+        }
+        return result;
+    }
+
+    /** 将@Bean导入的对象当作 Configuration 处理 */
+    private void processBeanMethodClass(MethodMetadata metadata, ConfigurationClass configClass){
+        if(isBeanMethod(metadata) && metadata instanceof StandardMethodMetadata){
+            BeanMethod beanMethod = new BeanMethod(metadata,configClass);
+            configClass.addBeanMethod(beanMethod);
+            AnnotationAttributes annotationAttributes =
+                    AnnotatedElementUtils.getAnnotationAttributes(((StandardMethodMetadata) metadata)
+                            .getIntrospectedMethod(), Bean.class.getName());
+            String name = annotationAttributes.getString("name");
+            if(!StringUtils.hasText(name)){
+                name = metadata.getMethodName();
+            }
+            try {
+                //process this bean as configuration class
+                processConfigurationClass(new ConfigurationClass(ClassUtils.forName(metadata.getReturnTypeName()),name));
+            } catch (ClassNotFoundException e) {
+                configClass.removeBeanMethod(beanMethod);
+                throw new IllegalStateException(" class not found : " + metadata.getReturnTypeName());
+            }
+        }
+    }
 
     protected boolean isBeanMethod(MethodMetadata metadata){
         return !metadata.isAbstract() && !metadata.isStatic()
                 && !metadata.isFinal() && !metadata.getReturnTypeName().equals("void");
     }
+
+    public void loadBeanDefinition(Set<ConfigurationClass> configurationClasses) {
+        for(ConfigurationClass configurationClass : configurationClasses){
+            loadBeanDefinitionsFormConfigurationClass(configurationClass);
+        }
+    }
+
+    private void loadBeanDefinitionsFormConfigurationClass(ConfigurationClass configClass) {
+        if(configClass.isImported()){
+            registerBeanDefinitionFromImport(configClass);
+        }
+        if(configClass.hasBeanMethod()){
+            registerBeanDefinitionFromBeanMethod(configClass);
+        }
+    }
+
+    private void registerBeanDefinitionFromImport(ConfigurationClass configClass) {
+        Set<Class<?>> importedBy = configClass.getImportedBy();
+        for(Class<?> clazz : importedBy){
+            AnnotatedBeanDefinition beanDefinition = new AnnotatedGenericBeanDefinition(clazz);
+            this.componentScanParser.registerOriginBeanDefinition(beanDefinition);
+        }
+    }
+
+    private void registerBeanDefinitionFromBeanMethod(ConfigurationClass configClass) {
+        Set<BeanMethod> beanMethods = configClass.getBeanMethods();
+        for(BeanMethod beanMethod : beanMethods){
+            MethodMetadata metadata = beanMethod.getMetadata();
+            Class<?> aClass = ClassUtils.getClass(metadata.getReturnTypeName());
+            AnnotatedBeanDefinition beanDefinition = new AnnotatedGenericBeanDefinition(aClass);
+            beanDefinition.setFactoryBeanName(configClass.getBeanName());
+            beanDefinition.setFactoryMethodName(metadata.getMethodName());
+            this.componentScanParser.registerOriginBeanDefinition(beanDefinition);
+        }
+    }
+
 
 }

@@ -2,8 +2,9 @@ package hiyouka.seedframework.context.config;
 
 import hiyouka.seedframework.beans.metadata.AnnotationMetadata;
 import hiyouka.seedframework.beans.metadata.StandardAnnotationMetadata;
+import hiyouka.seedframework.beans.metadata.StandardClassMetadata;
 import hiyouka.seedframework.context.annotation.Configuration;
-import hiyouka.seedframework.context.annotation.Import;
+import hiyouka.seedframework.beans.annotation.Import;
 import hiyouka.seedframework.core.io.resource.ClassResource;
 import hiyouka.seedframework.core.io.resource.Resource;
 import hiyouka.seedframework.util.Assert;
@@ -39,7 +40,11 @@ public class ConfigurationClass {
     public ConfigurationClass(AnnotationMetadata metadata, String beanName) {
         Assert.notNull(beanName, "Bean name must not be null");
         this.metadata = metadata;
-        this.resource = new ClassResource(beanName);
+        Class<?> clazz = null;
+        if(metadata instanceof StandardClassMetadata){
+            clazz = ((StandardClassMetadata) metadata).getIntrospectedClass();
+        }
+        this.resource = new ClassResource(beanName,clazz);
         this.beanName = beanName;
     }
 
@@ -64,6 +69,10 @@ public class ConfigurationClass {
      */
     public boolean isImported() {
         return !this.importedBy.isEmpty();
+    }
+
+    public boolean hasBeanMethod(){
+        return !this.beanMethods.isEmpty();
     }
 
     public void addImportedBy(Class<?> clazz){

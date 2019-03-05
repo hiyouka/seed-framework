@@ -2,11 +2,11 @@ package hiyouka.seedframework.context.annotation;
 
 import java.lang.annotation.*;
 
-@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
 @Documented
-public @interface Import {
+public @interface ComponentScan {
 
-    Class<?>[] value();
+    String[] value() default {};
 
 }
