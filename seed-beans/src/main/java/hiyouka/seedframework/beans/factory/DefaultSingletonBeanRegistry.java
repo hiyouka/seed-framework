@@ -42,6 +42,10 @@ public class DefaultSingletonBeanRegistry implements SingletonBeanRegistry {
         }
     }
 
+    protected void addEarlySingleObjects(String beanName, Object instance){
+        this.earlySingletonObjects.put(beanName,instance);
+    }
+
     protected void addSingleton(String beanName, Object singletonObject) {
         synchronized (this.singletonObjects) {
             this.singletonObjects.put(beanName, singletonObject);

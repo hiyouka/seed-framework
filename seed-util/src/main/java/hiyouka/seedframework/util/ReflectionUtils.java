@@ -38,6 +38,7 @@ public class ReflectionUtils {
 
     public static Object invokeMethod(Method method, Object target, Object... args) {
         try {
+            makeAccessible(method);
             return method.invoke(target, args);
         }
         catch (Exception ex) {
@@ -48,10 +49,10 @@ public class ReflectionUtils {
 
     public static void handleReflectionException(Exception ex) {
         if (ex instanceof NoSuchMethodException) {
-            throw new IllegalStateException("Method not found: " + ex.getMessage());
+            throw new IllegalStateException("Method not found: " + ex.getMessage(),ex);
         }
         if (ex instanceof IllegalAccessException) {
-            throw new IllegalStateException("Could not access method: " + ex.getMessage());
+            throw new IllegalStateException("Could not access method: " + ex.getMessage(),ex);
         }
         if (ex instanceof InvocationTargetException) {
             handleInvocationTargetException((InvocationTargetException) ex);

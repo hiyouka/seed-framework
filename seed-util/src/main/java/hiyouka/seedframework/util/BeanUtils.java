@@ -5,6 +5,8 @@ import hiyouka.seedframework.exception.BeanInstantiationException;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Arrays;
 
 /**
  * @author hiyouka
@@ -31,6 +33,7 @@ public class BeanUtils {
         }
     }
 
+
     public static <T> T instanceClass(Constructor<T> ctor, Object... args){
         ReflectionUtils.makeAccessible(ctor);
         try {
@@ -44,24 +47,33 @@ public class BeanUtils {
         }
     }
 
-//    public static <T> T instantiateClass(Constructor<T> ctor, Object... args) throws BeanInstantiationException {
-//        Assert.notNull(ctor, "Constructor must not be null");
-//        try {
-//            ReflectionUtils.makeAccessible(ctor);
-//            return (KotlinDetector.isKotlinType(ctor.getDeclaringClass()) ?
-//                    KotlinDelegate.instantiateClass(ctor, args) : ctor.newInstance(args));
-//        }
-//        catch (InstantiationException ex) {
-//            throw new BeanInstantiationException(ctor, "Is it an abstract class?", ex);
-//        }
-//        catch (IllegalAccessException ex) {
-//            throw new BeanInstantiationException(ctor, "Is the constructor accessible?", ex);
-//        }
-//        catch (IllegalArgumentException ex) {
-//            throw new BeanInstantiationException(ctor, "Illegal arguments for constructor", ex);
-//        }
-//        catch (InvocationTargetException ex) {
-//            throw new BeanInstantiationException(ctor, "Constructor threw exception", ex.getTargetException());
-//        }
-//    }
+    public static <T> Constructor<T> findConstructor(Class<T> clazz, Object... args){
+        Class<?>[] parameters = getClassFromArgs(args);
+        try {
+            return clazz.getDeclaredConstructor(parameters);
+        } catch (NoSuchMethodException e) {
+            throw new IllegalStateException("No Such Constructor parameter ["+ Arrays.asList(parameters) +"] from class : " + clazz.getName(),e);
+        }
+    }
+
+    public static Method findMethod(Class<?> clazz, String methodName, Object... args){
+        Class<?>[] parameters = getClassFromArgs(args);
+        try {
+            return clazz.getDeclaredMethod(methodName,parameters);
+        } catch (NoSuchMethodException e) {
+            throw new IllegalStateException("No Such Method : "+ methodName +" parameter ["+ Arrays.asList(parameters) +"] from class : " + clazz.getName(),e);
+        }
+    }
+
+    private static Class<?>[] getClassFromArgs(Object... args){
+        if(args == null)
+            return null;
+        Class<?>[] result = new Class[args.length];
+        int i = 0;
+        for(Object arg : args){
+            result[i] = arg.getClass();
+            i++;
+        }
+        return result;
+    }
 }

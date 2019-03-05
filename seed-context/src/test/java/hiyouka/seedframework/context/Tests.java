@@ -1,10 +1,5 @@
 package hiyouka.seedframework.context;
 
-import hiyouka.seedframework.beans.definition.AnnotatedGenericBeanDefinition;
-import hiyouka.seedframework.beans.definition.BeanDefinition;
-import hiyouka.seedframework.beans.factory.BeanDefinitionRegistry;
-import hiyouka.seedframework.beans.factory.DefaultBenFactory;
-import hiyouka.seedframework.context.config.ConfigurationClassPostProcessor;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -20,15 +15,16 @@ public class Tests {
     @Test
     public void test(){
 //
-        BeanDefinitionRegistry registry = new DefaultBenFactory();
-        registry.registerBeanDefinition("config",new AnnotatedGenericBeanDefinition(ConfigClass.class));
-        ConfigurationClassPostProcessor postProcessor = new ConfigurationClassPostProcessor();
-        postProcessor.postProcessBeanDefinitionRegistry(registry);
-        System.out.println(registry.getBeanDefinitionCount());
-        for(String beanName : registry.getBeanDefinitionNames()){
-            BeanDefinition beanDefinition = registry.getBeanDefinition(beanName);
-            System.out.println(beanName);
-        }
+//        Method getLess = BeanUtils.findMethod(AnoTest.class, "getLess", null);
+//        BeanDefinitionRegistry registry = new DefaultBenFactory();
+//        registry.registerBeanDefinition("config",new AnnotatedGenericBeanDefinition(ConfigClass.class));
+//        ConfigurationClassPostProcessor postProcessor = new ConfigurationClassPostProcessor();
+//        postProcessor.postProcessBeanDefinitionRegistry(registry);
+//        System.out.println(registry.getBeanDefinitionCount());
+//        for(String beanName : registry.getBeanDefinitionNames()){
+//            BeanDefinition beanDefinition = registry.getBeanDefinition(beanName);
+//            System.out.println(beanName);
+//        }
 
 
 //        ClassPathBeanDefinitionScanner scanner = new ClassPathBeanDefinitionScanner();

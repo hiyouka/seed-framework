@@ -62,7 +62,7 @@ public class ClassUtils {
         try {
             aClass = Class.forName(className);
         } catch (ClassNotFoundException e) {
-            throw new IllegalStateException("Class can not forName : " + className);
+            throw new IllegalStateException("Class can not forName : " + className,e);
         }
         return aClass;
     }
@@ -123,4 +123,5 @@ public class ClassUtils {
         int lastDotIndex = fqClassName.lastIndexOf(PACKAGE_SEPARATOR);
         return (lastDotIndex != -1 ? fqClassName.substring(0, lastDotIndex) : "");
     }
+
 }

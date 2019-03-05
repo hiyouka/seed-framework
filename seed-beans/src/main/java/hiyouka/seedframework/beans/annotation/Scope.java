@@ -5,7 +5,7 @@ import hiyouka.seedframework.beans.factory.config.ConfigurableBeanFactory;
 
 import java.lang.annotation.*;
 
-@Target({ElementType.TYPE,ElementType.METHOD,ElementType.FIELD})
+@Target({ElementType.TYPE,ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Scope {

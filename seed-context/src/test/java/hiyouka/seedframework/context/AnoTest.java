@@ -16,4 +16,8 @@ import hiyouka.seedframework.beans.factory.config.ConfigurableBeanFactory;
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class AnoTest {
 
+
+    public void getLess(){
+
+    }
 }

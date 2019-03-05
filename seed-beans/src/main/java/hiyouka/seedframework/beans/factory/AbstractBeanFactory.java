@@ -28,11 +28,17 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 
     private final List<BeanPostProcessor> beanPostProcessors = new ArrayList<>();
 
+
+    private ClassLoader beanClassLoader = ClassUtils.getDefaultClassLoader();
+
     protected boolean hasBeanCreationStarted() {
         return !this.alreadyCreated.isEmpty();
     }
 
-    private ClassLoader beanClassLoader = ClassUtils.getDefaultClassLoader();
+    protected void addAlreadyCreated(String beanName){
+        Assert.hasText(beanName,"beanName must not be null !!");
+        this.alreadyCreated.add(beanName);
+    }
 
     @Override
     public ClassLoader getBeanClassLoader() {
@@ -54,6 +60,10 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
     @Override
     public int getBeanPostProcessorCount() {
         return beanPostProcessors.size();
+    }
+
+    public List<BeanPostProcessor> getBeanPostProcessors(){
+        return this.beanPostProcessors;
     }
 
     @Override

@@ -189,7 +189,7 @@ public class ConfigurationClassParser {
                 processConfigurationClass(new ConfigurationClass(ClassUtils.forName(metadata.getReturnTypeName()),name));
             } catch (ClassNotFoundException e) {
                 configClass.removeBeanMethod(beanMethod);
-                throw new IllegalStateException(" class not found : " + metadata.getReturnTypeName());
+                throw new IllegalStateException(" class not found : " + metadata.getReturnTypeName(),e);
             }
         }
     }
@@ -218,6 +218,7 @@ public class ConfigurationClassParser {
         Set<Class<?>> importedBy = configClass.getImportedBy();
         for(Class<?> clazz : importedBy){
             AnnotatedBeanDefinition beanDefinition = new AnnotatedGenericBeanDefinition(clazz);
+            this.componentScanParser.processBeanDefinitionToPrefect(beanDefinition);
             this.componentScanParser.registerOriginBeanDefinition(beanDefinition);
         }
     }
@@ -228,11 +229,16 @@ public class ConfigurationClassParser {
             MethodMetadata metadata = beanMethod.getMetadata();
             Class<?> aClass = ClassUtils.getClass(metadata.getReturnTypeName());
             AnnotatedBeanDefinition beanDefinition = new AnnotatedGenericBeanDefinition(aClass);
+            this.componentScanParser.processBeanDefinitionToPrefect(beanDefinition);
+            processBeanMethodBeanDefinition(beanDefinition,metadata);
             beanDefinition.setFactoryBeanName(configClass.getBeanName());
             beanDefinition.setFactoryMethodName(metadata.getMethodName());
             this.componentScanParser.registerOriginBeanDefinition(beanDefinition);
         }
     }
 
+    private void processBeanMethodBeanDefinition(BeanDefinition beanDefinition, MethodMetadata methodMetadata){
+        this.componentScanParser.processBeanDefinition(methodMetadata,beanDefinition);
+    }
 
 }

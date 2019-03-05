@@ -1,9 +1,11 @@
 package hiyouka.seedframework.context;
 
 import hiyouka.seedframework.beans.annotation.Bean;
+import hiyouka.seedframework.beans.annotation.Import;
+import hiyouka.seedframework.beans.annotation.Lazy;
+import hiyouka.seedframework.beans.annotation.Primary;
 import hiyouka.seedframework.context.annotation.ComponentScan;
 import hiyouka.seedframework.context.annotation.Configuration;
-import hiyouka.seedframework.beans.annotation.Import;
 
 /**
  * @author hiyouka
@@ -15,6 +17,8 @@ import hiyouka.seedframework.beans.annotation.Import;
 public class ConfigClass {
 
     @Bean
+    @Lazy
+    @Primary
     public BeanClass beanClass(){
         return new BeanClass();
     }

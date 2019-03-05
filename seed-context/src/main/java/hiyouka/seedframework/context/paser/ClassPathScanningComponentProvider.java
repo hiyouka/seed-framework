@@ -89,7 +89,7 @@ public class ClassPathScanningComponentProvider {
                         AnnotatedGenericBeanDefinition bea = new AnnotatedGenericBeanDefinition(meta);
                         bea.setResource(resource);
                         if(isComponent(bea)){
-                            logger.info("add BeanDefinition : " + bea.getBeanClassName());
+                            logger.info("scan BeanDefinition : " + bea.getBeanClassName());
                             searchBeanDefinitions.add(bea);
                         }else {
                             logger.error("not support abstract or inner class Component class : " + bea.getBeanClassName());

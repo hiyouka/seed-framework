@@ -82,6 +82,7 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningComponentPr
 
     protected void registerBeanDefinition(BeanDefinitionHolder definitionHolder, BeanDefinitionRegistry registry) {
         BeanDefinitionReaderUtils.registerBeanDefinition(definitionHolder, registry);
+        logger.info("register bean name : " + definitionHolder.getBeanName() + ", bean class ["+definitionHolder.getBeanDefinition().getBeanClassName()+"]");
     }
 
     protected String generateBeanName(BeanDefinition beanDefinition){
@@ -98,9 +99,16 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningComponentPr
 
     protected void processBeanDefinitionToPrefect(AnnotatedBeanDefinition beanDefinition){
         AnnotationMetadata metadata = beanDefinition.getMetadata();
+        processBeanDefinition(metadata,beanDefinition);
+    }
+
+    protected void processBeanDefinition(AnnotatedTypeMetadata metadata, BeanDefinition beanDefinition){
         AnnotationAttributes scope = attributesFor(metadata, Scope.class);
         if(scope != null){
             beanDefinition.setScope(scope.getString("value"));
+        }else {
+            // set default scope
+            beanDefinition.setScope(ConfigurableBeanFactory.SCOPE_SINGLETON);
         }
 
         AnnotationAttributes lazy = attributesFor(metadata, Lazy.class);
