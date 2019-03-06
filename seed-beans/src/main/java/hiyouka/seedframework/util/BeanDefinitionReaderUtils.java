@@ -2,7 +2,7 @@ package hiyouka.seedframework.util;
 
 import hiyouka.seedframework.beans.definition.BeanDefinitionHolder;
 import hiyouka.seedframework.beans.factory.BeanDefinitionRegistry;
-import hiyouka.seedframework.exception.BeanDefinitionStoreException;
+import hiyouka.seedframework.beans.exception.BeanDefinitionStoreException;
 
 /**
  * @author hiyouka

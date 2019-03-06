@@ -1,7 +1,7 @@
 package hiyouka.seedframework.beans.factory.config;
 
 import hiyouka.seedframework.beans.factory.DefaultBenFactory;
-import hiyouka.seedframework.exception.BeansException;
+import hiyouka.seedframework.beans.exception.BeansException;
 
 /**
  *

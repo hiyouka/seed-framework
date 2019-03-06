@@ -2,7 +2,6 @@ package hiyouka.seedframework;
 
 import hiyouka.seedframework.util.AnnotatedElementUtils;
 import hiyouka.seedframework.util.AnnotationUtils;
-import hiyouka.seedframework.util.BeanUtils;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Method;
@@ -54,7 +53,7 @@ public class test {
 //        AnnotationUtils.
 //        AnoTest.class.getD
         Class<AnoTest.innerClass> innerClassClass = AnoTest.innerClass.class;
-        AnoTest.innerClass innerClass = BeanUtils.instanceClass(innerClassClass);
+//        AnoTest.innerClass innerClass = BeanUtils.instanceClass(innerClassClass);
 
 
     }

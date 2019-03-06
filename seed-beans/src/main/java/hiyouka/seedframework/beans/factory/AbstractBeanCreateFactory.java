@@ -3,10 +3,10 @@ package hiyouka.seedframework.beans.factory;
 import hiyouka.seedframework.beans.definition.AbstractBeanDefinition;
 import hiyouka.seedframework.beans.definition.BeanDefinition;
 import hiyouka.seedframework.beans.definition.RootBeanDefinition;
+import hiyouka.seedframework.beans.exception.BeanCreatedException;
+import hiyouka.seedframework.beans.exception.BeanInstantiationException;
 import hiyouka.seedframework.beans.factory.config.BeanPostProcessor;
 import hiyouka.seedframework.beans.factory.config.Initialization;
-import hiyouka.seedframework.exception.BeanInstantiationException;
-import hiyouka.seedframework.exception.BeansException;
 import hiyouka.seedframework.util.*;
 
 import java.lang.reflect.Method;
@@ -17,21 +17,21 @@ import java.util.List;
  * @author hiyouka
  * @since JDK 1.8
  */
-public class AbstractBeanCreateFactory extends AbstractBeanFactory implements BeanCreateFactory{
+public abstract class AbstractBeanCreateFactory extends AbstractBeanFactory implements BeanCreateFactory{
 
 
 //    private final Map<String, BeanHolder> factoryBeanInstanceCache = new ConcurrentHashMap<>(16);
 //
-    ThreadLocal<List<String>> currentlyCreatedBean = new ThreadLocal<>();
+    private ThreadLocal<List<String>> currentlyCreatedBean = new ThreadLocal<>();
 
     @Override
-    public <T> T createBean(Class<T> beanClass) throws BeansException {
+    public <T> T createBean(Class<T> beanClass) throws BeanCreatedException {
         RootBeanDefinition rootBeanDefinition = new RootBeanDefinition(beanClass);
         return (T) createBean(beanClass.getName(),rootBeanDefinition,null);
     }
 
     @Override
-    protected Object createBean(String beanName, BeanDefinition beanDefinition, Object[] args) {
+    protected Object createBean(String beanName, BeanDefinition beanDefinition, Object[] args) throws BeanCreatedException{
         return doCreateBean(beanName, beanDefinition, args);
     }
 
@@ -39,6 +39,7 @@ public class AbstractBeanCreateFactory extends AbstractBeanFactory implements Be
         List<String> beanNames = this.currentlyCreatedBean.get();
         if(beanNames == null){
             beanNames = new ArrayList<>();
+            this.currentlyCreatedBean.set(beanNames);
         }
         beanNames.add(beanName);
     }
@@ -59,32 +60,46 @@ public class AbstractBeanCreateFactory extends AbstractBeanFactory implements Be
         return beanNames.contains(beanName);
     }
 
-    private Object doCreateBean(String beanName, BeanDefinition beanDefinition, Object[] args) {
-
-        addCurrentlyCreatedBean(beanName);
-        // 1. 创建初步的对象。。。
-        Object instance = createBeanInstance(beanName,beanDefinition,args);
-
-        // 2. 将初步对象放入早期对象缓存
-        if(beanDefinition.isSingleton()){
-            addEarlySingleObjects(beanName, instance);
+    protected List<String> getAllCurrentlyCreated(){
+        List<String> result = currentlyCreatedBean.get();
+        if(CollectionUtils.isEmpty(result)){
+            result = new ArrayList<>();
+            currentlyCreatedBean.set(result);
         }
+        return result;
+    }
 
-        // 3. 给对象注入 @Autowire 和 @Value 的属性
-        // do some things to resolver dependency
+    private Object doCreateBean(String beanName, BeanDefinition beanDefinition, Object[] args) throws BeanCreatedException{
+        Object instance;
+        try{
+            addCurrentlyCreatedBean(beanName);
+            // 1. 创建初步的对象。。。
+            instance = createBeanInstance(beanName,beanDefinition,args);
 
-        // 4. 初始化方法执行
-        instance = init(beanName,instance,beanDefinition);
+            // 2. 将初步对象放入早期对象缓存
+            if(beanDefinition.isSingleton()){
+                addEarlySingleObjects(beanName, instance);
+            }
 
-        removeCurrentlyCreatedBean(beanName);
+            // 3. 给对象注入 @Autowire 和 @Value 的属性
+            // do some things to resolver dependency
 
+            // 4. 初始化方法执行
+            instance = init(beanName,instance,beanDefinition);
+
+        }catch (Exception e){
+            throw new BeanCreatedException("create bean:"+ beanName +" error !!" );
+        }
+        finally {
+            logger.info("create bean :" + beanName + " success");
+            removeCurrentlyCreatedBean(beanName);
+        }
         return instance;
     }
 
     private Object init(String beanName, Object instance, BeanDefinition beanDefinition) {
-        Object result = instance;
         // 1. 前置处理方法执行
-        result = applyPostProcessBeforeInitialization(instance,beanName);
+        Object result = applyPostProcessBeforeInitialization(instance,beanName);
 
         // 2. 初始化方法执行
         try {
@@ -92,9 +107,8 @@ public class AbstractBeanCreateFactory extends AbstractBeanFactory implements Be
         } catch (Exception e) {
             throw new IllegalStateException("bean : " + beanName + " init method invoke error !!",e);
         }
-
         // 3. 后置处理方法执行
-        result = applyPostProcessAfterInitialization(instance,beanName);
+        result = applyPostProcessAfterInitialization(result,beanName);
 
         return result;
     }
@@ -139,6 +153,7 @@ public class AbstractBeanCreateFactory extends AbstractBeanFactory implements Be
 
     protected Object createBeanInstance(String beanName, BeanDefinition beanDefinition, Object[] args){
         Object bean;
+        validateBeanDefinition(beanName,beanDefinition);
         if(isFactoryBeanToCreate(beanDefinition)){
             bean = instanceBeanUsingFactoryMethod(beanName,beanDefinition);
         }else {
@@ -186,6 +201,12 @@ public class AbstractBeanCreateFactory extends AbstractBeanFactory implements Be
     protected boolean isFactoryBeanToCreate(BeanDefinition beanDefinition){
         return StringUtils.hasText(beanDefinition.getFactoryBeanName())
            && StringUtils.hasText(beanDefinition.getFactoryMethodName());
+    }
+
+    protected void validateBeanDefinition(String beanName, BeanDefinition beanDefinition){
+        if(beanDefinition.isAbstract()){
+            throw new BeanCreatedException("create bean : "+beanName+" must mot be abstract");
+        }
     }
 
 }

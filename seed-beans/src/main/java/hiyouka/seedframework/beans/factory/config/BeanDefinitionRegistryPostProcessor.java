@@ -1,7 +1,7 @@
 package hiyouka.seedframework.beans.factory.config;
 
 import hiyouka.seedframework.beans.factory.BeanDefinitionRegistry;
-import hiyouka.seedframework.exception.BeansException;
+import hiyouka.seedframework.beans.exception.BeansException;
 
 /**
  * 用于注册bean时修改注册数据 将在 {@link BeanFactoryPostProcessor} 之前执行。

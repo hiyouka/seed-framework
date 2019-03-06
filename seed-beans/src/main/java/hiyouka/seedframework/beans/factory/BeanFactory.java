@@ -1,9 +1,9 @@
 package hiyouka.seedframework.beans.factory;
 
 import com.sun.istack.internal.Nullable;
-import hiyouka.seedframework.exception.BeansException;
-import hiyouka.seedframework.exception.NoSuchBeanDefinitionException;
-import hiyouka.seedframework.exception.NoUniqueBeanDefinitionException;
+import hiyouka.seedframework.beans.exception.BeansException;
+import hiyouka.seedframework.beans.exception.NoSuchBeanDefinitionException;
+import hiyouka.seedframework.beans.exception.NoUniqueBeanDefinitionException;
 
 /**
  * @author hiyouka
@@ -29,6 +29,10 @@ public interface BeanFactory {
      */
     <T> T getBean(String name, @Nullable Class<T> requiredType) throws BeansException;
 
+    Object getBean(String name, @Nullable Object[] args);
+
+    <T> T getBean(String name, @Nullable Class<T> requiredType, @Nullable Object[] args) throws BeansException;
+
 
     /**
      * @param requiredType 
@@ -40,7 +44,6 @@ public interface BeanFactory {
     <T> T getBean(Class<T> requiredType) throws BeansException;
 
 
-
     /**
      * get bean with constructor arguments
      * @param requiredType bean class
@@ -49,7 +52,7 @@ public interface BeanFactory {
      * @throws NoSuchBeanDefinitionException if there is no such bean definition
      * @throws BeansException if the bean could not be created
      */
-    <T> T getBean(Class<T> requiredType, Object... args) throws BeansException;
+    <T> T getBean(Class<T> requiredType, @Nullable Object... args) throws BeansException;
 
     boolean containsBean(String name);
 

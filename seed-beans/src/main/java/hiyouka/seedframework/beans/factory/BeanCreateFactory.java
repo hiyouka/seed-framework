@@ -1,6 +1,6 @@
 package hiyouka.seedframework.beans.factory;
 
-import hiyouka.seedframework.exception.BeansException;
+import hiyouka.seedframework.beans.exception.BeanCreatedException;
 
 /**
  * @author hiyouka
@@ -8,6 +8,6 @@ import hiyouka.seedframework.exception.BeansException;
  */
 public interface BeanCreateFactory extends BeanFactory {
 
-    <T> T createBean(Class<T> beanClass) throws BeansException;
+    <T> T createBean(Class<T> beanClass) throws BeanCreatedException;
 
 }

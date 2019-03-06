@@ -1,7 +1,7 @@
 package hiyouka.seedframework.util;
 
 
-import hiyouka.seedframework.exception.BeanInstantiationException;
+import hiyouka.seedframework.beans.exception.BeanInstantiationException;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;

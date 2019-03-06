@@ -1,4 +1,4 @@
-package hiyouka.seedframework.exception;
+package hiyouka.seedframework.beans.exception;
 
 /**
  * @author hiyouka

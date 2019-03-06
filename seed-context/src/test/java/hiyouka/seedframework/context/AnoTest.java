@@ -1,21 +1,30 @@
 package hiyouka.seedframework.context;
 
-import hiyouka.seedframework.beans.annotation.Component;
-import hiyouka.seedframework.beans.annotation.Lazy;
-import hiyouka.seedframework.beans.annotation.Primary;
-import hiyouka.seedframework.beans.annotation.Scope;
-import hiyouka.seedframework.beans.factory.config.ConfigurableBeanFactory;
+import hiyouka.seedframework.beans.annotation.*;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * @author hiyouka
  * @since JDK 1.8
  */
-@Primary
 @Component
 @Lazy
-@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+@Primary
 public class AnoTest {
 
+    Log logger = LogFactory.getLog(this.getClass());
+
+
+    @InitMethod
+    public void init(){
+        logger.info(getClass().getName() + " init method invoke ....");
+    }
+
+    @DestroyMethod
+    public void destroy(){
+        logger.info(getClass().getName() + " init method destroy ....");
+    }
 
     public void getLess(){
 

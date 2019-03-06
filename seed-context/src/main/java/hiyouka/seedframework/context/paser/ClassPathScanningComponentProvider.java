@@ -10,7 +10,7 @@ import hiyouka.seedframework.core.asm.ClassReaderUtils;
 import hiyouka.seedframework.core.io.resource.Resource;
 import hiyouka.seedframework.core.io.resource.ResourceLoader;
 import hiyouka.seedframework.core.io.resource.ResourcePatternResolver;
-import hiyouka.seedframework.exception.BeanDefinitionStoreException;
+import hiyouka.seedframework.beans.exception.BeanDefinitionStoreException;
 import hiyouka.seedframework.util.Assert;
 import hiyouka.seedframework.util.ClassUtils;
 import hiyouka.seedframework.util.ResourcePatternUtils;

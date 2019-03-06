@@ -1,8 +1,8 @@
 package hiyouka.seedframework.beans.factory;
 
 import hiyouka.seedframework.beans.definition.BeanDefinition;
-import hiyouka.seedframework.exception.BeanDefinitionStoreException;
-import hiyouka.seedframework.exception.NoSuchBeanDefinitionException;
+import hiyouka.seedframework.beans.exception.BeanDefinitionStoreException;
+import hiyouka.seedframework.beans.exception.NoSuchBeanDefinitionException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

@@ -1,6 +1,6 @@
 package hiyouka.seedframework.beans.factory.config;
 
-import hiyouka.seedframework.exception.BeansException;
+import hiyouka.seedframework.beans.exception.BeansException;
 
 /**
  * bean 后置处理器

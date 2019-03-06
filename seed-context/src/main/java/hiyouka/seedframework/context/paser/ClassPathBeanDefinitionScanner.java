@@ -1,27 +1,23 @@
 package hiyouka.seedframework.context.paser;
 
-import hiyouka.seedframework.beans.annotation.Component;
-import hiyouka.seedframework.beans.annotation.Lazy;
-import hiyouka.seedframework.beans.annotation.Primary;
-import hiyouka.seedframework.beans.annotation.Scope;
+import hiyouka.seedframework.beans.annotation.*;
 import hiyouka.seedframework.beans.definition.*;
+import hiyouka.seedframework.beans.exception.BeanDefinitionStoreException;
 import hiyouka.seedframework.beans.factory.BeanDefinitionRegistry;
 import hiyouka.seedframework.beans.factory.config.ConfigurableBeanFactory;
 import hiyouka.seedframework.beans.metadata.AnnotatedTypeMetadata;
 import hiyouka.seedframework.beans.metadata.AnnotationMetadata;
+import hiyouka.seedframework.beans.metadata.MethodMetadata;
 import hiyouka.seedframework.common.AnnotationAttributes;
 import hiyouka.seedframework.context.config.filter.AnnotationIncludeFilter;
 import hiyouka.seedframework.context.config.filter.ClassTypeFilter;
-import hiyouka.seedframework.exception.BeanDefinitionStoreException;
 import hiyouka.seedframework.util.Assert;
 import hiyouka.seedframework.util.BeanDefinitionReaderUtils;
 import hiyouka.seedframework.util.ClassUtils;
 import hiyouka.seedframework.util.StringUtils;
 
 import java.lang.annotation.Annotation;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author hiyouka
@@ -99,7 +95,54 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningComponentPr
 
     protected void processBeanDefinitionToPrefect(AnnotatedBeanDefinition beanDefinition){
         AnnotationMetadata metadata = beanDefinition.getMetadata();
+        if(beanDefinition instanceof AbstractBeanDefinition){
+            String initMethod = processInitAndDestroyMethod(beanDefinition, metadata, true);
+            String destroyMethod = processInitAndDestroyMethod(beanDefinition, metadata, false);
+            ((AbstractBeanDefinition) beanDefinition).setInitMethodName(initMethod);
+            ((AbstractBeanDefinition) beanDefinition).setDestroyMethodName(destroyMethod);
+        }
+
         processBeanDefinition(metadata,beanDefinition);
+    }
+
+    /** get intiMethod or destroyMethod name */
+    protected String processInitAndDestroyMethod(BeanDefinition beanDefinition, AnnotationMetadata metadata, boolean isInit){
+        String annotationName;
+        String methodName;
+        String result = null;
+        if(isInit){
+            annotationName = InitMethod.class.getName();
+            methodName = " inti method ";
+        }else {
+            annotationName = DestroyMethod.class.getName();
+            methodName = " destroy method ";
+        }
+        Set<MethodMetadata> methods = metadata.getAnnotatedMethods(annotationName);
+        if(methods.size() > 1){
+            List<String> methodsNames = new ArrayList<>();
+            for(MethodMetadata methodMetadata : methods){
+                methodsNames.add(methodMetadata.getMethodName());
+            }
+            throw new IllegalStateException(methodName + " must unique there is " + methodsNames.size()
+                    + methodName + methodsNames + "in class : " + beanDefinition.getBeanClassName());
+        }
+        if(methods.size() != 0){
+            for(MethodMetadata methodMetadata : methods){
+                if(isVoidMethod(methodMetadata)){
+                    result = methodMetadata.getMethodName();
+                }else {
+                    throw new IllegalStateException(methodName + "must no return type, method: "+
+                                methodMetadata.getMethodName()+" have return type : "
+                                +methodMetadata.getReturnTypeName()+", in class : "
+                                + beanDefinition.getBeanClassName());
+                }
+            }
+        }
+        return result;
+    }
+
+    protected boolean isVoidMethod(MethodMetadata methodMetadata){
+        return "void".equals(methodMetadata.getReturnTypeName());
     }
 
     protected void processBeanDefinition(AnnotatedTypeMetadata metadata, BeanDefinition beanDefinition){

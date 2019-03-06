@@ -62,7 +62,7 @@ public class DefaultSingletonBeanRegistry implements SingletonBeanRegistry {
     protected Object getSingleton(String beanName, boolean allowEarlyReference) {
         Object singletonObject = this.singletonObjects.get(beanName);
         /**  如果该对象正在创建则先获取早期的创建对象 */
-        if (singletonObject == null && isSingletonCurrentlyInCreation(beanName)) {
+        if (singletonObject == null && isSingletonCurrentlyInCreation(beanName) && allowEarlyReference) {
             synchronized (this.singletonObjects) {
                 singletonObject = this.earlySingletonObjects.get(beanName);
 //                if (singletonObject == null && allowEarlyReference) {
@@ -77,6 +77,7 @@ public class DefaultSingletonBeanRegistry implements SingletonBeanRegistry {
         }
         return singletonObject;
     }
+
 
     @Override
     public boolean containsSingleton(String beanName) {

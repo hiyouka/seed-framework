@@ -6,7 +6,7 @@ import hiyouka.seedframework.beans.factory.BeanDefinitionRegistry;
 import hiyouka.seedframework.beans.factory.DefaultBenFactory;
 import hiyouka.seedframework.beans.factory.config.BeanDefinitionRegistryPostProcessor;
 import hiyouka.seedframework.context.paser.ConfigurationClassParser;
-import hiyouka.seedframework.exception.BeansException;
+import hiyouka.seedframework.beans.exception.BeansException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

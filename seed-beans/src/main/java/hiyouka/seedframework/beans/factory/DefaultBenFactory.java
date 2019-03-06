@@ -1,10 +1,13 @@
 package hiyouka.seedframework.beans.factory;
 
+import hiyouka.seedframework.beans.annotation.Primary;
 import hiyouka.seedframework.beans.definition.AbstractBeanDefinition;
 import hiyouka.seedframework.beans.definition.BeanDefinition;
-import hiyouka.seedframework.exception.BeanDefinitionStoreException;
-import hiyouka.seedframework.exception.BeansException;
-import hiyouka.seedframework.exception.NoSuchBeanDefinitionException;
+import hiyouka.seedframework.beans.definition.BeanHolder;
+import hiyouka.seedframework.beans.exception.*;
+import hiyouka.seedframework.util.AnnotatedElementUtils;
+import hiyouka.seedframework.util.ArrayUtils;
+import hiyouka.seedframework.util.Assert;
 import hiyouka.seedframework.util.ReflectionUtils;
 
 import java.lang.reflect.Method;
@@ -37,6 +40,26 @@ public class DefaultBenFactory extends AbstractBeanCreateFactory implements Bean
     private volatile Set<String> manualSingletonNames = new LinkedHashSet<>(16);
 
 
+
+    protected void addBeanNamesByType(Class<?> clazz, String name){
+        allBeanNamesByType.put(clazz,add(name,allBeanNamesByType.get(clazz)));
+    }
+
+    protected void addSingletonBeanNamesByType(Class<?> clazz, String name){
+        singletonBeanNamesByType.put(clazz,add(name,singletonBeanNamesByType.get(clazz)));
+    }
+
+    private String[] add(String name, String[] names){
+        List<String> list;
+        if(names == null){
+            list = new ArrayList<>(1);
+        }else {
+            list = new ArrayList<>(names.length + 1);
+            list.addAll(Arrays.asList(names));
+        }
+        list.add(name);
+        return list.toArray(new String[list.size()]);
+    }
 
     @Override
     public void registerBeanDefinition(String beanName, BeanDefinition beanDefinition) throws BeanDefinitionStoreException {
@@ -147,4 +170,128 @@ public class DefaultBenFactory extends AbstractBeanCreateFactory implements Bean
         super.destroySingleton(beanName);
         this.manualSingletonNames.remove(beanName);
     }
+
+    @Override
+    public <T> T getBean(Class<T> requiredType) throws BeansException {
+        return getBean(requiredType,null);
+    }
+
+    @Override
+    public <T> T getBean(Class<T> requiredType, Object... args) throws BeansException {
+        BeanHolder<T> beanHolder= resolveBeanForType(requiredType, args);
+        if(beanHolder.getBean() == null){
+            throw new BeanNotFoundException("not found bean for type : " + requiredType.getName() + " args : " + ArrayUtils.asList(args));
+        }
+        return beanHolder.getBean();
+    }
+
+
+    protected <T> BeanHolder<T> resolveBeanForType(Class<T> requiredType, Object... args){
+        Assert.notNull(requiredType,"requireType must not be null");
+        String[] beanNames = getBeanNamesForType(requiredType);
+        String beanName;
+        if(beanNames.length == 1){
+            beanName = beanNames[0];
+        }
+        else{
+            beanName = determinePrimary(beanNames,requiredType);
+        }
+        T bean;
+        if(ArrayUtils.isEmpty(args)){
+            bean = (T) getBean(beanName);
+        }else {
+            bean = (T) getBean(beanName,args);
+        }
+        if(bean == null)
+            return null;
+        return new BeanHolder<T>(bean,beanName);
+    }
+
+    protected String determinePrimary(String[] beanNames,Class<?> requiredType){
+        String result;
+        List<String> primaryBeanName = new ArrayList<>();
+        for(String beanName : beanNames){
+            Class<?> type = getType(beanName);
+            if(AnnotatedElementUtils.isAnnotated(type,Primary.class.getName())){
+                primaryBeanName.add(beanName);
+            }
+        }
+        if(primaryBeanName.size() == 1){
+            result = primaryBeanName.get(0);
+        }
+        else{
+            String message = null;
+            if(primaryBeanName.size() > 0){
+                message = ",primary beanName : " + primaryBeanName;
+            }
+            throw new NoUniqueBeanException("not found unique bean for type : " + requiredType.getName()
+                    + (message == null ? "" : message));
+        }
+        return result;
+    }
+
+    private String[] getBeanNamesForType(Class<?> type){
+        return getBeanNamesForType(type,true,true);
+    }
+
+    private String[] getBeanNamesForType(Class<?> type, boolean allowNoSingleton, boolean allowEarlyInit){
+        Map<Class<?>, String[]> cache;
+        if(allowNoSingleton){
+            cache = allBeanNamesByType;
+        }
+        else {
+            cache = singletonBeanNamesByType;
+        }
+        String[] names = cache.get(type);
+        if(names != null){
+            return names;
+        }
+        names = doGetBeanNamesForType(type,allowNoSingleton,allowEarlyInit);
+        cache.put(type,names);
+        return names;
+    }
+
+    /**
+     * @param type  类型
+     * @param allowNoSingleton 是否获取非单例的对象名称
+     * @param allowEarlyInit 是否允许提前创建(lazy 对象)
+     * @return  符合类型的集合
+     */
+    private String[] doGetBeanNamesForType(Class<?> type, boolean allowNoSingleton, boolean allowEarlyInit){
+        List<String> result = new ArrayList<>();
+        for(String name : beanDefinitionNames){
+            BeanDefinition beanDefinition = getBeanDefinition(name);
+            if(beanDefinition != null){
+                boolean isMatch = false;
+                Class<?> beanClass = getType(name);
+                if(beanClass != null && !beanDefinition.isAbstract()){
+                    isMatch = (beanDefinition.isSingleton() || allowNoSingleton)
+                            &&(allowEarlyInit || (!beanDefinition.isLazyInit() && isCreateBean(name,beanDefinition)))
+                            &&(isBeanTypeOf(beanClass,type));
+                }
+                if(isMatch){
+                    result.add(name);
+                }
+            }
+       }
+        return result.toArray(new String[result.size()]);
+    }
+
+    private boolean isCreateBean(String beanName,BeanDefinition beanDefinition){
+        if(beanDefinition.isSingleton()){
+            Object singleton = getSingleton(beanName);
+            if(singleton == null){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean isBeanTypeOf(Class<?> type, Class<?> compareType){
+        if(type == compareType){
+            return true;
+        }
+        return compareType.isAssignableFrom(type);
+    }
+
 }

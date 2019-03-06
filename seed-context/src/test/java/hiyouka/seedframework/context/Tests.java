@@ -1,7 +1,14 @@
 package hiyouka.seedframework.context;
 
+import hiyouka.seedframework.beans.definition.AnnotatedGenericBeanDefinition;
+import hiyouka.seedframework.beans.factory.BeanDefinitionRegistry;
+import hiyouka.seedframework.beans.factory.BeanFactory;
+import hiyouka.seedframework.beans.factory.DefaultBenFactory;
+import hiyouka.seedframework.context.config.ConfigurationClassPostProcessor;
+import hiyouka.seedframework.util.BeanUtils;
 import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,11 +22,14 @@ public class Tests {
     @Test
     public void test(){
 //
-//        Method getLess = BeanUtils.findMethod(AnoTest.class, "getLess", null);
-//        BeanDefinitionRegistry registry = new DefaultBenFactory();
-//        registry.registerBeanDefinition("config",new AnnotatedGenericBeanDefinition(ConfigClass.class));
-//        ConfigurationClassPostProcessor postProcessor = new ConfigurationClassPostProcessor();
-//        postProcessor.postProcessBeanDefinitionRegistry(registry);
+        Method getLess = BeanUtils.findMethod(AnoTest.class, "getLess", null);
+        BeanDefinitionRegistry registry = new DefaultBenFactory();
+        registry.registerBeanDefinition("config",new AnnotatedGenericBeanDefinition(ConfigClass.class));
+        ConfigurationClassPostProcessor postProcessor = new ConfigurationClassPostProcessor();
+        postProcessor.postProcessBeanDefinitionRegistry(registry);
+        if(registry instanceof BeanFactory){
+            AnoTest bean = ((BeanFactory) registry).getBean(AnoTest.class);
+        }
 //        System.out.println(registry.getBeanDefinitionCount());
 //        for(String beanName : registry.getBeanDefinitionNames()){
 //            BeanDefinition beanDefinition = registry.getBeanDefinition(beanName);
