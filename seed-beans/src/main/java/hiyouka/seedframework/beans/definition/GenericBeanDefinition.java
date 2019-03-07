@@ -1,7 +1,8 @@
 package hiyouka.seedframework.beans.definition;
 
-import com.sun.istack.internal.Nullable;
 import org.objectweb.asm.ClassReader;
+
+import javax.annotation.Nullable;
 
 /**
  * @author hiyouka

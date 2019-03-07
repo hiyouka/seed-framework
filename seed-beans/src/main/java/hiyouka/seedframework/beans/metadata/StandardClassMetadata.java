@@ -1,10 +1,10 @@
 package hiyouka.seedframework.beans.metadata;
 
 
-import com.sun.istack.internal.Nullable;
 import hiyouka.seedframework.util.Assert;
 import hiyouka.seedframework.util.StringUtils;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Modifier;
 import java.util.LinkedHashSet;
 

@@ -1,11 +1,11 @@
 package hiyouka.seedframework.core.io.resource;
 
-import com.sun.istack.internal.Nullable;
 import hiyouka.seedframework.util.Assert;
 import hiyouka.seedframework.util.FileUtils;
 import hiyouka.seedframework.util.ResourceUtils;
 import hiyouka.seedframework.util.StringUtils;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,7 +17,6 @@ import java.net.*;
  */
 public class UrlResource extends AbstractFileResolvingResource {
 
-    @Nullable
     private final URI uri;
 
     /**

@@ -51,6 +51,9 @@ public class FileUtils implements EncodeConstant {
     public static File getFile(String path) throws FileNotFoundException {
         if(path.startsWith(ResourceUtils.CLASSPATH_URL_PREFIX)){
             path = path.substring(ResourceUtils.CLASSPATH_URL_PREFIX.length());
+            if(path.startsWith(StringUtils.FOLDER_SEPARATOR)){
+                path = path.substring(1,path.length());
+            }
             String description = "class path resource [" + path + "]";
             ClassLoader cl = ClassUtils.getDefaultClassLoader();
             URL url = (cl != null ? cl.getResource(path) : ClassLoader.getSystemResource(path));

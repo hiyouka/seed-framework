@@ -7,6 +7,8 @@ import hiyouka.seedframework.beans.factory.DefaultBenFactory;
 import hiyouka.seedframework.beans.factory.config.BeanDefinitionRegistryPostProcessor;
 import hiyouka.seedframework.context.paser.ConfigurationClassParser;
 import hiyouka.seedframework.beans.exception.BeansException;
+import hiyouka.seedframework.core.env.Environment;
+import hiyouka.seedframework.util.Assert;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -21,7 +23,17 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 
     private final Log logger = LogFactory.getLog(this.getClass());
 
+    private Environment environment;
 
+
+    public Environment getEnvironment() {
+        return environment;
+    }
+
+    public void setEnvironment(Environment environment) {
+        Assert.notNull(environment,"environment must not be null");
+        this.environment = environment;
+    }
 
     @Override
     public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
@@ -46,7 +58,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
                 processBean.add(new BeanDefinitionHolder(beanDefinition,beanName));
             }
         }
-        ConfigurationClassParser parser = new ConfigurationClassParser(registry);
+        ConfigurationClassParser parser = new ConfigurationClassParser(registry,this.environment);
         parser.parse(processBean);
 
         Set<ConfigurationClass> configurationClasses = parser.getConfigurationClasses();

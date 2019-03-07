@@ -1,10 +1,10 @@
 package hiyouka.seedframework.beans.factory;
 
-import com.sun.istack.internal.Nullable;
 import hiyouka.seedframework.beans.definition.BeanDefinition;
 import hiyouka.seedframework.beans.exception.BeansException;
 import hiyouka.seedframework.beans.exception.NoSuchBeanDefinitionException;
 
+import javax.annotation.Nullable;
 import java.lang.annotation.Annotation;
 import java.util.Map;
 

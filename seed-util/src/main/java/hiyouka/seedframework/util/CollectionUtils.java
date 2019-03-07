@@ -1,7 +1,6 @@
 package hiyouka.seedframework.util;
 
-import com.sun.istack.internal.Nullable;
-
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Map;
 

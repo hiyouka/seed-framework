@@ -1,6 +1,7 @@
 package hiyouka.seedframework.beans.metadata;
 
-import com.sun.istack.internal.Nullable;
+
+import javax.annotation.Nullable;
 
 /**
  * 对象属性的集合{@link PropertyValue}

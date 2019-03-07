@@ -89,7 +89,7 @@ public class DefaultBenFactory extends AbstractBeanCreateFactory implements Bean
                 this.manualSingletonNames.remove(beanName);
             }
         }
-        if (oldBeanDefinition != null || containsSingleton(beanName)) {
+        if (oldBeanDefinition != null && containsSingleton(beanName)) {
             resetBeanDefinition(beanName,oldBeanDefinition);
         }
     }

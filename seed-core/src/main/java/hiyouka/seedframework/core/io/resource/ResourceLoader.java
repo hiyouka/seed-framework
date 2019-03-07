@@ -1,8 +1,8 @@
 package hiyouka.seedframework.core.io.resource;
 
-import com.sun.istack.internal.Nullable;
 import hiyouka.seedframework.util.ResourceUtils;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 
 /**

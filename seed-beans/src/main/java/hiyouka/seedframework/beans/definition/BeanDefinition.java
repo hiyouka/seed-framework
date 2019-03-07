@@ -1,8 +1,9 @@
 package hiyouka.seedframework.beans.definition;
 
-import com.sun.istack.internal.Nullable;
 import hiyouka.seedframework.beans.attribute.AttributeAccessor;
 import hiyouka.seedframework.beans.metadata.MutablePropertyValues;
+
+import javax.annotation.Nullable;
 
 /**
  * bean Description

@@ -124,4 +124,9 @@ public class ClassUtils {
         return (lastDotIndex != -1 ? fqClassName.substring(0, lastDotIndex) : "");
     }
 
+    public static boolean isRequiredClass(Object re, Class<?> required){
+        Assert.notNull(re,"compare obj must not be null");
+        return re.getClass().equals(required);
+    }
+
 }

@@ -1,9 +1,9 @@
 package hiyouka.seedframework.util;
 
-import com.sun.istack.internal.Nullable;
 import hiyouka.seedframework.core.io.resource.PathMatchingResourcePatternResolver;
 import hiyouka.seedframework.core.io.resource.ResourceLoader;
 import hiyouka.seedframework.core.io.resource.ResourcePatternResolver;
+import javax.annotation.Nullable;
 
 /**
  * @author hiyouka

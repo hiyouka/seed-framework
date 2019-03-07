@@ -5,7 +5,7 @@ import hiyouka.seedframework.core.io.resource.FileSystemResource;
 import hiyouka.seedframework.core.io.resource.Resource;
 import hiyouka.seedframework.core.io.resource.UrlResource;
 import hiyouka.seedframework.util.ClassUtils;
-import jdk.internal.org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassReader;
 
 import java.io.IOException;
 import java.io.InputStream;

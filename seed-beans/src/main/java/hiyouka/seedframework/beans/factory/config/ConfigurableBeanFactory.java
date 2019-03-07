@@ -1,7 +1,8 @@
 package hiyouka.seedframework.beans.factory.config;
 
-import com.sun.istack.internal.Nullable;
 import hiyouka.seedframework.beans.factory.BeanFactory;
+
+import javax.annotation.Nullable;
 
 /**
  * @author hiyouka

@@ -1,6 +1,5 @@
 package hiyouka.seedframework.beans.factory;
 
-import com.sun.istack.internal.Nullable;
 import hiyouka.seedframework.beans.definition.BeanDefinition;
 import hiyouka.seedframework.beans.exception.*;
 import hiyouka.seedframework.beans.factory.config.BeanPostProcessor;
@@ -8,6 +7,7 @@ import hiyouka.seedframework.beans.factory.config.ConfigurableBeanFactory;
 import hiyouka.seedframework.util.Assert;
 import hiyouka.seedframework.util.ClassUtils;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

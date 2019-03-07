@@ -1,9 +1,10 @@
 package hiyouka.seedframework.beans.factory;
 
-import com.sun.istack.internal.Nullable;
 import hiyouka.seedframework.beans.exception.BeansException;
 import hiyouka.seedframework.beans.exception.NoSuchBeanDefinitionException;
 import hiyouka.seedframework.beans.exception.NoUniqueBeanDefinitionException;
+
+import javax.annotation.Nullable;
 
 /**
  * @author hiyouka

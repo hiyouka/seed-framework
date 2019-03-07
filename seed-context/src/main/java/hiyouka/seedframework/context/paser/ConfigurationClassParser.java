@@ -1,20 +1,26 @@
 package hiyouka.seedframework.context.paser;
 
 import hiyouka.seedframework.beans.annotation.Bean;
-import hiyouka.seedframework.context.annotation.ComponentScan;
+import hiyouka.seedframework.beans.annotation.Import;
 import hiyouka.seedframework.beans.definition.*;
 import hiyouka.seedframework.beans.factory.BeanDefinitionRegistry;
 import hiyouka.seedframework.beans.metadata.*;
 import hiyouka.seedframework.common.AnnotationAttributes;
+import hiyouka.seedframework.context.annotation.ComponentScan;
 import hiyouka.seedframework.context.annotation.Configuration;
-import hiyouka.seedframework.beans.annotation.Import;
+import hiyouka.seedframework.context.annotation.PropertySources;
 import hiyouka.seedframework.context.config.BeanMethod;
 import hiyouka.seedframework.context.config.ConfigurationClass;
 import hiyouka.seedframework.context.config.ConfigurationUtils;
+import hiyouka.seedframework.core.asm.ClassReaderUtils;
+import hiyouka.seedframework.core.env.ConfigurableEnvironment;
+import hiyouka.seedframework.core.env.Environment;
+import hiyouka.seedframework.core.io.resource.Resource;
 import hiyouka.seedframework.util.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.io.IOException;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -34,11 +40,14 @@ public class ConfigurationClassParser {
 
     private final ClassPathBeanDefinitionScanner componentScanParser;
 
+    private final Environment environment;
 
 
-    public ConfigurationClassParser(BeanDefinitionRegistry registry){
+
+    public ConfigurationClassParser(BeanDefinitionRegistry registry, Environment environment){
         this.registry = registry;
         this.componentScanParser = new ClassPathBeanDefinitionScanner(registry);
+        this.environment = environment;
     }
 
     public Set<ConfigurationClass> getConfigurationClasses() {
@@ -102,6 +111,11 @@ public class ConfigurationClassParser {
         if(metadata instanceof StandardClassMetadata) {
             clazz = ((StandardClassMetadata) metadata).getIntrospectedClass();
         }
+        AnnotationAttributes property = AnnotationConfigUtils.getAnnotationAttributes(metadata, PropertySources.class.getName());
+        if(property != null){
+            processPropertySources(property,configClass);
+        }
+
         AnnotationAttributes annotationAttributes = AnnotationConfigUtils.getAnnotationAttributes(metadata, ComponentScan.class.getName());
         if(annotationAttributes != null){
             Set<BeanDefinitionHolder> holders = this.componentScanParser.parse(annotationAttributes, metadata.getClassName());
@@ -118,6 +132,20 @@ public class ConfigurationClassParser {
 
         processInterfaces(configClass, clazz);
 
+    }
+
+    private void processPropertySources(AnnotationAttributes property,ConfigurationClass configurationClass) {
+        String[] values = property.getStringArray("value");
+        for(String value : values){
+            if(this.environment instanceof ConfigurableEnvironment){
+                try {
+                    Resource resource = this.componentScanParser.getResourcePatternResolver().getResource(value);
+                    ((ConfigurableEnvironment) this.environment).loadResource(resource);
+                } catch (IOException e) {
+                    throw new IllegalStateException("not found properties in [" + value + "]" + " resolve class : " + ClassReaderUtils.getPackageName(configurationClass.getResource()));
+                }
+            }
+        }
     }
 
     protected void processImports(ConfigurationClass configClass){
@@ -219,7 +247,7 @@ public class ConfigurationClassParser {
         for(Class<?> clazz : importedBy){
             AnnotatedBeanDefinition beanDefinition = new AnnotatedGenericBeanDefinition(clazz);
             this.componentScanParser.processBeanDefinitionToPrefect(beanDefinition);
-            this.componentScanParser.registerOriginBeanDefinition(beanDefinition);
+            this.componentScanParser.registerOriginBeanDefinition(null,beanDefinition);
         }
     }
 
@@ -233,7 +261,7 @@ public class ConfigurationClassParser {
             processBeanMethodBeanDefinition(beanDefinition,metadata);
             beanDefinition.setFactoryBeanName(configClass.getBeanName());
             beanDefinition.setFactoryMethodName(metadata.getMethodName());
-            this.componentScanParser.registerOriginBeanDefinition(beanDefinition);
+            this.componentScanParser.registerOriginBeanDefinition(null,beanDefinition);
         }
     }
 

@@ -1,6 +1,5 @@
 package hiyouka.seedframework.beans.test;
 
-import com.sun.org.glassfish.external.probe.provider.annotations.ProbeProvider;
 import hiyouka.seedframework.beans.annotation.Component;
 
 /**
@@ -8,7 +7,6 @@ import hiyouka.seedframework.beans.annotation.Component;
  * Date: 2019/2/21
  * @since JDK 1.8
  */
-@ProbeProvider
 @Tell
 @Tess
 @Component("777")

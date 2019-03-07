@@ -1,6 +1,5 @@
 package hiyouka.seedframework.beans.test;
 
-import com.sun.org.glassfish.external.probe.provider.annotations.ProbeProvider;
 
 import java.lang.annotation.*;
 
@@ -12,7 +11,6 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
 @Documented
-@ProbeProvider
 public @interface Tess {
 
 

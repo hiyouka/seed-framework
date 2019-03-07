@@ -1,8 +1,8 @@
 package hiyouka.seedframework.beans.metadata;
 
-import com.sun.istack.internal.Nullable;
 import hiyouka.seedframework.util.MultiValueMap;
 
+import javax.annotation.Nullable;
 import java.util.Map;
 
 /**

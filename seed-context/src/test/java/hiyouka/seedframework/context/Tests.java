@@ -20,7 +20,7 @@ public class Tests {
 
 
     @Test
-    public void test(){
+    public void test() {
 //
         Method getLess = BeanUtils.findMethod(AnoTest.class, "getLess", null);
         BeanDefinitionRegistry registry = new DefaultBenFactory();

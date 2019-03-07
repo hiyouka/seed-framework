@@ -1,7 +1,7 @@
 package hiyouka.seedframework.beans.metadata;
 
 
-import com.sun.istack.internal.NotNull;
+import javax.annotation.Nullable;
 
 /**
  * @author hiyouka
@@ -53,7 +53,7 @@ public interface ClassMetadata {
 	 */
 	boolean hasEnclosingClass();
 
-	@NotNull
+	@Nullable
 	String getEnclosingClassName();
 
 	boolean hasSuperClass();

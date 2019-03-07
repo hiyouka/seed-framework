@@ -59,18 +59,28 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningComponentPr
         for(String basePackage : basePackages){
             Set<BeanDefinition> beanDefinitions = findBeanDefinitions(basePackage);
             for(BeanDefinition beanDefinition : beanDefinitions){
-                BeanDefinitionHolder definitionHolder = registerOriginBeanDefinition(beanDefinition);
-                beanDefinitionHolders.add(definitionHolder);
+                String beanName = generateBeanName(beanDefinition);
+                if(checkExistBeanDefinition(beanName)){
+                    BeanDefinitionHolder definitionHolder = registerOriginBeanDefinition(beanName,beanDefinition);
+                    beanDefinitionHolders.add(definitionHolder);
+                }
             }
         }
         return beanDefinitionHolders;
     }
 
-    protected BeanDefinitionHolder registerOriginBeanDefinition(BeanDefinition beanDefinition){
+    protected boolean checkExistBeanDefinition(String beanName){
+        BeanDefinition existBeanDefinition = this.registry.getBeanDefinition(beanName);
+        boolean exist = existBeanDefinition != null && (existBeanDefinition instanceof AbstractBeanDefinition
+                 && ((AbstractBeanDefinition) existBeanDefinition).getResource() != null);
+        return !exist;
+    }
+
+    protected BeanDefinitionHolder registerOriginBeanDefinition(String beanName, BeanDefinition beanDefinition){
         if(beanDefinition instanceof AnnotatedBeanDefinition){
             processBeanDefinitionToPrefect((AnnotatedBeanDefinition) beanDefinition);
         }
-        String beanName = generateBeanName(beanDefinition);
+        beanName = StringUtils.hasText(beanName) ? generateBeanName(beanDefinition) : beanName;
         BeanDefinitionHolder definitionHolder = new BeanDefinitionHolder(beanDefinition, beanName);
         registerBeanDefinition(definitionHolder,this.registry);
         return definitionHolder;
@@ -101,7 +111,6 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningComponentPr
             ((AbstractBeanDefinition) beanDefinition).setInitMethodName(initMethod);
             ((AbstractBeanDefinition) beanDefinition).setDestroyMethodName(destroyMethod);
         }
-
         processBeanDefinition(metadata,beanDefinition);
     }
 

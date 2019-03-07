@@ -15,6 +15,7 @@
     </properties>
 
     <dependencies>
+
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
@@ -40,7 +41,7 @@
             <artifactId>seed-core</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
-        
+
     </dependencies>
 
     <build>
@@ -48,6 +49,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.7.0</version>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
@@ -57,9 +59,41 @@
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.22.1</version>
+                <configuration>
+                    <skipTests>true</skipTests>
+                </configuration>
             </plugin>
-
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.0.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
+
+
+    <distributionManagement>
+
+        <!-- maven nexus config -->
+        <repository>
+            <id>hiyouka-release</id>
+            <name>Release Repository of hiyouka</name>
+            <url>http://47.100.213.49:8001/repository/hiyouka-release/</url>
+        </repository>
+        <snapshotRepository>
+            <id>hiyouka-snapshot</id>
+            <name>Snapshot Repository of hiyouka</name>
+            <url>http://47.100.213.49:8001/repository/hiyouka-snapshot/</url>
+        </snapshotRepository>
+
+    </distributionManagement>
 
 </project>

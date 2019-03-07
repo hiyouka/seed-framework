@@ -1,7 +1,7 @@
 package hiyouka.seedframework.exception;
 
-import com.sun.istack.internal.Nullable;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 
 /**

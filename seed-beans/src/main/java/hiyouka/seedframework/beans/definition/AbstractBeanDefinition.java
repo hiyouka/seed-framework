@@ -1,10 +1,11 @@
 package hiyouka.seedframework.beans.definition;
 
-import com.sun.istack.internal.Nullable;
 import hiyouka.seedframework.beans.metadata.MutablePropertyValues;
 import hiyouka.seedframework.core.io.resource.Resource;
 import hiyouka.seedframework.util.Assert;
 import hiyouka.seedframework.util.ObjectUtils;
+
+import javax.annotation.Nullable;
 
 /**
  * @author hiyouka
