@@ -9,6 +9,7 @@ import hiyouka.seedframework.common.AnnotationAttributes;
 import hiyouka.seedframework.context.annotation.ComponentScan;
 import hiyouka.seedframework.context.annotation.Configuration;
 import hiyouka.seedframework.context.annotation.PropertySources;
+import hiyouka.seedframework.context.config.AnnotationConfigUtils;
 import hiyouka.seedframework.context.config.BeanMethod;
 import hiyouka.seedframework.context.config.ConfigurationClass;
 import hiyouka.seedframework.context.config.ConfigurationUtils;
@@ -246,7 +247,7 @@ public class ConfigurationClassParser {
         Set<Class<?>> importedBy = configClass.getImportedBy();
         for(Class<?> clazz : importedBy){
             AnnotatedBeanDefinition beanDefinition = new AnnotatedGenericBeanDefinition(clazz);
-            this.componentScanParser.processBeanDefinitionToPrefect(beanDefinition);
+            BeanDefinitionReaderUtils.processBeanDefinitionToPrefect(beanDefinition);
             this.componentScanParser.registerOriginBeanDefinition(null,beanDefinition);
         }
     }
@@ -257,8 +258,8 @@ public class ConfigurationClassParser {
             MethodMetadata metadata = beanMethod.getMetadata();
             Class<?> aClass = ClassUtils.getClass(metadata.getReturnTypeName());
             AnnotatedBeanDefinition beanDefinition = new AnnotatedGenericBeanDefinition(aClass);
-            this.componentScanParser.processBeanDefinitionToPrefect(beanDefinition);
-            processBeanMethodBeanDefinition(beanDefinition,metadata);
+//            BeanDefinitionReaderUtils.processBeanDefinitionToPrefect(beanDefinition);
+//            processBeanMethodBeanDefinition(beanDefinition,metadata);
             beanDefinition.setFactoryBeanName(configClass.getBeanName());
             beanDefinition.setFactoryMethodName(metadata.getMethodName());
             this.componentScanParser.registerOriginBeanDefinition(null,beanDefinition);
@@ -266,7 +267,7 @@ public class ConfigurationClassParser {
     }
 
     private void processBeanMethodBeanDefinition(BeanDefinition beanDefinition, MethodMetadata methodMetadata){
-        this.componentScanParser.processBeanDefinition(methodMetadata,beanDefinition);
+        BeanDefinitionReaderUtils.processBeanDefinition(methodMetadata,beanDefinition);
     }
 
 }

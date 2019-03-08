@@ -95,5 +95,11 @@ public class ConfigurationClass {
         return this.beanMethods;
     }
 
-
+    @Override
+    public String toString() {
+        return "ConfigurationClass{" +
+                ", resource=" + resource +
+                ", beanName='" + beanName + '\'' +
+                '}';
+    }
 }

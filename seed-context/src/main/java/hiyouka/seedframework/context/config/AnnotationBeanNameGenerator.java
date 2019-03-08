@@ -1,6 +1,9 @@
-package hiyouka.seedframework.beans.definition;
+package hiyouka.seedframework.context.config;
 
 import hiyouka.seedframework.beans.annotation.Component;
+import hiyouka.seedframework.beans.definition.AnnotatedBeanDefinition;
+import hiyouka.seedframework.beans.definition.BeanDefinition;
+import hiyouka.seedframework.beans.definition.BeanNameGenerator;
 import hiyouka.seedframework.beans.factory.BeanDefinitionRegistry;
 import hiyouka.seedframework.beans.metadata.AnnotationMetadata;
 import hiyouka.seedframework.common.AnnotationAttributes;

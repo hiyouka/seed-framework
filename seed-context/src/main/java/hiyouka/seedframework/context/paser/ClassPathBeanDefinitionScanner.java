@@ -6,6 +6,7 @@ import hiyouka.seedframework.beans.exception.BeanDefinitionStoreException;
 import hiyouka.seedframework.beans.factory.BeanDefinitionRegistry;
 import hiyouka.seedframework.beans.factory.config.ConfigurableBeanFactory;
 import hiyouka.seedframework.common.AnnotationAttributes;
+import hiyouka.seedframework.context.config.AnnotationBeanNameGenerator;
 import hiyouka.seedframework.context.config.filter.AnnotationIncludeFilter;
 import hiyouka.seedframework.context.config.filter.ClassTypeFilter;
 import hiyouka.seedframework.util.Assert;
@@ -68,6 +69,9 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningComponentPr
     }
 
     protected boolean checkExistBeanDefinition(String beanName){
+        if(!this.registry.containsBeanDefinition(beanName)){
+            return true;
+        }
         BeanDefinition existBeanDefinition = this.registry.getBeanDefinition(beanName);
         boolean exist = existBeanDefinition != null && (existBeanDefinition instanceof AbstractBeanDefinition
                  && ((AbstractBeanDefinition) existBeanDefinition).getResource() != null);
@@ -78,7 +82,7 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningComponentPr
         if(beanDefinition instanceof AnnotatedBeanDefinition){
             BeanDefinitionReaderUtils.processBeanDefinitionToPrefect((AnnotatedBeanDefinition) beanDefinition);
         }
-        beanName = StringUtils.hasText(beanName) ? generateBeanName(beanDefinition) : beanName;
+        beanName = !StringUtils.hasText(beanName) ? generateBeanName(beanDefinition) : beanName;
         BeanDefinitionHolder definitionHolder = new BeanDefinitionHolder(beanDefinition, beanName);
         registerBeanDefinition(definitionHolder,this.registry);
         return definitionHolder;

@@ -2,11 +2,11 @@ package hiyouka.seedframework.context.config;
 
 import hiyouka.seedframework.beans.definition.BeanDefinition;
 import hiyouka.seedframework.beans.definition.BeanDefinitionHolder;
-import hiyouka.seedframework.beans.factory.BeanDefinitionRegistry;
-import hiyouka.seedframework.beans.factory.DefaultBenFactory;
-import hiyouka.seedframework.beans.factory.config.BeanDefinitionRegistryPostProcessor;
-import hiyouka.seedframework.context.paser.ConfigurationClassParser;
 import hiyouka.seedframework.beans.exception.BeansException;
+import hiyouka.seedframework.beans.factory.BeanDefinitionRegistry;
+import hiyouka.seedframework.beans.factory.config.BeanDefinitionRegistryPostProcessor;
+import hiyouka.seedframework.beans.factory.config.ConfigurableDefinitionBeanFactory;
+import hiyouka.seedframework.context.paser.ConfigurationClassParser;
 import hiyouka.seedframework.core.env.Environment;
 import hiyouka.seedframework.util.Assert;
 import org.apache.commons.logging.Log;
@@ -41,12 +41,14 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
     }
 
     @Override
-    public void postProcessBeanFactory(DefaultBenFactory beanFactory) throws BeansException {
-
+    public void postProcessBeanFactory(ConfigurableDefinitionBeanFactory beanFactory) throws BeansException {
+        if(beanFactory instanceof BeanDefinitionRegistry){
+            processConfigurationBeanDefinitions((BeanDefinitionRegistry) beanFactory);
+        }
     }
 
 
-    public void processConfigurationBeanDefinitions(BeanDefinitionRegistry registry){
+    protected void processConfigurationBeanDefinitions(BeanDefinitionRegistry registry){
         String[] beanNames = registry.getBeanDefinitionNames();
         Set<BeanDefinitionHolder> processBean = new LinkedHashSet<>(128);
         for(String beanName : beanNames){

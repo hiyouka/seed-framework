@@ -146,7 +146,7 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
             }
         }
 
-        if(requiredType != null && bean.getClass() != requiredType ){
+        if(requiredType != null && bean.getClass().isAssignableFrom(requiredType)){
             throw new BeanNotRequiredException(" bean : "+beanName + " type["+bean.getClass().getName()
                     +"] not conform to " + requiredType.getName());
         }

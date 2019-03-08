@@ -36,4 +36,12 @@ public class RootBeanDefinition extends AbstractBeanDefinition {
     public String getParentName() {
         return null;
     }
+
+    @Override
+    public String toString() {
+        return "RootBeanDefinition{" +
+                "decoratedDefinition=" + decoratedDefinition +
+                "class:" + getBeanClassName() +
+                '}';
+    }
 }

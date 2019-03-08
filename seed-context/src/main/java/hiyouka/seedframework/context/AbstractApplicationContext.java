@@ -4,6 +4,7 @@ import hiyouka.seedframework.beans.definition.BeanDefinition;
 import hiyouka.seedframework.beans.exception.BeansException;
 import hiyouka.seedframework.beans.exception.NoSuchBeanDefinitionException;
 import hiyouka.seedframework.beans.factory.DefinitionBeanFactory;
+import hiyouka.seedframework.beans.factory.config.BeanDefinitionRegistryPostProcessor;
 import hiyouka.seedframework.beans.factory.config.BeanFactoryPostProcessor;
 import hiyouka.seedframework.beans.factory.config.ConfigurableDefinitionBeanFactory;
 import hiyouka.seedframework.core.env.ConfigurableEnvironment;
@@ -119,7 +120,6 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 
     protected void prepareBeanFactory(ConfigurableDefinitionBeanFactory beanFactory) {
         beanFactory.setBeanClassLoader(getClassLoader());
-        beanFactory.registerSingleton("",null);
     }
 
     protected DefinitionBeanFactory obtainFreshBeanFactory(){
@@ -137,14 +137,26 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 
     protected abstract void closeBeanFactory();
 
-    protected void invokeBeanFactoryPostProcessors(DefinitionBeanFactory beanFactory) {
-
+    protected void invokeBeanFactoryPostProcessors(ConfigurableDefinitionBeanFactory beanFactory) {
+        // TODO: 排序
+        String[] registerPostProcessors = beanFactory.getBeanNamesForType(BeanDefinitionRegistryPostProcessor.class);
+        List<BeanDefinitionRegistryPostProcessor> currentRegistryProcessors = new ArrayList<>();
+        for(String beanName: registerPostProcessors){
+            currentRegistryProcessors.add(beanFactory.getBean(beanName,BeanDefinitionRegistryPostProcessor.class));
+        }
+        doInvokeBeanFactoryPostProcessors(currentRegistryProcessors,beanFactory);
     }
 
-    protected void registerBeanPostProcessor(DefinitionBeanFactory beanFactory){};
+    private void doInvokeBeanFactoryPostProcessors(List<BeanDefinitionRegistryPostProcessor> processors, ConfigurableDefinitionBeanFactory factory) {
+        for(BeanDefinitionRegistryPostProcessor postProcessor : processors){
+            postProcessor.postProcessBeanFactory(factory);
+        }
+    }
+
+    protected void registerBeanPostProcessor(ConfigurableDefinitionBeanFactory beanFactory){};
 
 
-    protected void finishBeanFactoryInitialization(DefinitionBeanFactory beanFactory){};
+    protected void finishBeanFactoryInitialization(ConfigurableDefinitionBeanFactory beanFactory){};
 
     protected void finishRefresh(){};
 

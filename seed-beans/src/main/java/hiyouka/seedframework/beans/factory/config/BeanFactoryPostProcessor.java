@@ -1,6 +1,5 @@
 package hiyouka.seedframework.beans.factory.config;
 
-import hiyouka.seedframework.beans.factory.DefaultBenFactory;
 import hiyouka.seedframework.beans.exception.BeansException;
 
 /**
@@ -11,6 +10,6 @@ import hiyouka.seedframework.beans.exception.BeansException;
 public interface BeanFactoryPostProcessor {
 
     /** beanFactory 的后置处理 */
-    void postProcessBeanFactory(DefaultBenFactory beanFactory) throws BeansException;
+    void postProcessBeanFactory(ConfigurableDefinitionBeanFactory beanFactory) throws BeansException;
 
 }

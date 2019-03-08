@@ -2,6 +2,8 @@ package hiyouka.seedframework.context;
 
 import hiyouka.seedframework.beans.definition.*;
 import hiyouka.seedframework.beans.factory.BeanDefinitionRegistry;
+import hiyouka.seedframework.context.config.AnnotationBeanNameGenerator;
+import hiyouka.seedframework.context.config.AnnotationConfigUtils;
 import hiyouka.seedframework.util.Assert;
 import hiyouka.seedframework.util.BeanDefinitionReaderUtils;
 
@@ -20,6 +22,7 @@ public class AnnotatedBeanDefinitionReader {
     public AnnotatedBeanDefinitionReader(BeanDefinitionRegistry registry){
         Assert.notNull(registry,"BeanDefinitionRegistry must not be null");
         this.registry = registry;
+        AnnotationConfigUtils.registerAnnotationConfigProcessors(this.registry);
     }
 
     public BeanDefinitionRegistry getRegistry() {
