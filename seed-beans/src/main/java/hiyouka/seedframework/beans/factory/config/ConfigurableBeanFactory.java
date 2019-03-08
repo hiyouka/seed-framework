@@ -26,4 +26,5 @@ public interface ConfigurableBeanFactory extends BeanFactory {
      */
     int getBeanPostProcessorCount();
 
+
 }

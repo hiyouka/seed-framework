@@ -12,6 +12,6 @@ import java.lang.annotation.*;
 @Documented
 public @interface PropertySources {
 
-    String[] value() default {};
+    String[] value();
 
 }

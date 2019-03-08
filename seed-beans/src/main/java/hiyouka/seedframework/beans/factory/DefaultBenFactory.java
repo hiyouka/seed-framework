@@ -5,11 +5,15 @@ import hiyouka.seedframework.beans.definition.AbstractBeanDefinition;
 import hiyouka.seedframework.beans.definition.BeanDefinition;
 import hiyouka.seedframework.beans.definition.BeanHolder;
 import hiyouka.seedframework.beans.exception.*;
+import hiyouka.seedframework.beans.factory.config.ConfigurableDefinitionBeanFactory;
 import hiyouka.seedframework.util.AnnotatedElementUtils;
 import hiyouka.seedframework.util.ArrayUtils;
 import hiyouka.seedframework.util.Assert;
 import hiyouka.seedframework.util.ReflectionUtils;
 
+import javax.annotation.Nullable;
+import java.io.Serializable;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -18,7 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author hiyouka
  * @since JDK 1.8
  */
-public class DefaultBenFactory extends AbstractBeanCreateFactory implements BeanDefinitionRegistry {
+public class DefaultBenFactory extends AbstractBeanCreateFactory implements ConfigurableDefinitionBeanFactory, BeanDefinitionRegistry , Serializable {
 
 
     /** 是否允许重复注册 */
@@ -39,7 +43,16 @@ public class DefaultBenFactory extends AbstractBeanCreateFactory implements Bean
     /** List of names of manually registered singletons, in registration order (内部的bean)*/
     private volatile Set<String> manualSingletonNames = new LinkedHashSet<>(16);
 
+    private String serializationId;
 
+    @Nullable
+    public String getSerializationId() {
+        return serializationId;
+    }
+
+    public void setSerializationId(@Nullable String serializationId) {
+        this.serializationId = serializationId;
+    }
 
     protected void addBeanNamesByType(Class<?> clazz, String name){
         allBeanNamesByType.put(clazz,add(name,allBeanNamesByType.get(clazz)));
@@ -230,11 +243,13 @@ public class DefaultBenFactory extends AbstractBeanCreateFactory implements Bean
         return result;
     }
 
-    private String[] getBeanNamesForType(Class<?> type){
+    @Override
+    public String[] getBeanNamesForType(Class<?> type){
         return getBeanNamesForType(type,true,true);
     }
 
-    private String[] getBeanNamesForType(Class<?> type, boolean allowNoSingleton, boolean allowEarlyInit){
+    @Override
+    public String[] getBeanNamesForType(Class<?> type, boolean allowNoSingleton, boolean allowEarlyInit){
         Map<Class<?>, String[]> cache;
         if(allowNoSingleton){
             cache = allBeanNamesByType;
@@ -249,6 +264,36 @@ public class DefaultBenFactory extends AbstractBeanCreateFactory implements Bean
         names = doGetBeanNamesForType(type,allowNoSingleton,allowEarlyInit);
         cache.put(type,names);
         return names;
+    }
+
+    @Override
+    public <T> Map<String, T> getBeansOfType(@Nullable Class<T> type) throws BeansException {
+        return getBeansOfType(type,true,true);
+    }
+
+    @Override
+    public <T> Map<String, T> getBeansOfType(@Nullable Class<T> type, boolean includeNonSingletons, boolean allowEagerInit) throws BeansException {
+        String[] beanNames = getBeanNamesForType(type,includeNonSingletons,allowEagerInit);
+        Map<String,T> result = new HashMap<>(beanNames.length);
+        for(String beanName : beanNames){
+            try{
+                Object bean = getBean(beanName);
+                result.put(beanName,bean == null ? null : (T)bean);
+            }catch (BeanCreatedException e){
+                if(isCurrentlyCreated(beanName)){
+                    logger.error("create bean : "+beanName+" error, this bean is in creation");
+                }
+                throw e;
+            }
+
+        }
+        return result;
+    }
+
+    @Nullable
+    @Override
+    public <A extends Annotation> A findAnnotationOnBean(String beanName, Class<A> annotationType) throws NoSuchBeanDefinitionException {
+        return null;
     }
 
     /**

@@ -12,7 +12,7 @@ import java.util.Map;
  * @author hiyouka
  * @since JDK 1.8
  */
-public interface DefinitionBeanFactory extends BeanFactory {
+public interface DefinitionBeanFactory extends BeanFactory{
 
     boolean containsBeanDefinition(String beanName);
 
