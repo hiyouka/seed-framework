@@ -3,8 +3,8 @@
 
 ## Quick Start:
 
-    使用和spring容器类似,创建AnnotationConfigApplicationContext加载一个配置类。在配置类上添加注解来扫包。将bean添加到容器当中。
-    之后就可以在容器中获取bean了。
+使用和spring容器类似,创建AnnotationConfigApplicationContext加载一个配置类。在配置类上添加注解来扫包。将bean添加到容器当中。
+之后就可以在容器中获取bean了。
     
 ### Example:
 
