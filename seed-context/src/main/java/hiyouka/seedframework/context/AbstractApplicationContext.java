@@ -3,10 +3,13 @@ package hiyouka.seedframework.context;
 import hiyouka.seedframework.beans.definition.BeanDefinition;
 import hiyouka.seedframework.beans.exception.BeansException;
 import hiyouka.seedframework.beans.exception.NoSuchBeanDefinitionException;
-import hiyouka.seedframework.beans.factory.DefinitionBeanFactory;
+import hiyouka.seedframework.beans.factory.BeanDefinitionRegistry;
+import hiyouka.seedframework.beans.factory.BeanFactory;
 import hiyouka.seedframework.beans.factory.config.BeanDefinitionRegistryPostProcessor;
 import hiyouka.seedframework.beans.factory.config.BeanFactoryPostProcessor;
+import hiyouka.seedframework.beans.factory.config.BeanPostProcessor;
 import hiyouka.seedframework.beans.factory.config.ConfigurableDefinitionBeanFactory;
+import hiyouka.seedframework.context.config.ApplicationContextAwareProcessor;
 import hiyouka.seedframework.core.env.ConfigurableEnvironment;
 import hiyouka.seedframework.core.env.StandardEnvironment;
 import hiyouka.seedframework.core.io.resource.DefaultResourceLoader;
@@ -21,6 +24,7 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -85,7 +89,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
             // 环境变量配置，容器预启动
             prepareRefresh();
 
-            ConfigurableDefinitionBeanFactory beanFactory = getBeanFactory();
+            ConfigurableDefinitionBeanFactory beanFactory = obtainFreshBeanFactory();
             //工厂中加入组件
             prepareBeanFactory(beanFactory);
             //执行beanFactoryProcessors
@@ -120,11 +124,21 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 
     protected void prepareBeanFactory(ConfigurableDefinitionBeanFactory beanFactory) {
         beanFactory.setBeanClassLoader(getClassLoader());
+
+        beanFactory.addBeanPostProcessor(new ApplicationContextAwareProcessor(this));
+
+        //注册环境信息
+        beanFactory.registerSingleton(ENVIRONMENT_BEAN_NAME,this.environment);
+        beanFactory.registerSingleton(SYSTEM_ENVIRONMENT_BEAN_NAME,this.environment.getSystemEnvironment());
+        beanFactory.registerSingleton(SYSTEM_PROPERTIES_BEAN_NAME,this.environment.getSystemProperties());
+
+        //TODO: 设置忽略注册的接口以及指定接口注册指定bean
+
     }
 
-    protected DefinitionBeanFactory obtainFreshBeanFactory(){
+    protected ConfigurableDefinitionBeanFactory obtainFreshBeanFactory(){
         refreshBeanFactory();
-        DefinitionBeanFactory beanFactory = getBeanFactory();
+        ConfigurableDefinitionBeanFactory beanFactory = getBeanFactory();
         return beanFactory;
     }
 
@@ -139,24 +153,84 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 
     protected void invokeBeanFactoryPostProcessors(ConfigurableDefinitionBeanFactory beanFactory) {
         // TODO: 排序
-        String[] registerPostProcessors = beanFactory.getBeanNamesForType(BeanDefinitionRegistryPostProcessor.class);
-        List<BeanDefinitionRegistryPostProcessor> currentRegistryProcessors = new ArrayList<>();
-        for(String beanName: registerPostProcessors){
-            currentRegistryProcessors.add(beanFactory.getBean(beanName,BeanDefinitionRegistryPostProcessor.class));
+        if(beanFactory instanceof BeanDefinitionRegistry){
+            String[] registerPostProcessors = beanFactory.getBeanNamesForType(BeanDefinitionRegistryPostProcessor.class);
+            List<BeanDefinitionRegistryPostProcessor> currentRegistryProcessors = new ArrayList<>();
+
+            //确保每个类型的 BeanFactoryProcessor 只执行一次
+            HashMap<String,Class<BeanDefinitionRegistryPostProcessor>> processed = new HashMap<>();
+            for(String beanName: registerPostProcessors){
+                BeanDefinitionRegistryPostProcessor bean = beanFactory.getBean(beanName, BeanDefinitionRegistryPostProcessor.class);
+                processed.put(beanName,(Class<BeanDefinitionRegistryPostProcessor>) bean.getClass());
+                currentRegistryProcessors.add(bean);
+            }
+            BeanDefinitionRegistry registry = (BeanDefinitionRegistry) beanFactory;
+            doInvokeBeanDefinitionRegistryPostProcessors(currentRegistryProcessors,registry);
+
+            currentRegistryProcessors.clear();
+            //执行自定义的BeanDefinitionRegistryPostProcessor
+            registerPostProcessors = beanFactory.getBeanNamesForType(BeanDefinitionRegistryPostProcessor.class);
+            for(String beanName: registerPostProcessors){
+                if(!processed.containsKey(beanName)){
+                    BeanDefinitionRegistryPostProcessor bean = beanFactory.getBean(beanName, BeanDefinitionRegistryPostProcessor.class);
+                    if(!processed.keySet().contains(bean.getClass())){
+                        currentRegistryProcessors.add(bean);
+                        processed.put(beanName, (Class<BeanDefinitionRegistryPostProcessor>) bean.getClass());
+                    }
+                }
+            }
+            doInvokeBeanDefinitionRegistryPostProcessors(currentRegistryProcessors,registry);
+            currentRegistryProcessors.clear();
         }
-        doInvokeBeanFactoryPostProcessors(currentRegistryProcessors,beanFactory);
+
+
+        List<BeanFactoryPostProcessor> currentFactoryProcessors = new ArrayList<>();
+        //执行BeanFactoryProcessor
+        String[] beanFactoryProcessors = beanFactory.getBeanNamesForType(BeanFactory.class);
+
+        HashMap<String,Class<BeanFactoryPostProcessor>> processed = new HashMap<>();
+        for(String beanName : beanFactoryProcessors){
+            if(!processed.containsKey(beanName)){
+                BeanFactoryPostProcessor bean = beanFactory.getBean(beanName, BeanFactoryPostProcessor.class);
+                if(!processed.keySet().contains(bean.getClass())){
+                    currentFactoryProcessors.add(bean);
+                    processed.put(beanName, (Class<BeanFactoryPostProcessor>) bean.getClass());
+                }
+            }
+        }
+
+        doInvokeBeanFactoryPostProcessors(currentFactoryProcessors, beanFactory);
+        currentFactoryProcessors.clear();
+
     }
 
-    private void doInvokeBeanFactoryPostProcessors(List<BeanDefinitionRegistryPostProcessor> processors, ConfigurableDefinitionBeanFactory factory) {
+    protected void doInvokeBeanFactoryPostProcessors(List<BeanFactoryPostProcessor> processors, ConfigurableDefinitionBeanFactory beanFactory){
+        for(BeanFactoryPostProcessor postProcessor : processors){
+            postProcessor.postProcessBeanFactory(beanFactory);
+        }
+    }
+
+
+    protected void doInvokeBeanDefinitionRegistryPostProcessors(List<BeanDefinitionRegistryPostProcessor> processors, BeanDefinitionRegistry registry) {
         for(BeanDefinitionRegistryPostProcessor postProcessor : processors){
-            postProcessor.postProcessBeanFactory(factory);
+            postProcessor.postProcessBeanDefinitionRegistry(registry);
         }
     }
 
-    protected void registerBeanPostProcessor(ConfigurableDefinitionBeanFactory beanFactory){};
+    protected void registerBeanPostProcessor(ConfigurableDefinitionBeanFactory beanFactory){
+        //向BeanFactory中添加beanPostProcessor
+        String[] postProcessors = beanFactory.getBeanNamesForType(BeanPostProcessor.class);
+        for(String beanName : postProcessors){
+            BeanPostProcessor bean = beanFactory.getBean(beanName, BeanPostProcessor.class);
+            beanFactory.addBeanPostProcessor(bean);
+        }
+    }
 
 
-    protected void finishBeanFactoryInitialization(ConfigurableDefinitionBeanFactory beanFactory){};
+    protected void finishBeanFactoryInitialization(ConfigurableDefinitionBeanFactory beanFactory){
+        //创建所有的单例非懒加载对象
+        beanFactory.preInstantiateSingletons();
+    }
 
     protected void finishRefresh(){};
 

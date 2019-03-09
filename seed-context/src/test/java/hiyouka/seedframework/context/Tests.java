@@ -32,6 +32,12 @@ public class Tests {
 //        }
         ApplicationContext applicationContext = new AnnotationConfigApplicationContext(ConfigClass.class);
         AnoTest bean = applicationContext.getBean(AnoTest.class);
+//        Method[] declaredMethods = PerAnoTest.class.getDeclaredMethods();
+//        System.out.println(declaredMethods);
+
     }
+
+
+
 
 }

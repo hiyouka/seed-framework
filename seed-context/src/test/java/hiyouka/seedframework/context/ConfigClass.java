@@ -18,7 +18,7 @@ import hiyouka.seedframework.context.annotation.PropertySources;
 @PropertySources("classpath:/test.properties")
 public class ConfigClass {
 
-    @Bean
+    @Bean("innerBeanClass")
     @Lazy
     @Primary
     public BeanClass beanClass(){

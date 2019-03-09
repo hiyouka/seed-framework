@@ -7,6 +7,6 @@ import hiyouka.seedframework.context.annotation.ComponentScan;
  * @since JDK 1.8
  */
 @ComponentScan("hiyouka.seedframework.comp")
-public class ImportClass implements IntefaceBean{
+public class ImportClass extends PClass{
 
 }

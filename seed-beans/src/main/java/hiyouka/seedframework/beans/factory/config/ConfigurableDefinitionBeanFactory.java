@@ -1,5 +1,6 @@
 package hiyouka.seedframework.beans.factory.config;
 
+import hiyouka.seedframework.beans.exception.BeansException;
 import hiyouka.seedframework.beans.factory.DefinitionBeanFactory;
 import hiyouka.seedframework.beans.factory.SingletonBeanRegistry;
 
@@ -9,5 +10,12 @@ import hiyouka.seedframework.beans.factory.SingletonBeanRegistry;
  * @since JDK 1.8
  */
 public interface ConfigurableDefinitionBeanFactory extends ConfigurableBeanFactory,DefinitionBeanFactory, SingletonBeanRegistry{
+
+
+    /**
+     * 创建所有的单例对象
+     * @throws BeansException if bean create error
+     */
+    void preInstantiateSingletons() throws BeansException;
 
 }

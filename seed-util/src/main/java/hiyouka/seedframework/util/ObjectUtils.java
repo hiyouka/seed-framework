@@ -18,6 +18,10 @@ public class ObjectUtils {
     private static final String EMPTY_ARRAY = ARRAY_START + ARRAY_END;
     private static final String ARRAY_ELEMENT_SEPARATOR = ", ";
 
+    public static boolean isNull(Object object){
+        return object == null;
+    }
+
     public static boolean isEmpty(Object... array) {
         return (array == null || array.length == 0);
     }

@@ -40,7 +40,7 @@ public class DefaultBenFactory extends AbstractBeanCreateFactory implements Conf
     /** List of bean definition names, in registration order */
     private volatile List<String> beanDefinitionNames = new ArrayList<>(256);
 
-    /** List of names of manually registered singletons, in registration order (内部的bean)*/
+    /** List of names of manually registered singletons, in registration order (手动创建的bean不会生成beanDefinition)*/
     private volatile Set<String> manualSingletonNames = new LinkedHashSet<>(16);
 
     private String serializationId;
@@ -151,6 +151,26 @@ public class DefaultBenFactory extends AbstractBeanCreateFactory implements Conf
 
     public boolean isAllowBeanDefinitionOverriding() {
         return this.allowBeanDefinitionOverriding;
+    }
+
+    @Override
+    public void registerSingleton(String beanName, Object singletonObject) {
+        super.registerSingleton(beanName, singletonObject);
+        if(hasBeanCreationStarted()){
+            synchronized (this.beanDefinitionMap){
+                if(!this.beanDefinitionMap.containsKey(beanName)){
+                    Set<String> update = new LinkedHashSet<>(this.manualSingletonNames.size() + 1);
+                    update.addAll(this.manualSingletonNames);
+                    update.add(beanName);
+                    this.manualSingletonNames = update;
+                }
+            }
+        }else {
+            if(!this.beanDefinitionMap.containsKey(beanName)){
+                this.manualSingletonNames.add(beanName);
+            }
+        }
+
     }
 
     protected void resetBeanDefinition(String beanName, BeanDefinition oldBeanDefinition) {
@@ -339,4 +359,16 @@ public class DefaultBenFactory extends AbstractBeanCreateFactory implements Conf
         return compareType.isAssignableFrom(type);
     }
 
+    @Override
+    public void preInstantiateSingletons() throws BeansException {
+        String[] beanNames = getBeanDefinitionNames();
+        for(String beanName : beanNames){
+            BeanDefinition beanDefinition = getBeanDefinition(beanName);
+            if(!beanDefinition.isAbstract() && beanDefinition.isSingleton()
+                    && !beanDefinition.isLazyInit()){
+                getBean(beanName);
+            }
+        }
+
+    }
 }

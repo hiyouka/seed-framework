@@ -1,16 +1,16 @@
 package hiyouka.seedframework.context.config;
 
-import hiyouka.seedframework.beans.annotation.Component;
 import hiyouka.seedframework.beans.definition.AnnotatedBeanDefinition;
 import hiyouka.seedframework.beans.definition.BeanDefinition;
 import hiyouka.seedframework.beans.definition.BeanNameGenerator;
 import hiyouka.seedframework.beans.factory.BeanDefinitionRegistry;
 import hiyouka.seedframework.beans.metadata.AnnotationMetadata;
 import hiyouka.seedframework.common.AnnotationAttributes;
-import hiyouka.seedframework.util.*;
+import hiyouka.seedframework.util.Assert;
+import hiyouka.seedframework.util.ClassUtils;
+import hiyouka.seedframework.util.StringUtils;
 
 import java.beans.Introspector;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -21,9 +21,7 @@ public class AnnotationBeanNameGenerator implements BeanNameGenerator {
 
     public static final String COMPONENT_ANNOTATION_CLASSNAME = "hiyouka.seedframework.beans.annotation.Component";
 
-    public static final String BEAN_ANNOTATION_CLASSNAME = "hiyouka.seedframework.beans.annotation.Bean";
 
-    public static final String IMPORT_ANNOTATION_CLASSNAME = "hiyouka.seedframework.beans.annotation.Import";
 
     @Override
     public String generateBeanName(BeanDefinition definition, BeanDefinitionRegistry registry) {
@@ -57,42 +55,12 @@ public class AnnotationBeanNameGenerator implements BeanNameGenerator {
                     }
                 }
             }
-            else if(isBean(attributes,amd.getMetaAnnotationTypes(type),type)){
-                Object name = attributes.get("name");
-                if(name instanceof String){
-                    String val = (String) name;
-                    if(StringUtils.hasText(val)){
-                        beanName = val;
-                    }
-                }
-                if(!StringUtils.hasText(beanName)){
-                    beanName = annotatedDef.getFactoryMethodName();
-                }
-            }
-            else if(isImport(amd.getMetaAnnotationTypes(type), type)){
-                beanName = annotatedDef.getBeanClassName();
-            }
-        }
-        Map<String, Object> annotationAttributes = amd.getAnnotationAttributes(Component.class.getName());
-        if(!CollectionUtils.isEmpty(annotationAttributes)){
-            Object value = annotationAttributes.get("value");
-            if(value instanceof String)
-                beanName = (String) value;
+
         }
         return beanName;
     }
 
-    private boolean isBean(AnnotationAttributes attributes, Set<String> metaAnnotationTypes, String annotationType) {
-        boolean isBean = BEAN_ANNOTATION_CLASSNAME.equals(annotationType)
-                || metaAnnotationTypes.contains(BEAN_ANNOTATION_CLASSNAME);
-        return (isBean && attributes != null && attributes.containsKey("name"));
-    }
 
-
-    private boolean isImport(Set<String> metaAnnotationTypes, String annotationType) {
-        return IMPORT_ANNOTATION_CLASSNAME.equals(annotationType)
-                || metaAnnotationTypes.contains(IMPORT_ANNOTATION_CLASSNAME);
-    }
 
     /**
      *  判断是否包含组件注解

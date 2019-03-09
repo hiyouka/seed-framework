@@ -23,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 
 import java.io.IOException;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -34,6 +35,8 @@ import java.util.Set;
 public class ConfigurationClassParser {
 
     private final Log logger = LogFactory.getLog(getClass());
+
+    public static final String BEAN_ANNOTATION_CLASSNAME = "hiyouka.seedframework.beans.annotation.Bean";
 
     private final BeanDefinitionRegistry registry;
 
@@ -209,7 +212,7 @@ public class ConfigurationClassParser {
             AnnotationAttributes annotationAttributes =
                     AnnotatedElementUtils.getAnnotationAttributes(((StandardMethodMetadata) metadata)
                             .getIntrospectedMethod(), Bean.class.getName());
-            String name = annotationAttributes.getString("name");
+            String name = annotationAttributes.getString("value");
             if(!StringUtils.hasText(name)){
                 name = metadata.getMethodName();
             }
@@ -247,8 +250,8 @@ public class ConfigurationClassParser {
         Set<Class<?>> importedBy = configClass.getImportedBy();
         for(Class<?> clazz : importedBy){
             AnnotatedBeanDefinition beanDefinition = new AnnotatedGenericBeanDefinition(clazz);
-            BeanDefinitionReaderUtils.processBeanDefinitionToPrefect(beanDefinition);
-            this.componentScanParser.registerOriginBeanDefinition(null,beanDefinition);
+            String benName = clazz.getName();
+            this.componentScanParser.registerOriginBeanDefinition(benName,beanDefinition);
         }
     }
 
@@ -258,16 +261,26 @@ public class ConfigurationClassParser {
             MethodMetadata metadata = beanMethod.getMetadata();
             Class<?> aClass = ClassUtils.getClass(metadata.getReturnTypeName());
             AnnotatedBeanDefinition beanDefinition = new AnnotatedGenericBeanDefinition(aClass);
-//            BeanDefinitionReaderUtils.processBeanDefinitionToPrefect(beanDefinition);
-//            processBeanMethodBeanDefinition(beanDefinition,metadata);
             beanDefinition.setFactoryBeanName(configClass.getBeanName());
             beanDefinition.setFactoryMethodName(metadata.getMethodName());
-            this.componentScanParser.registerOriginBeanDefinition(null,beanDefinition);
+            Map<String, Object> annotationAttributes = metadata.getAnnotationAttributes(Bean.class.getName());
+            String beanName = null;
+            if(!annotationAttributes.isEmpty()){
+                Object name = annotationAttributes.get("value");
+                if((name instanceof String) && StringUtils.hasText((String)name)){
+                    beanName = (String) name;
+                }
+            }
+            if(!StringUtils.hasText(beanName)){
+                beanName = metadata.getMethodName();
+            }
+            this.componentScanParser.registerOriginBeanDefinition(beanName,beanDefinition);
         }
     }
 
     private void processBeanMethodBeanDefinition(BeanDefinition beanDefinition, MethodMetadata methodMetadata){
         BeanDefinitionReaderUtils.processBeanDefinition(methodMetadata,beanDefinition);
     }
+
 
 }

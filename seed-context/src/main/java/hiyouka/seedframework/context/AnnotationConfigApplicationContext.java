@@ -17,6 +17,7 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
     public AnnotationConfigApplicationContext() {
         this.scanner = new ClassPathBeanDefinitionScanner(this);
         this.reader = new AnnotatedBeanDefinitionReader(this);
+        getEnvironment();
     }
 
     public AnnotationConfigApplicationContext(DefaultBenFactory beanFactory){

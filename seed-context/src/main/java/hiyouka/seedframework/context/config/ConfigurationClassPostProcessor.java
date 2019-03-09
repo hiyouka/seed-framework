@@ -4,6 +4,7 @@ import hiyouka.seedframework.beans.definition.BeanDefinition;
 import hiyouka.seedframework.beans.definition.BeanDefinitionHolder;
 import hiyouka.seedframework.beans.exception.BeansException;
 import hiyouka.seedframework.beans.factory.BeanDefinitionRegistry;
+import hiyouka.seedframework.beans.factory.aware.EnvironmentAware;
 import hiyouka.seedframework.beans.factory.config.BeanDefinitionRegistryPostProcessor;
 import hiyouka.seedframework.beans.factory.config.ConfigurableDefinitionBeanFactory;
 import hiyouka.seedframework.context.paser.ConfigurationClassParser;
@@ -19,7 +20,7 @@ import java.util.Set;
  * @author hiyouka
  * @since JDK 1.8
  */
-public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPostProcessor {
+public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPostProcessor , EnvironmentAware{
 
     private final Log logger = LogFactory.getLog(this.getClass());
 

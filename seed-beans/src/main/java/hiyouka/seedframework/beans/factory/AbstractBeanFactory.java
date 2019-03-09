@@ -171,6 +171,7 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
         if(isCurrentlyCreated(beanName)){
             throw new BeanCurrentlyInCreationException("bean : " + beanName + "in Creation After bean Create");
         }
+//        addAlreadyCreated(beanName);
     }
 
     protected boolean isPrototypeBeanCurrentlyInCreated(String beanName, BeanDefinition beanDefinition){

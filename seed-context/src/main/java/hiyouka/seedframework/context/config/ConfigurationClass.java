@@ -97,9 +97,9 @@ public class ConfigurationClass {
 
     @Override
     public String toString() {
-        return "ConfigurationClass{" +
+        return "ConfigurationClass"+
+                "beanName + " + beanName +
                 ", resource=" + resource +
-                ", beanName='" + beanName + '\'' +
                 '}';
     }
 }

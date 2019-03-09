@@ -7,7 +7,7 @@ import java.lang.annotation.*;
 @Documented
 public @interface Bean {
 
-    String name() default "";
+    String value() default "";
 
     String initMethod() default "";
 

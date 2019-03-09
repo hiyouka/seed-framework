@@ -16,7 +16,7 @@ public class Assert {
 
 
     public static void notNull(Object item, String message) {
-        if (ObjectUtils.isEmpty(item)) {
+        if (ObjectUtils.isNull(item)) {
             throw new IllegalArgumentException(message);
         }
     }

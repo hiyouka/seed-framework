@@ -88,12 +88,12 @@ public abstract class AbstractBeanCreateFactory extends AbstractBeanFactory impl
             instance = init(beanName,instance,beanDefinition);
 
         }catch (Exception e){
-            throw new BeanCreatedException("create bean:"+ beanName +" error !!" );
+            throw new BeanCreatedException("create bean:"+ beanName +" error !!" , e);
         }
         finally {
-            logger.info("create bean :" + beanName + " success");
             removeCurrentlyCreatedBean(beanName);
         }
+        logger.info("create bean :" + beanName + " success");
         return instance;
     }
 
@@ -186,8 +186,22 @@ public abstract class AbstractBeanCreateFactory extends AbstractBeanFactory impl
                 factoryMethod = method;
             }
         }
+        // 从接口中获取方法
+        if(factoryMethod == null){
+            getRealMethod(factoryMethod,factoryMethodName,bean.getClass());
+        }
+
         Assert.notNull(factoryMethod,"No Such Method ["+ factoryMethodName +"] from class " + bean.getClass().getName());
         return ReflectionUtils.invokeMethod(factoryMethod,bean);
+    }
+
+    protected void getRealMethod(Method factoryMethod, String methodName, Class<?> clazz){
+        Method[] declaredMethods = clazz.getDeclaredMethods();
+        for(Method method : declaredMethods){
+            if(factoryMethod == null && methodName.equals(method.getName())){
+                factoryMethod =  method;
+            }
+        }
     }
 
     protected void validateSingletonBean(String beanName, BeanDefinition beanDefinition){
