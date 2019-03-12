@@ -8,6 +8,7 @@ import hiyouka.seedframework.beans.factory.aware.EnvironmentAware;
 import hiyouka.seedframework.beans.factory.config.BeanDefinitionRegistryPostProcessor;
 import hiyouka.seedframework.beans.factory.config.ConfigurableDefinitionBeanFactory;
 import hiyouka.seedframework.context.paser.ConfigurationClassParser;
+import hiyouka.seedframework.core.annotation.Priority;
 import hiyouka.seedframework.core.env.Environment;
 import hiyouka.seedframework.util.Assert;
 import org.apache.commons.logging.Log;
@@ -20,12 +21,12 @@ import java.util.Set;
  * @author hiyouka
  * @since JDK 1.8
  */
+@Priority(1)
 public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPostProcessor , EnvironmentAware{
 
     private final Log logger = LogFactory.getLog(this.getClass());
 
     private Environment environment;
-
 
     public Environment getEnvironment() {
         return environment;

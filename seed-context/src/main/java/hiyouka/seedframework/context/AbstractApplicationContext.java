@@ -10,13 +10,12 @@ import hiyouka.seedframework.beans.factory.config.BeanFactoryPostProcessor;
 import hiyouka.seedframework.beans.factory.config.BeanPostProcessor;
 import hiyouka.seedframework.beans.factory.config.ConfigurableDefinitionBeanFactory;
 import hiyouka.seedframework.context.config.ApplicationContextAwareProcessor;
+import hiyouka.seedframework.core.annotation.Priority;
 import hiyouka.seedframework.core.env.ConfigurableEnvironment;
 import hiyouka.seedframework.core.env.StandardEnvironment;
 import hiyouka.seedframework.core.io.resource.DefaultResourceLoader;
 import hiyouka.seedframework.core.io.resource.ResourcePatternResolver;
-import hiyouka.seedframework.util.Assert;
-import hiyouka.seedframework.util.ClassUtils;
-import hiyouka.seedframework.util.ResourcePatternUtils;
+import hiyouka.seedframework.util.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -153,6 +152,8 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 
     protected void invokeBeanFactoryPostProcessors(ConfigurableDefinitionBeanFactory beanFactory) {
         // TODO: 排序
+
+
         if(beanFactory instanceof BeanDefinitionRegistry){
             String[] registerPostProcessors = beanFactory.getBeanNamesForType(BeanDefinitionRegistryPostProcessor.class);
             List<BeanDefinitionRegistryPostProcessor> currentRegistryProcessors = new ArrayList<>();
@@ -202,6 +203,11 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
         doInvokeBeanFactoryPostProcessors(currentFactoryProcessors, beanFactory);
         currentFactoryProcessors.clear();
 
+    }
+
+
+    protected boolean hasPrority(Object bean){
+        return AnnotatedElementUtils.isAnnotated(bean.getClass(), Priority.class.getName());
     }
 
     protected void doInvokeBeanFactoryPostProcessors(List<BeanFactoryPostProcessor> processors, ConfigurableDefinitionBeanFactory beanFactory){

@@ -58,6 +58,19 @@ bean在创建之后初始化过程：
 * [ ] 添加seed-aop模块使用cglib实现注解形式支持aop功能，生成代理bean。
 * [ ] @Autowired 依赖注入功能。
 
+### seed-web模块
+
+请求方式设计支持：
+    Get : 正常Get请求传参。
+    
+    Post : 
+```java
+   
+    
+
+```
+
+
 ## License
 
 The Seed Framework is released under version 2.0 of the [Apache License](http://www.apache.org/licenses/LICENSE-2.0).

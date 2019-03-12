@@ -31,7 +31,6 @@ public abstract class AbstractBeanDefinition implements BeanDefinition {
     /**
      * bean属性信息
      */
-    @Nullable
     private MutablePropertyValues propertyValues;
 
     /**
@@ -53,7 +52,7 @@ public abstract class AbstractBeanDefinition implements BeanDefinition {
     private String destroyMethodName;
 
     protected AbstractBeanDefinition() {
-        this.propertyValues = null;
+        this.propertyValues = new MutablePropertyValues();
     }
 
     protected AbstractBeanDefinition( @Nullable MutablePropertyValues pvs) {
@@ -169,6 +168,7 @@ public abstract class AbstractBeanDefinition implements BeanDefinition {
 
     @Override
     public Object getAttribute(String name) {
+
         return null;
     }
 
