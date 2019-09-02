@@ -24,6 +24,7 @@
      }
  
  }
+ 
  class Test{
      public static void main(String[] args){
          ApplicationContext applicationContext = new AnnotationConfigApplicationContext(ConfigClass.class);
@@ -38,7 +39,7 @@
 
 2. @Import: 使用@Import导入指定类(目前支持可实例化的了)
 
-3. @Bean: 使用指定的方法导入类
+3. @Bean: 使用指定的方法导入类(@Bean导入的对象会被当做配置类继续处理，这点和spring不一样)
 
 ### bean lifecycle
 
@@ -54,21 +55,19 @@ bean在创建之后初始化过程：
 
 ## TODO LIST
 
-* [ ] 添加seed-web模块使用netty实现web功能。
+* [x] @Autowired 依赖注入功能。
 * [ ] 添加seed-aop模块使用cglib实现注解形式支持aop功能，生成代理bean。
-* [ ] @Autowired 依赖注入功能。
+* [ ] 添加seed-web模块使用netty实现web功能。
 
 ### seed-web模块
 
-请求方式设计支持：
-    Get : 正常Get请求传参。
+    HttpDispatcher 进行任务的调度分发。
     
-    Post : 
-```java
-   
-    
+## 更新日志
 
-```
+### 0.0.2-SNAPSHOT: 
+1. 支持使用@Autowired自动注入容器中的bean。
+2. 添加InstantiationAwareBeanPostProcessor,提供在bean创建前返回bean和Bean创建后对属性处理的机会。
 
 
 ## License

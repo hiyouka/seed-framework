@@ -74,7 +74,7 @@ public class AnnotationBeanNameGenerator implements BeanNameGenerator {
 
     protected String buildDefaultBeanName(BeanDefinition definition) {
         String beanClassName = definition.getBeanClassName();
-        Assert.state(beanClassName != null, "No bean class name set");
+        Assert.state(beanClassName != null, "No hiyouka.framework.test.bean class name set");
         String shortClassName = ClassUtils.getShortName(beanClassName);
         return Introspector.decapitalize(shortClassName);
     }

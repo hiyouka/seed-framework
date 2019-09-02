@@ -7,6 +7,7 @@ import hiyouka.seedframework.beans.factory.BeanDefinitionRegistry;
 import hiyouka.seedframework.beans.factory.aware.EnvironmentAware;
 import hiyouka.seedframework.beans.factory.config.BeanDefinitionRegistryPostProcessor;
 import hiyouka.seedframework.beans.factory.config.ConfigurableDefinitionBeanFactory;
+import hiyouka.seedframework.constant.SeedConstant;
 import hiyouka.seedframework.context.paser.ConfigurationClassParser;
 import hiyouka.seedframework.core.annotation.Priority;
 import hiyouka.seedframework.core.env.Environment;
@@ -21,7 +22,7 @@ import java.util.Set;
  * @author hiyouka
  * @since JDK 1.8
  */
-@Priority(1)
+@Priority(SeedConstant.LOWEST_PRIORITY)
 public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPostProcessor , EnvironmentAware{
 
     private final Log logger = LogFactory.getLog(this.getClass());
@@ -56,7 +57,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
         for(String beanName : beanNames){
             BeanDefinition beanDefinition = registry.getBeanDefinition(beanName);
             if(alreadyProcessor(beanDefinition)){
-                logger.error("this configuration bean is bean process : " + beanName );
+                logger.error("this configuration hiyouka.framework.test.bean is hiyouka.framework.test.bean process : " + beanName );
             }
             if(ConfigurationUtils.checkConfigurationClass(beanDefinition)){
                 processBean.add(new BeanDefinitionHolder(beanDefinition,beanName));

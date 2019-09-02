@@ -16,7 +16,6 @@ public class MutablePropertyValues implements PropertyValues {
     /**
      * 已处理过的属性
      */
-    @Nullable
     private Set<String> processedProperties;
 
     public MutablePropertyValues() {

@@ -16,17 +16,17 @@ import java.io.Closeable;
 public interface ConfigurableApplicationContext extends ApplicationContext, Closeable, Lifecycle{
 
     /**
-     * Name of the {@link Environment} bean in the factory.
+     * Name of the {@link Environment} hiyouka.framework.test.bean in the factory.
      */
     String ENVIRONMENT_BEAN_NAME = "environment";
 
     /**
-     * Name of the System properties bean in the factory.
+     * Name of the System properties hiyouka.framework.test.bean in the factory.
      */
     String SYSTEM_PROPERTIES_BEAN_NAME = "systemProperties";
 
     /**
-     * Name of the System environment bean in the factory.
+     * Name of the System environment hiyouka.framework.test.bean in the factory.
      */
     String SYSTEM_ENVIRONMENT_BEAN_NAME = "systemEnvironment";
 

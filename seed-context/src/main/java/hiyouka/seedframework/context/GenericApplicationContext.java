@@ -38,6 +38,12 @@ public class GenericApplicationContext extends AbstractApplicationContext implem
     }
 
     @Override
+    protected void destroyBeans() {
+        super.destroyBeans();
+        this.beanFactory.getBeanDefinitionNames();
+    }
+
+    @Override
     protected void cancelRefresh() {
         this.beanFactory.setSerializationId(null);
         super.cancelRefresh();

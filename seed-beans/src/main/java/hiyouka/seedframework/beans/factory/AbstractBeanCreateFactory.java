@@ -81,19 +81,15 @@ public abstract class AbstractBeanCreateFactory extends AbstractBeanFactory impl
                 addEarlySingleObjects(beanName, instance);
             }
 
-            // 3. 给对象注入 @Autowire 和 @Value 的属性
-            // do some things to resolver dependency
-
-            // 4. 初始化方法执行
-            instance = init(beanName,instance,beanDefinition);
+             instance = init(beanName,instance,beanDefinition);
 
         }catch (Exception e){
-            throw new BeanCreatedException("create bean:"+ beanName +" error !!" , e);
+            throw new BeanCreatedException("create hiyouka.framework.test.bean:"+ beanName +" error !!" , e);
         }
         finally {
             removeCurrentlyCreatedBean(beanName);
         }
-        logger.info("create bean :" + beanName + " success");
+        logger.info("create hiyouka.framework.test.bean :" + beanName + " success");
         return instance;
     }
 
@@ -105,7 +101,7 @@ public abstract class AbstractBeanCreateFactory extends AbstractBeanFactory impl
         try {
             initialization(result,beanDefinition);
         } catch (Exception e) {
-            throw new IllegalStateException("bean : " + beanName + " init method invoke error !!",e);
+            throw new IllegalStateException("hiyouka.framework.test.bean : " + beanName + " init method invoke error !!",e);
         }
         // 3. 后置处理方法执行
         result = applyPostProcessAfterInitialization(result,beanName);
@@ -165,7 +161,7 @@ public abstract class AbstractBeanCreateFactory extends AbstractBeanFactory impl
 
     private Object instanceBean(String beanName, BeanDefinition beanDefinition, Object[] args) {
         validateSingletonBean(beanName,beanDefinition);
-        Assert.notNull(beanDefinition.getBeanClass(),"bean : " + beanName + " beanDefinition must have beanClass");
+        Assert.notNull(beanDefinition.getBeanClass(),"hiyouka.framework.test.bean : " + beanName + " beanDefinition must have beanClass");
         if(ArrayUtils.isEmpty(args)){
             return BeanUtils.instanceClass(beanDefinition.getBeanClass());
         }else {
@@ -173,7 +169,7 @@ public abstract class AbstractBeanCreateFactory extends AbstractBeanFactory impl
         }
     }
 
-    /** Bean method to get bean instance  */
+    /** Bean method to get hiyouka.framework.test.bean instance  */
     protected Object instanceBeanUsingFactoryMethod(String beanName, BeanDefinition beanDefinition) {
         validateSingletonBean(beanName,beanDefinition);
         String factoryBeanName = beanDefinition.getFactoryBeanName();
@@ -208,7 +204,7 @@ public abstract class AbstractBeanCreateFactory extends AbstractBeanFactory impl
         if(beanDefinition.isSingleton()){
             Object singleton = this.getSingleton(beanName);
             if(singleton != null)
-                throw new BeanInstantiationException("this bean : " + beanName + " already existing ...");
+                throw new BeanInstantiationException("this hiyouka.framework.test.bean : " + beanName + " already existing ...");
         }
     }
 
@@ -219,7 +215,7 @@ public abstract class AbstractBeanCreateFactory extends AbstractBeanFactory impl
 
     protected void validateBeanDefinition(String beanName, BeanDefinition beanDefinition){
         if(beanDefinition.isAbstract()){
-            throw new BeanCreatedException("create bean : "+beanName+" must mot be abstract");
+            throw new BeanCreatedException("create hiyouka.framework.test.bean : "+beanName+" must mot be abstract");
         }
     }
 

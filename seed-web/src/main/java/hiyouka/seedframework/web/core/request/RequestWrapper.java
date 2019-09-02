@@ -32,7 +32,7 @@ public interface RequestWrapper<T extends HttpRequest>{
 
 
     //请求的ip
-    String remoteIp();
+    String getRemoteIp();
 
 
 

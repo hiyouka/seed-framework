@@ -16,19 +16,19 @@ public class DefaultSingletonBeanRegistry implements SingletonBeanRegistry {
 
     protected final Log logger = LogFactory.getLog(getClass());
 
-    /** cache of single bean : beanName -> bean instance */
+    /** cache of single hiyouka.framework.test.bean : beanName -> hiyouka.framework.test.bean instance */
     private final Map<String, Object> singletonObjects = new ConcurrentHashMap<>(256);
 
-    /** Cache of early singleton objects: bean name --> bean instance */
+    /** Cache of early singleton objects: hiyouka.framework.test.bean name --> hiyouka.framework.test.bean instance */
     private final Map<String, Object> earlySingletonObjects = new HashMap<>(16);
 
-    /** Set of registered singletons, containing the bean names in registration order */
+    /** Set of registered singletons, containing the hiyouka.framework.test.bean names in registration order */
     private final Set<String> registeredSingletons = new LinkedHashSet<>(256);
 
     /** Names of beans that are currently in creation */
     private final Set<String> singletonsCurrentlyInCreation =
             Collections.newSetFromMap(new ConcurrentHashMap<>(16));
-
+    
     @Override
     public void registerSingleton(String beanName, Object singletonObject) {
         Assert.notNull(beanName, "Bean name must not be null");
@@ -36,7 +36,7 @@ public class DefaultSingletonBeanRegistry implements SingletonBeanRegistry {
         synchronized (this.singletonObjects){
             Object obj = this.singletonObjects.get(beanName);
             if(obj != null){
-                throw new IllegalStateException("Could not register bean : " + beanName + "this name is already been register");
+                throw new IllegalStateException("Could not register hiyouka.framework.test.bean : " + beanName + "this name is already been register");
             }
             addSingleton(beanName, singletonObject);
         }

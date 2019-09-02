@@ -29,7 +29,7 @@ public class RootBeanDefinition extends AbstractBeanDefinition {
     @Override
     public void setParentName(String parentName) {
         if(parentName != null)
-            throw new IllegalArgumentException("Root bean cannot be changed into a child bean with parent reference ");
+            throw new IllegalArgumentException("Root hiyouka.framework.test.bean cannot be changed into a child hiyouka.framework.test.bean with parent reference ");
     }
 
     @Override

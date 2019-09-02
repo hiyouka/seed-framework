@@ -28,16 +28,16 @@ public class DefaultBenFactory extends AbstractBeanCreateFactory implements Conf
     /** 是否允许重复注册 */
     private boolean allowBeanDefinitionOverriding = true;
 
-    /** Map of singleton and non-singleton bean names, keyed by dependency type */
+    /** Map of singleton and non-singleton hiyouka.framework.test.bean names, keyed by dependency type */
     private final Map<Class<?>, String[]> allBeanNamesByType = new ConcurrentHashMap<>(64);
 
-    /** Map of singleton-only bean names, keyed by dependency type */
+    /** Map of singleton-only hiyouka.framework.test.bean names, keyed by dependency type */
     private final Map<Class<?>, String[]> singletonBeanNamesByType = new ConcurrentHashMap<>(64);
 
-    /** Map of bean definition objects, keyed by bean name */
+    /** Map of hiyouka.framework.test.bean definition objects, keyed by hiyouka.framework.test.bean name */
     private final Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<>(256);
 
-    /** List of bean definition names, in registration order */
+    /** List of hiyouka.framework.test.bean definition names, in registration order */
     private volatile List<String> beanDefinitionNames = new ArrayList<>(256);
 
     /** List of names of manually registered singletons, in registration order (手动创建的bean不会生成beanDefinition)*/
@@ -79,7 +79,7 @@ public class DefaultBenFactory extends AbstractBeanCreateFactory implements Conf
         BeanDefinition oldBeanDefinition = this.beanDefinitionMap.get(beanName);
         if(oldBeanDefinition != null){
             if(!isAllowBeanDefinitionOverriding()){
-                throw new BeanDefinitionStoreException("can not register this bean : " + beanName + "there is already registered !! ",beanName);
+                throw new BeanDefinitionStoreException("can not register this hiyouka.framework.test.bean : " + beanName + "there is already registered !! ",beanName);
             }
             this.beanDefinitionMap.put(beanName,beanDefinition);
         }else {
@@ -111,7 +111,7 @@ public class DefaultBenFactory extends AbstractBeanCreateFactory implements Conf
     public void removeBeanDefinition(String beanName) throws NoSuchBeanDefinitionException {
         BeanDefinition remove = this.beanDefinitionMap.remove(beanName);
         if(remove == null)
-            logger.error("no bean to remove : " + beanName);
+            logger.error("no hiyouka.framework.test.bean to remove : " + beanName);
         throw new NoSuchBeanDefinitionException(beanName);
 
     }
@@ -120,7 +120,7 @@ public class DefaultBenFactory extends AbstractBeanCreateFactory implements Conf
     public BeanDefinition getBeanDefinition(String beanName) throws NoSuchBeanDefinitionException {
         BeanDefinition beanDefinition = this.beanDefinitionMap.get(beanName);
         if(beanDefinition == null){
-            throw new NoSuchBeanDefinitionException("no bean named '" + beanName + "' found in " + this);
+            throw new NoSuchBeanDefinitionException("no hiyouka.framework.test.bean named '" + beanName + "' found in " + this);
         }
         return beanDefinition;
     }
@@ -213,7 +213,7 @@ public class DefaultBenFactory extends AbstractBeanCreateFactory implements Conf
     public <T> T getBean(Class<T> requiredType, Object... args) throws BeansException {
         BeanHolder<T> beanHolder= resolveBeanForType(requiredType, args);
         if(beanHolder.getBean() == null){
-            throw new BeanNotFoundException("not found bean for type : " + requiredType.getName() + " args : " + ArrayUtils.asList(args));
+            throw new BeanNotFoundException("not found hiyouka.framework.test.bean for type : " + requiredType.getName() + " args : " + ArrayUtils.asList(args));
         }
         return beanHolder.getBean();
     }
@@ -257,7 +257,7 @@ public class DefaultBenFactory extends AbstractBeanCreateFactory implements Conf
             if(primaryBeanName.size() > 0){
                 message = ",primary beanName : " + primaryBeanName;
             }
-            throw new NoUniqueBeanException("not found unique bean for type : " + requiredType.getName()
+            throw new NoUniqueBeanException("not found unique hiyouka.framework.test.bean for type : " + requiredType.getName()
                     + (message == null ? "" : message));
         }
         return result;
@@ -301,7 +301,7 @@ public class DefaultBenFactory extends AbstractBeanCreateFactory implements Conf
                 result.put(beanName,bean == null ? null : (T)bean);
             }catch (BeanCreatedException e){
                 if(isCurrentlyCreated(beanName)){
-                    logger.error("create bean : "+beanName+" error, this bean is in creation");
+                    logger.error("create hiyouka.framework.test.bean : "+beanName+" error, this hiyouka.framework.test.bean is in creation");
                 }
                 throw e;
             }
