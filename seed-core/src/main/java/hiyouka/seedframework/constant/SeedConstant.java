@@ -13,6 +13,10 @@ import java.io.FileNotFoundException;
  */
 public class SeedConstant implements LogoConstant , EncodeConstant{
 
+    public static final int LOWEST_PRIORITY = Integer.MAX_VALUE;
+
+    public static final int HIGHEST_PRIORITY = Integer.MIN_VALUE;
+
     private static final int MAX_LOGO_SIZE = 10240;
 
     @Override

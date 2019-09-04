@@ -2,6 +2,7 @@ package hiyouka.seedframework.web.core.request;
 
 import io.netty.handler.codec.http.HttpRequest;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -11,6 +12,12 @@ import java.util.Map;
 public class AbstractRequestWrapper<T extends HttpRequest> implements RequestWrapper<T> {
 
     private T request;
+
+    private String remoteIp;
+
+    private Map<String,Object> cookies = new HashMap<>();
+
+    private Map<String,String> hearders = new HashMap<>();
 
     public AbstractRequestWrapper(T request) {
         this.request = request;
@@ -33,8 +40,15 @@ public class AbstractRequestWrapper<T extends HttpRequest> implements RequestWra
         return null;
     }
 
-    public String remoteIp() {
-        return null;
+    public String getRemoteIp() {
+        return this.remoteIp;
     }
+
+
+    public void setRemoteIp(String remoteIp) {
+        this.remoteIp = remoteIp;
+    }
+
+
 
 }

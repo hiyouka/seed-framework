@@ -21,8 +21,8 @@ public class GenericBeanDefinition extends AbstractBeanDefinition{
 
     /**
      * Create a new GenericBeanDefinition as deep copy of the given
-     * bean definition.
-     * @param original the original bean definition to copy from
+     * hiyouka.framework.test.bean definition.
+     * @param original the original hiyouka.framework.test.bean definition to copy from
      */
     public GenericBeanDefinition(BeanDefinition original) {
         super(original);
@@ -47,7 +47,7 @@ public class GenericBeanDefinition extends AbstractBeanDefinition{
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder("Generic bean");
+        StringBuilder sb = new StringBuilder("Generic hiyouka.framework.test.bean");
         if (this.parentName != null) {
             sb.append(" with parent '").append(this.parentName).append("'");
         }

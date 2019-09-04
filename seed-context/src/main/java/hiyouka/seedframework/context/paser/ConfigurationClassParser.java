@@ -159,7 +159,7 @@ public class ConfigurationClassParser {
             Class<?>[] values = attributes.getClassArray("value");
             for(Class clazz : values){
                 StandardAnnotationMetadata smeta = new StandardAnnotationMetadata(clazz);
-                // process as configuration class beanName default bean class name
+                // process as configuration class beanName default hiyouka.framework.test.bean class name
                 configClass.addImportedBy(clazz);
                 processConfigurationClass(new ConfigurationClass(smeta,clazz.getName()));
             }
@@ -217,7 +217,7 @@ public class ConfigurationClassParser {
                 name = metadata.getMethodName();
             }
             try {
-                //process this bean as configuration class
+                //process this hiyouka.framework.test.bean as configuration class
                 processConfigurationClass(new ConfigurationClass(ClassUtils.forName(metadata.getReturnTypeName()),name));
             } catch (ClassNotFoundException e) {
                 configClass.removeBeanMethod(beanMethod);
@@ -260,9 +260,9 @@ public class ConfigurationClassParser {
         for(BeanMethod beanMethod : beanMethods){
             MethodMetadata metadata = beanMethod.getMetadata();
             Class<?> aClass = ClassUtils.getClass(metadata.getReturnTypeName());
-            AnnotatedBeanDefinition beanDefinition = new AnnotatedGenericBeanDefinition(aClass);
+             AnnotatedBeanDefinition beanDefinition =
+                    new AnnotatedGenericBeanDefinition(new StandardAnnotationMetadata(aClass),metadata);
             beanDefinition.setFactoryBeanName(configClass.getBeanName());
-            beanDefinition.setFactoryMethodName(metadata.getMethodName());
             Map<String, Object> annotationAttributes = metadata.getAnnotationAttributes(Bean.class.getName());
             String beanName = null;
             if(!annotationAttributes.isEmpty()){

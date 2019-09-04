@@ -99,10 +99,13 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
             finishBeanFactoryInitialization(beanFactory);
             //结束刷新
             finishRefresh();
+
         }catch (BeansException e){
 
+            // todo
             destroyBeans();
 
+            // todo
             cancelRefresh();
 
             throw e;
@@ -153,11 +156,9 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
     protected void invokeBeanFactoryPostProcessors(ConfigurableDefinitionBeanFactory beanFactory) {
         // TODO: 排序
 
-
         if(beanFactory instanceof BeanDefinitionRegistry){
             String[] registerPostProcessors = beanFactory.getBeanNamesForType(BeanDefinitionRegistryPostProcessor.class);
             List<BeanDefinitionRegistryPostProcessor> currentRegistryProcessors = new ArrayList<>();
-
             //确保每个类型的 BeanFactoryProcessor 只执行一次
             HashMap<String,Class<BeanDefinitionRegistryPostProcessor>> processed = new HashMap<>();
             for(String beanName: registerPostProcessors){
@@ -183,7 +184,6 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
             doInvokeBeanDefinitionRegistryPostProcessors(currentRegistryProcessors,registry);
             currentRegistryProcessors.clear();
         }
-
 
         List<BeanFactoryPostProcessor> currentFactoryProcessors = new ArrayList<>();
         //执行BeanFactoryProcessor
@@ -238,11 +238,17 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
         beanFactory.preInstantiateSingletons();
     }
 
-    protected void finishRefresh(){};
+    protected void finishRefresh(){
+        // todo 清除缓存，避免出现无法gc的关联数据
+    };
 
-    protected void destroyBeans(){};
+    protected void destroyBeans(){
+        // todo 清除缓存, 删除所有创建对象
+    };
 
-    protected void cancelRefresh(){};
+    protected void cancelRefresh(){
+        this.active .set(false);
+    };
 
     protected ConfigurableEnvironment createEnvironment() {
         return new StandardEnvironment();
@@ -265,7 +271,6 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 
     @Override
     public void stop() {
-
     }
 
     @Override

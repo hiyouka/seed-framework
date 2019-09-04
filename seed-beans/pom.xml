@@ -11,7 +11,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>${maven.compiler.source}</maven.compiler.target>
-        <junit.jupiter.version>5.4.0</junit.jupiter.version>
+        <junit.jupiter.version>5.4.2</junit.jupiter.version>
     </properties>
 
     <dependencies>
@@ -39,7 +39,7 @@
         <dependency>
             <groupId>hiyouka.seedframework</groupId>
             <artifactId>seed-core</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
 
     </dependencies>
@@ -51,8 +51,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.7.0</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
                 </configuration>
             </plugin>
             <!-- JUnit 5 requires Surefire version 2.22.1 or higher -->
@@ -82,7 +82,7 @@
 
     <distributionManagement>
 
-        <!-- maven nexus config -->
+        <!-- maven nexus hiyouka.framework.test.config -->
         <repository>
             <id>hiyouka-release</id>
             <name>Release Repository of hiyouka</name>

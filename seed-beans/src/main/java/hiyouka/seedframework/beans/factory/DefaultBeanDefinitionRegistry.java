@@ -20,16 +20,16 @@ public class DefaultBeanDefinitionRegistry implements BeanDefinitionRegistry {
     /** 是否允许重复注册 */
     private boolean allowBeanDefinitionOverriding = true;
 
-    /** Map of singleton and non-singleton bean names, keyed by dependency type */
+    /** Map of singleton and non-singleton hiyouka.framework.test.bean names, keyed by dependency type */
     private final Map<Class<?>, String[]> allBeanNamesByType = new ConcurrentHashMap<>(64);
 
-    /** Map of singleton-only bean names, keyed by dependency type */
+    /** Map of singleton-only hiyouka.framework.test.bean names, keyed by dependency type */
     private final Map<Class<?>, String[]> singletonBeanNamesByType = new ConcurrentHashMap<>(64);
 
-    /** Map of bean definition objects, keyed by bean name */
+    /** Map of hiyouka.framework.test.bean definition objects, keyed by hiyouka.framework.test.bean name */
     private final Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<>(256);
 
-    /** List of bean definition names, in registration order */
+    /** List of hiyouka.framework.test.bean definition names, in registration order */
     private volatile List<String> beanDefinitionNames = new ArrayList<>(256);
 
     /** List of names of manually registered singletons, in registration order (内部的bean)*/
@@ -43,7 +43,7 @@ public class DefaultBeanDefinitionRegistry implements BeanDefinitionRegistry {
         BeanDefinition oldBeanDefinition = this.beanDefinitionMap.get(beanName);
         if(oldBeanDefinition != null){
             if(!isAllowBeanDefinitionOverriding()){
-                throw new BeanDefinitionStoreException("can not register this bean : " + beanName + "there is already registered !! ",beanName);
+                throw new BeanDefinitionStoreException("can not register this hiyouka.framework.test.bean : " + beanName + "there is already registered !! ",beanName);
             }
             this.beanDefinitionMap.put(beanName,beanDefinition);
         }
@@ -53,7 +53,7 @@ public class DefaultBeanDefinitionRegistry implements BeanDefinitionRegistry {
     public void removeBeanDefinition(String beanName) throws NoSuchBeanDefinitionException {
         BeanDefinition remove = this.beanDefinitionMap.remove(beanName);
         if(remove == null)
-            logger.error("no bean to remove : " + beanName);
+            logger.error("no hiyouka.framework.test.bean to remove : " + beanName);
         throw new NoSuchBeanDefinitionException(beanName);
 
 

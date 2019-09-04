@@ -6,7 +6,7 @@ import hiyouka.seedframework.beans.metadata.MutablePropertyValues;
 import javax.annotation.Nullable;
 
 /**
- * bean Description
+ * hiyouka.framework.test.bean Description
  * {@link AnnotatedGenericBeanDefinition}
  * @author hiyouka
  * Date: 2019/1/27
@@ -21,12 +21,12 @@ public interface BeanDefinition extends AttributeAccessor {
     public static final String SCOPE_PROTOTYPE = "prototype";
 
     /**
-     *  role is mean this bean is register by user
+     *  role is mean this hiyouka.framework.test.bean is register by user
      */
     int ROLE_SUPPORT = 0;
 
     /**
-     *  role is mean this bean is mine,
+     *  role is mean this hiyouka.framework.test.bean is mine,
      *  no relevance to the user
      */
     int ROLE_INFRASTRUCTURE = 2;
@@ -78,7 +78,7 @@ public interface BeanDefinition extends AttributeAccessor {
     String getParentName();
 
     /**
-     * Return whether this bean is "abstract", that is, not meant to be instantiated.
+     * Return whether this hiyouka.framework.test.bean is "abstract", that is, not meant to be instantiated.
      * 是否需要实例化
      */
     boolean isAbstract();

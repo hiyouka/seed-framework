@@ -128,7 +128,7 @@ public abstract class AbstractBeanDefinition implements BeanDefinition {
     @Override
     public Class<?> getBeanClass() {
         Object beanClass = this.beanClass;
-        Assert.notNull(beanClass,"No bean class bind on bean definition");
+        Assert.notNull(beanClass,"No hiyouka.framework.test.bean class bind on hiyouka.framework.test.bean definition");
         if(!(beanClass instanceof Class)){
             throw new IllegalStateException(
                     "Bean class name [" + beanClass + "] has not been resolved into an actual Class");

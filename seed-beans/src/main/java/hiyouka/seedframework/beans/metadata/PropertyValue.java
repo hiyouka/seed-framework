@@ -13,7 +13,6 @@ public class PropertyValue implements Serializable{
 
     private String name;
 
-    @Nullable
     private Object value;
 
     public PropertyValue(String name, @Nullable Object value) {

@@ -16,7 +16,7 @@ import java.util.Set;
  */
 public class AnnotationConfigUtils {
 
-    public static final String CONFIGURATION_CLASS_PROCESSOR_BEAN_NAME = "hiyouka.seedframework.context.config.internalConfigurationClassPostProcessor";
+    public static final String CONFIGURATION_CLASS_PROCESSOR_BEAN_NAME = "hiyouka.seedframework.context.hiyouka.framework.test.config.internalConfigurationClassPostProcessor";
 
     public static AnnotationAttributes getAnnotationAttributes(AnnotatedTypeMetadata metadata, String annotationName){
         return AnnotationAttributes.fromMap(metadata.getAnnotationAttributes(annotationName));

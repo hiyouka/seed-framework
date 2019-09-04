@@ -14,7 +14,6 @@ public class Assert {
         }
     }
 
-
     public static void notNull(Object item, String message) {
         if (ObjectUtils.isNull(item)) {
             throw new IllegalArgumentException(message);
@@ -35,4 +34,5 @@ public class Assert {
             throw new IllegalStateException(message);
         }
     }
+
 }

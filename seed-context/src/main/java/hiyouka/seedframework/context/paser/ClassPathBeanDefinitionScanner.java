@@ -90,13 +90,13 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningComponentPr
 
     protected void registerBeanDefinition(BeanDefinitionHolder definitionHolder, BeanDefinitionRegistry registry) {
         BeanDefinitionReaderUtils.registerBeanDefinition(definitionHolder, registry);
-        logger.info("register bean name : " + definitionHolder.getBeanName() + ", bean class ["+definitionHolder.getBeanDefinition().getBeanClassName()+"]");
+        logger.info("register hiyouka.framework.test.bean name : " + definitionHolder.getBeanName() + ", hiyouka.framework.test.bean class ["+definitionHolder.getBeanDefinition().getBeanClassName()+"]");
     }
 
     protected String generateBeanName(BeanDefinition beanDefinition){
         String beanName = this.beanNameGenerator.generateBeanName(beanDefinition, this.registry);
         if(checkBeanName(beanName)){
-            throw new BeanDefinitionStoreException("this beanName is existing : " + beanName + " [ bean class : " + beanDefinition.getBeanClassName() + " ] ");
+            throw new BeanDefinitionStoreException("this beanName is existing : " + beanName + " [ hiyouka.framework.test.bean class : " + beanDefinition.getBeanClassName() + " ] ");
         }
         return beanName;
     }
