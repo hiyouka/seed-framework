@@ -4,16 +4,16 @@ import hiyouka.seedframework.beans.factory.AutowiredAnnotationBeanPostProcessor;
 
 import java.lang.annotation.*;
 
-/**
- * @see AutowiredAnnotationBeanPostProcessor
- * @author hiyouka
- * @since JDK 1.8
- */
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface Autowired {
+public @interface Specify {
 
-    boolean required() default true;
+    /**
+     * specifies the bean name
+     * @see Autowired
+     * @see AutowiredAnnotationBeanPostProcessor
+     */
+    String value();
 
 }

@@ -146,7 +146,7 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
             }
         }
 
-        if(requiredType != null && requiredType.isAssignableFrom(bean.getClass())){
+        if(requiredType != null && !requiredType.isAssignableFrom(bean.getClass())){
             throw new BeanNotRequiredException(" hiyouka.framework.test.bean : "+beanName + " type["+bean.getClass().getName()
                     +"] not conform to " + requiredType.getName());
         }

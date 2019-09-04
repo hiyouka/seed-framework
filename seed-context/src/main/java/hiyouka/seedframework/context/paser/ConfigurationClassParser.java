@@ -260,9 +260,9 @@ public class ConfigurationClassParser {
         for(BeanMethod beanMethod : beanMethods){
             MethodMetadata metadata = beanMethod.getMetadata();
             Class<?> aClass = ClassUtils.getClass(metadata.getReturnTypeName());
-            AnnotatedBeanDefinition beanDefinition = new AnnotatedGenericBeanDefinition(aClass);
+             AnnotatedBeanDefinition beanDefinition =
+                    new AnnotatedGenericBeanDefinition(new StandardAnnotationMetadata(aClass),metadata);
             beanDefinition.setFactoryBeanName(configClass.getBeanName());
-            beanDefinition.setFactoryMethodName(metadata.getMethodName());
             Map<String, Object> annotationAttributes = metadata.getAnnotationAttributes(Bean.class.getName());
             String beanName = null;
             if(!annotationAttributes.isEmpty()){
