@@ -5,6 +5,8 @@ import hiyouka.seedframework.util.MultiValueMap;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
@@ -61,7 +63,14 @@ public class StandardAnnotationMetadata extends StandardClassMetadata implements
         for(Method method : methods){
             if (!method.isBridge() && method.getAnnotations().length > 0 &&
                     AnnotatedElementUtils.isAnnotated(method, annotationName)) {
-                annotatedMethods.add(new StandardMethodMetadata(method));
+                Type genericReturnType = method.getGenericReturnType();
+                if(genericReturnType instanceof Class){
+                    annotatedMethods.add(new StandardMethodMetadata(method));
+                }
+                else if(genericReturnType instanceof ParameterizedType){
+                    Type[] types = ((ParameterizedType) genericReturnType).getActualTypeArguments();
+                    annotatedMethods.add(new GenericMethodMetadata(method,types));
+                }
             }
         }
         return annotatedMethods;

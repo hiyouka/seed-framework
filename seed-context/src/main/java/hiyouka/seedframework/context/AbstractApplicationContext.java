@@ -85,6 +85,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
     @Override
     public void refresh() throws BeansException, IllegalArgumentException {
         try{
+
             // 环境变量配置，容器预启动
             prepareRefresh();
 

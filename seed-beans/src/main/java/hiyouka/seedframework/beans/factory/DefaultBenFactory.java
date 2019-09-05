@@ -2,19 +2,23 @@ package hiyouka.seedframework.beans.factory;
 
 import hiyouka.seedframework.beans.annotation.Primary;
 import hiyouka.seedframework.beans.definition.AbstractBeanDefinition;
+import hiyouka.seedframework.beans.definition.AnnotatedGenericBeanDefinition;
 import hiyouka.seedframework.beans.definition.BeanDefinition;
 import hiyouka.seedframework.beans.definition.BeanHolder;
 import hiyouka.seedframework.beans.exception.*;
 import hiyouka.seedframework.beans.factory.config.ConfigurableDefinitionBeanFactory;
-import hiyouka.seedframework.util.AnnotatedElementUtils;
-import hiyouka.seedframework.util.ArrayUtils;
-import hiyouka.seedframework.util.Assert;
-import hiyouka.seedframework.util.ReflectionUtils;
+import hiyouka.seedframework.beans.metadata.GenericMethodMetadata;
+import hiyouka.seedframework.beans.metadata.MethodMetadata;
+import hiyouka.seedframework.core.annotation.Priority;
+import hiyouka.seedframework.util.*;
 
 import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -241,14 +245,32 @@ public class DefaultBenFactory extends AbstractBeanCreateFactory implements Conf
     }
 
     protected String determinePrimary(String[] beanNames,Class<?> requiredType){
-        String result;
+        String result = null;
         List<String> primaryBeanName = new ArrayList<>();
+        Map<String,Class> types = new HashMap<>(beanNames.length);
         for(String beanName : beanNames){
             Class<?> type = getType(beanName);
+            types.put(beanName,type);
             if(AnnotatedElementUtils.isAnnotated(type,Primary.class.getName())){
                 primaryBeanName.add(beanName);
             }
         }
+        // no primary bean order by priority
+        if(primaryBeanName.size() == 0){
+            Integer orderNum = Integer.MAX_VALUE;
+            for(Map.Entry<String,Class> entry : types.entrySet()){
+                Integer value = (Integer) AnnotatedElementUtils.getAttribute(entry.getValue(), Priority.class, "value");
+                if(orderNum.equals(value)){
+                    primaryBeanName.add(entry.getKey());
+                }
+                else if(orderNum > value){
+                    primaryBeanName.clear();
+                    primaryBeanName.add(entry.getKey());
+                }
+                orderNum = value;
+            }
+        }
+
         if(primaryBeanName.size() == 1){
             result = primaryBeanName.get(0);
         }
@@ -371,4 +393,54 @@ public class DefaultBenFactory extends AbstractBeanCreateFactory implements Conf
         }
 
     }
+
+
+    @Override
+    public Object resolveBeanForField(String beanName,Field field) {
+        Type genericType = field.getGenericType();
+        if(genericType instanceof Class){
+            Class<?> type = field.getType();
+            return this.getBean(type);
+        }
+        else if(genericType instanceof ParameterizedType){
+            return doResolveBeanForField(beanName,field);
+        }
+        return null;
+    }
+
+    private Object doResolveBeanForField(String beanName,Field field){
+        Class<?> type = field.getType();
+        String[] names = this.getBeanNamesForType(type);
+        List<String> matchName = new ArrayList<>();
+        for(String name : names){
+            BeanDefinition beanDefinition = this.getBeanDefinition(name);
+            // resolve Bean method generic type
+            if(beanDefinition instanceof AnnotatedGenericBeanDefinition){
+                MethodMetadata metadata = ((AnnotatedGenericBeanDefinition) beanDefinition).getFactoryMethodMetadata();
+                // have generic bean write method
+                if(metadata instanceof GenericMethodMetadata){
+                    Type[] generics = ((GenericMethodMetadata) metadata).getGenerics();
+                    if(ResolverTypeUtil.fieldIsMatchOfGenerics(field,generics)){
+                        matchName.add(name);
+                        continue;
+                    }
+                }
+            }
+            if(ResolverTypeUtil.isAssignableFrom(field,beanDefinition.getBeanClass())){
+                matchName.add(name);
+            }
+        }
+        if(matchName.size() == 0){
+            return null;
+        }
+        String matchNameStr;
+        if(matchName.size() == 1){
+            matchNameStr = matchName.get(0);
+        }else {
+            matchNameStr  = determinePrimary(matchName.toArray(new String[matchName.size()]), type);
+        }
+        return this.getBean(matchNameStr);
+    }
+
+
 }

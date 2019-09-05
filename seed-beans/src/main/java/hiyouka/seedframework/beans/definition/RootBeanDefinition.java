@@ -1,5 +1,8 @@
 package hiyouka.seedframework.beans.definition;
 
+import java.lang.reflect.Member;
+import java.util.List;
+
 /**
  * @author hiyouka
  * @since JDK 1.8
@@ -7,6 +10,8 @@ package hiyouka.seedframework.beans.definition;
 public class RootBeanDefinition extends AbstractBeanDefinition {
 
     private BeanDefinitionHolder decoratedDefinition;
+
+    private List<Member> members;
 
     public RootBeanDefinition(Class<?> clazz){
         super();
@@ -24,6 +29,14 @@ public class RootBeanDefinition extends AbstractBeanDefinition {
 
     public void setDecoratedDefinition(BeanDefinitionHolder decoratedDefinition) {
         this.decoratedDefinition = decoratedDefinition;
+    }
+
+    public List<Member> getMembers() {
+        return members;
+    }
+
+    public void setMembers(List<Member> members) {
+        this.members = members;
     }
 
     @Override

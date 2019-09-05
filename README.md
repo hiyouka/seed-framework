@@ -66,9 +66,8 @@ bean在创建之后初始化过程：
 ## 更新日志
 
 ### 0.0.2-SNAPSHOT: 
-1. 支持使用@Autowired自动注入容器中的bean。
+1. 支持使用@Autowired,@Value为容器注入属性。
 2. 添加InstantiationAwareBeanPostProcessor,提供在bean创建前返回bean和Bean创建后对属性处理的机会。
-
 
 ## License
 
