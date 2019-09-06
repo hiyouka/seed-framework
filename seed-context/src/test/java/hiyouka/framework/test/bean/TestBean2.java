@@ -2,6 +2,7 @@ package hiyouka.framework.test.bean;
 
 import hiyouka.seedframework.beans.annotation.Autowired;
 import hiyouka.seedframework.beans.annotation.Component;
+import hiyouka.seedframework.beans.annotation.Specify;
 import hiyouka.seedframework.core.annotation.Priority;
 
 /**
@@ -13,6 +14,7 @@ import hiyouka.seedframework.core.annotation.Priority;
 public class TestBean2 extends TestFather1<Test1, Test1> {
 
     @Autowired
+    @Specify("testBeanOfManual")
     private TestBean1 testBean1;
 
     @Autowired

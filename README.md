@@ -69,6 +69,48 @@ bean在创建之后初始化过程：
 1. 支持使用@Autowired,@Value为容器注入属性。
 2. 添加InstantiationAwareBeanPostProcessor,提供在bean创建前返回bean和Bean创建后对属性处理的机会。
 
+#### Example:
+```java
+@Component
+@Priority(100)
+@Primary
+public class TestBean1<T,D> extends TestFather1<Test2,Test2>{
+    @Autowired
+    private TestBean2 testBean2;
+}
+
+@Component
+@Priority(99)
+public class TestBean2 extends TestFather1<Test1, Test1> {
+    @Autowired
+    @Specify("testBeanOfManual")
+    private TestBean1 testBean1;
+
+    @Autowired
+    private TestBean2 testBean2;
+}
+
+@Component
+public class TestAutowired {
+    @Autowired
+    @Specify("testBean1")
+    private TestFather1 testFatherPrimary;
+    
+    @Autowired
+    private TestBean1<String,Object> testBean2;
+}
+
+@Configuration
+@ComponentScan("hiyouka.framework.test")
+public class TestConfiguration {
+    @Bean("testBeanOfManual")
+    public TestBean1<String,Object> stringObjectTestBean1(){
+        return new TestBean1<>();
+    }
+}
+```
+
+
 ## License
 
 The Seed Framework is released under version 2.0 of the [Apache License](http://www.apache.org/licenses/LICENSE-2.0).

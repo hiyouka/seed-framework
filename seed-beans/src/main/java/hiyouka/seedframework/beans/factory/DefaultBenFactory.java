@@ -1,6 +1,7 @@
 package hiyouka.seedframework.beans.factory;
 
 import hiyouka.seedframework.beans.annotation.Primary;
+import hiyouka.seedframework.beans.annotation.Specify;
 import hiyouka.seedframework.beans.annotation.Value;
 import hiyouka.seedframework.beans.definition.AbstractBeanDefinition;
 import hiyouka.seedframework.beans.definition.AnnotatedGenericBeanDefinition;
@@ -244,7 +245,7 @@ public class DefaultBenFactory extends AbstractBeanCreateFactory implements Conf
         return new BeanHolder<T>(bean,beanName);
     }
 
-    protected String determinePrimary(String[] beanNames,Class<?> requiredType){
+    private String determinePrimary(String[] beanNames,Class<?> requiredType){
         String result = null;
         List<String> primaryBeanName = new ArrayList<>();
         Map<String,Class> types = new HashMap<>(beanNames.length);
@@ -400,17 +401,9 @@ public class DefaultBenFactory extends AbstractBeanCreateFactory implements Conf
     @Override
     public Object resolveDepend(DependencyDescriptor dsr, String beanName) {
         // todo 解决方法依赖
-        Field field = dsr.getField();
         Object value;
         if(DependencyDescriptor.DependencyType.AUTOWIRED.equals(dsr.getAutowiredType())){
-            Type genericType = field.getGenericType();
-            if(genericType instanceof Class){
-                Class<?> type = field.getType();
-                value = this.getBean(type);
-            }
-            else {
-                value = doResolveDependForAutowired(dsr,beanName);
-            }
+            value = doResolveDependForAutowired(dsr,beanName);
         }
         else {
             value = doResolveDependForValue(dsr,beanName);
@@ -427,7 +420,7 @@ public class DefaultBenFactory extends AbstractBeanCreateFactory implements Conf
         Annotation valAnn = dsr.getAnnotationForType(Value.class);
         String value = (String) AnnotationUtils.getAttribute("value", valAnn);
         if(StringUtils.hasText(value)){
-
+            System.out.println();
         }
         return null;
     }
@@ -435,6 +428,26 @@ public class DefaultBenFactory extends AbstractBeanCreateFactory implements Conf
     private Object doResolveDependForAutowired(DependencyDescriptor dsr,String beanName){
         Field field = dsr.getField();
         Class<?> type = field.getType();
+
+        // first to get beanName from @Specify annotation
+        Annotation specify = dsr.getAnnotationForType(Specify.class);
+        if(specify != null){
+            String matchBeanName = (String)AnnotationUtils.getAttribute("value", specify);
+            Class<?> beanClass = getBeanDefinition(matchBeanName).getBeanClass();
+            if(!type.isAssignableFrom(beanClass)){
+                throw new BeanAutowiredException(" not found match bean from @Specify to specify beanName : "
+                + matchBeanName);
+            }else {
+                return this.getBean(matchBeanName);
+            }
+        }
+
+        // if it is no generic bean
+        Type genericType = field.getGenericType();
+        if(genericType instanceof Class){
+            return this.getBean(type);
+        }
+
         String[] names = this.getBeanNamesForType(type);
         List<String> matchName = new ArrayList<>();
         for(String name : names){
@@ -469,6 +482,7 @@ public class DefaultBenFactory extends AbstractBeanCreateFactory implements Conf
         if(matchName.size() == 1){
             matchNameStr = matchName.get(0);
         }else {
+
             matchNameStr  = determinePrimary(matchName.toArray(new String[matchName.size()]), type);
         }
         return this.getBean(matchNameStr);
@@ -476,8 +490,7 @@ public class DefaultBenFactory extends AbstractBeanCreateFactory implements Conf
 
 
     private boolean isSelfReference(String beanName, String currentBeanName){
-        return (beanName != null && currentBeanName != null && (
-                beanName.equals(currentBeanName)));
+        return (beanName != null && (beanName.equals(currentBeanName)));
     }
 
 
