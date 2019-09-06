@@ -1,11 +1,11 @@
 package hiyouka.seedframework.beans.annotation;
 
-import hiyouka.seedframework.beans.factory.AutowiredAnnotationBeanPostProcessor;
+import hiyouka.seedframework.beans.factory.AutowiredAnnotationPostProcessor;
 
 import java.lang.annotation.*;
 
 /**
- * @see AutowiredAnnotationBeanPostProcessor
+ * @see AutowiredAnnotationPostProcessor
  * @author hiyouka
  * @since JDK 1.8
  */

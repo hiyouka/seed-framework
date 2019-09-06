@@ -7,6 +7,9 @@ import hiyouka.seedframework.beans.exception.BeanCreatedException;
 import hiyouka.seedframework.beans.exception.BeanInstantiationException;
 import hiyouka.seedframework.beans.factory.config.BeanPostProcessor;
 import hiyouka.seedframework.beans.factory.config.Initialization;
+import hiyouka.seedframework.beans.factory.config.InstantiationAwareBeanPostProcessor;
+import hiyouka.seedframework.beans.factory.config.MergedBeanDefinitionPostProcessor;
+import hiyouka.seedframework.beans.metadata.PropertyValues;
 import hiyouka.seedframework.util.*;
 
 import java.lang.reflect.Method;
@@ -76,24 +79,56 @@ public abstract class AbstractBeanCreateFactory extends AbstractBeanFactory impl
             // 1. 创建初步的对象。。。
             instance = createBeanInstance(beanName,beanDefinition,args);
 
-            // 2. 将初步对象放入早期对象缓存
+            // 2. 处理需注入的bean
+            applyMergedBeanDefinitionPostProcessors(beanDefinition,beanDefinition.getBeanClass(),beanName);
+
+            // 3. 将初步对象放入早期对象缓存
             if(beanDefinition.isSingleton()){
                 addEarlySingleObjects(beanName, instance);
             }
 
-             instance = init(beanName,instance,beanDefinition);
+            // 4. 填充bean
+            populateInstance(beanName,beanDefinition,instance);
+
+             instance = initInstance(beanName,instance,beanDefinition);
 
         }catch (Exception e){
-            throw new BeanCreatedException("create hiyouka.framework.test.bean:"+ beanName +" error !!" , e);
+            throw new BeanCreatedException("create bean : "+ beanName +" error !!" , e);
         }
         finally {
             removeCurrentlyCreatedBean(beanName);
         }
-        logger.info("create hiyouka.framework.test.bean :" + beanName + " success");
+        logger.info("create bean :" + beanName + " success");
         return instance;
     }
 
-    private Object init(String beanName, Object instance, BeanDefinition beanDefinition) {
+    protected void applyMergedBeanDefinitionPostProcessors(BeanDefinition mbd, Class<?> beanType, String beanName){
+        for (BeanPostProcessor bp : getBeanPostProcessors()) {
+            if (bp instanceof MergedBeanDefinitionPostProcessor) {
+                MergedBeanDefinitionPostProcessor bdp = (MergedBeanDefinitionPostProcessor) bp;
+                bdp.postProcessMergedBeanDefinition(mbd, beanType, beanName);
+            }
+        }
+    }
+
+    protected void populateInstance(String beanName, BeanDefinition beanDefinition, Object instance){
+        List<InstantiationAwareBeanPostProcessor> inPs = new ArrayList<>();
+        for(BeanPostProcessor beanPostProcessor : getBeanPostProcessors()){
+            if(beanPostProcessor instanceof InstantiationAwareBeanPostProcessor){
+                inPs.add((InstantiationAwareBeanPostProcessor) beanPostProcessor);
+                boolean continues = ((InstantiationAwareBeanPostProcessor) beanPostProcessor).postProcessAfterInstantiation(instance, beanName);
+                if(!continues){
+                    return;
+                }
+            }
+        }
+        PropertyValues pvs = beanDefinition.getPropertyValues();
+        for(InstantiationAwareBeanPostProcessor instantiationAwareBeanPostProcessor : inPs){
+            pvs = instantiationAwareBeanPostProcessor.postProcessProperties(pvs,instance,beanName);
+        }
+    }
+
+    private Object initInstance(String beanName, Object instance, BeanDefinition beanDefinition) {
         // 1. 前置处理方法执行
         Object result = applyPostProcessBeforeInitialization(instance,beanName);
 
@@ -101,7 +136,7 @@ public abstract class AbstractBeanCreateFactory extends AbstractBeanFactory impl
         try {
             initialization(result,beanDefinition);
         } catch (Exception e) {
-            throw new IllegalStateException("hiyouka.framework.test.bean : " + beanName + " init method invoke error !!",e);
+            throw new IllegalStateException("bean : " + beanName + " init method invoke error !!",e);
         }
         // 3. 后置处理方法执行
         result = applyPostProcessAfterInitialization(result,beanName);
@@ -161,7 +196,7 @@ public abstract class AbstractBeanCreateFactory extends AbstractBeanFactory impl
 
     private Object instanceBean(String beanName, BeanDefinition beanDefinition, Object[] args) {
         validateSingletonBean(beanName,beanDefinition);
-        Assert.notNull(beanDefinition.getBeanClass(),"hiyouka.framework.test.bean : " + beanName + " beanDefinition must have beanClass");
+        Assert.notNull(beanDefinition.getBeanClass(),"bean : " + beanName + " beanDefinition must have beanClass");
         if(ArrayUtils.isEmpty(args)){
             return BeanUtils.instanceClass(beanDefinition.getBeanClass());
         }else {
@@ -169,7 +204,7 @@ public abstract class AbstractBeanCreateFactory extends AbstractBeanFactory impl
         }
     }
 
-    /** Bean method to get hiyouka.framework.test.bean instance  */
+    /** Bean method to get bean instance  */
     protected Object instanceBeanUsingFactoryMethod(String beanName, BeanDefinition beanDefinition) {
         validateSingletonBean(beanName,beanDefinition);
         String factoryBeanName = beanDefinition.getFactoryBeanName();
@@ -204,7 +239,7 @@ public abstract class AbstractBeanCreateFactory extends AbstractBeanFactory impl
         if(beanDefinition.isSingleton()){
             Object singleton = this.getSingleton(beanName);
             if(singleton != null)
-                throw new BeanInstantiationException("this hiyouka.framework.test.bean : " + beanName + " already existing ...");
+                throw new BeanInstantiationException("this bean : " + beanName + " already existing ...");
         }
     }
 
@@ -215,7 +250,7 @@ public abstract class AbstractBeanCreateFactory extends AbstractBeanFactory impl
 
     protected void validateBeanDefinition(String beanName, BeanDefinition beanDefinition){
         if(beanDefinition.isAbstract()){
-            throw new BeanCreatedException("create hiyouka.framework.test.bean : "+beanName+" must mot be abstract");
+            throw new BeanCreatedException("create bean : "+beanName+" must mot be abstract");
         }
     }
 

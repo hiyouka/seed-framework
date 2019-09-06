@@ -12,7 +12,6 @@ import javax.annotation.Nullable;
  */
 public interface BeanFactory {
 
-
     /**
      * get hiyouka.framework.test.bean instance with beanName
      * @param name beanName

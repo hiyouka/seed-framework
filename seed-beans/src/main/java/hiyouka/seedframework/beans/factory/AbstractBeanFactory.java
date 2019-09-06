@@ -95,7 +95,7 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
     public Class<?> getType(String beanName) throws NoSuchBeanDefinitionException {
             BeanDefinition beanDefinition = getBeanDefinition(beanName);
             if(beanDefinition == null){
-                throw new NoSuchBeanDefinitionException("not found hiyouka.framework.test.bean : " + beanName + "beanDefinition");
+                throw new NoSuchBeanDefinitionException("not found bean : " + beanName + "beanDefinition");
             }
             return beanDefinition.getBeanClass();
     }
@@ -105,7 +105,7 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
         Object singleton = getSingleton(beanName);
         if(singleton != null){
             if(isCurrentlyCreated(beanName)){
-                logger.debug("return early single hiyouka.framework.test.bean : " + beanName);
+                logger.debug("return early single bean : " + beanName);
             }
             bean = singleton;
         }
@@ -125,12 +125,12 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
                     }
                 }
 
-                throw new BeanCurrentlyInCreationException("hiyouka.framework.test.bean is currently in creation, hiyouka.framework.test.bean : " + beanName
+                throw new BeanCurrentlyInCreationException("bean is currently in creation, bean : " + beanName
                         + "..\n create relation :" + buffer.toString());
             }
             if(beanDefinition.isSingleton()){
                 try{
-
+                    this.addSingletonCurrentlyInCreation(beanName);
                     bean = resolveBeanCreate(beanName, beanDefinition, args);
                     addSingleton(beanName,bean);
                 }catch (BeanCreatedException e){
@@ -147,7 +147,7 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
         }
 
         if(requiredType != null && !requiredType.isAssignableFrom(bean.getClass())){
-            throw new BeanNotRequiredException(" hiyouka.framework.test.bean : "+beanName + " type["+bean.getClass().getName()
+            throw new BeanNotRequiredException(" bean : "+beanName + " type["+bean.getClass().getName()
                     +"] not conform to " + requiredType.getName());
         }
         return (T) bean;
@@ -162,14 +162,14 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 
     protected void beforeBeanCreated(String beanName){
         if(isCurrentlyCreated(beanName)){
-            throw new BeanCurrentlyInCreationException("hiyouka.framework.test.bean : " + beanName + "in Creation before hiyouka.framework.test.bean Create");
+            throw new BeanCurrentlyInCreationException("bean : " + beanName + " in Creation before bean Create");
         }
     }
 
 
     protected void afterBeanCreated(String beanName){
         if(isCurrentlyCreated(beanName)){
-            throw new BeanCurrentlyInCreationException("hiyouka.framework.test.bean : " + beanName + "in Creation After hiyouka.framework.test.bean Create");
+            throw new BeanCurrentlyInCreationException("bean : " + beanName + " in Creation After bean Create");
         }
 //        addAlreadyCreated(beanName);
     }

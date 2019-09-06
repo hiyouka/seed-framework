@@ -1,13 +1,7 @@
-import hiyouka.framework.test.bean.TestBean1;
-import hiyouka.seedframework.beans.annotation.Autowired;
-import hiyouka.seedframework.beans.annotation.Bean;
-import hiyouka.seedframework.util.AnnotatedElementUtils;
-import hiyouka.seedframework.util.AnnotationUtils;
-import hiyouka.seedframework.util.MultiValueMap;
+import hiyouka.framework.test.config.TestConfiguration;
+import hiyouka.seedframework.context.AnnotationConfigApplicationContext;
+import hiyouka.seedframework.context.ApplicationContext;
 import org.junit.jupiter.api.Test;
-
-import java.lang.reflect.Method;
-import java.util.List;
 
 /**
  * @author hiyouka
@@ -16,12 +10,11 @@ import java.util.List;
 public class TestClass {
 
     @Test
-    public void applicationTest(){
-        MultiValueMap<String, Object> attributes = AnnotatedElementUtils.getAttributes(TestBean1.class, Autowired.class);
-        List<Method> attributeMethods = AnnotationUtils.getAttributeMethods(Bean.class);
+    public void applicationTest() throws NoSuchFieldException {
 
-//        ApplicationContext applicationContext = new AnnotationConfigApplicationContext(TestConfiguration.class);
-        System.out.println(attributeMethods);
+        ApplicationContext applicationContext = new AnnotationConfigApplicationContext(TestConfiguration.class);
+        Object testAutowired = applicationContext.getBean("testAutowired");
+        System.out.println("666");
     }
 
 }

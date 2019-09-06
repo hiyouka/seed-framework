@@ -23,7 +23,7 @@ import java.util.Set;
  * @since JDK 1.8
  */
 @Priority(SeedConstant.LOWEST_PRIORITY)
-public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPostProcessor , EnvironmentAware{
+public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPostProcessor,EnvironmentAware{
 
     private final Log logger = LogFactory.getLog(this.getClass());
 

@@ -15,6 +15,12 @@ public class ResolverTypeUtil {
 
     private static final Map<Class,Map<Class,Class[]>> genericsCache = new ConcurrentHashMap<>();
 
+    /**
+     * 判断某个clazz是否源于某个属性(包含泛型判断)
+     * @param element 属性
+     * @param clazz 判断类
+     * @return boolean
+     */
     public static boolean isAssignableFrom(AnnotatedElement element, Class clazz){
         if(element instanceof Class){
             return element.equals(clazz);
@@ -24,7 +30,8 @@ public class ResolverTypeUtil {
             if(genericType instanceof ParameterizedType) {
                 Type rawType = ((ParameterizedType) genericType).getRawType();
                 if(rawType instanceof Class){
-                    if(!((Class) rawType).isAssignableFrom(clazz)){
+                    if(!((Class) rawType).isAssignableFrom(clazz)
+                        ||rawType.equals(clazz)){
                         return false;
                     }
                     Type[] actualTypeArguments = ((ParameterizedType) genericType).getActualTypeArguments();
@@ -41,6 +48,26 @@ public class ResolverTypeUtil {
             else if(genericType instanceof Class){
                 return ((Class) genericType).isAssignableFrom(clazz);
             }
+        }
+        return false;
+    }
+
+    public static boolean fieldIsMatchOfGenerics(Field field,Type[] generics){
+        Type genericType = field.getGenericType();
+        if(genericType instanceof Class){
+            return false;
+        }
+        else if(genericType instanceof ParameterizedType){
+            Type[] types = ((ParameterizedType) genericType).getActualTypeArguments();
+            if(types.length != generics.length){
+                return false;
+            }
+            for(int i=0; i< types.length; i++){
+                if(!types[i].equals(generics[i])){
+                    return false;
+                }
+            }
+            return true;
         }
         return false;
     }

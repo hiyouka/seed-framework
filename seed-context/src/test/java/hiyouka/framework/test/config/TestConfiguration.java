@@ -13,7 +13,7 @@ import hiyouka.seedframework.context.annotation.Configuration;
 @ComponentScan("hiyouka.framework.test")
 public class TestConfiguration {
 
-    @Bean
+    @Bean("testBeanOfManual")
     public TestBean1<String,Object> stringObjectTestBean1(){
         return new TestBean1<>();
     }
