@@ -1,6 +1,6 @@
 package hiyouka.seedframework.beans.factory.config;
 
-import hiyouka.seedframework.beans.definition.RootBeanDefinition;
+import hiyouka.seedframework.beans.definition.BeanDefinition;
 
 /**
  * use to extended beanDefinition
@@ -15,6 +15,6 @@ public interface MergedBeanDefinitionPostProcessor extends BeanPostProcessor {
      * @param beanType the actual type of the managed hiyouka.framework.test.bean instance
      * @param beanName the name of the hiyouka.framework.test.bean
      */
-    void postProcessMergedBeanDefinition(RootBeanDefinition beanDefinition, Class<?> beanType, String beanName);
+    void postProcessMergedBeanDefinition(BeanDefinition beanDefinition, Class<?> beanType, String beanName);
 
 }

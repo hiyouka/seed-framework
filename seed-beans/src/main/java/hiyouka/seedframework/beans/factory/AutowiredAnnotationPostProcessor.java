@@ -2,7 +2,7 @@ package hiyouka.seedframework.beans.factory;
 
 import hiyouka.seedframework.beans.annotation.Autowired;
 import hiyouka.seedframework.beans.annotation.Value;
-import hiyouka.seedframework.beans.definition.RootBeanDefinition;
+import hiyouka.seedframework.beans.definition.BeanDefinition;
 import hiyouka.seedframework.beans.exception.BeanAutowiredException;
 import hiyouka.seedframework.beans.exception.BeanCreatedException;
 import hiyouka.seedframework.beans.exception.BeansException;
@@ -17,28 +17,33 @@ import hiyouka.seedframework.exception.SeedCoreException;
 import hiyouka.seedframework.util.AnnotatedElementUtils;
 import hiyouka.seedframework.util.ReflectionUtils;
 import hiyouka.seedframework.util.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
+import java.lang.reflect.Modifier;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author hiyouka
  * @since JDK 1.8
  */
-public class AutowiredAnnotationBeanPostProcessor implements MergedBeanDefinitionPostProcessor, InstantiationAwareBeanPostProcessor, BeanFactoryAware {
+public class AutowiredAnnotationPostProcessor implements MergedBeanDefinitionPostProcessor, InstantiationAwareBeanPostProcessor, BeanFactoryAware {
+
+    private static final Log logger = LogFactory.getLog(AutowiredAnnotationPostProcessor.class);
 
     Set<Class<? extends Annotation>> autowiredAnnotationTypes = new LinkedHashSet<>(5);
+
+    private static final String REQUIRED_KEY = "required";
 
     private ConfigurableDefinitionBeanFactory beanFactory;
 
     private final Map<String,InjectionMetadata> injectionMetadataCache = new ConcurrentHashMap<>();
 
-    public AutowiredAnnotationBeanPostProcessor() {
+    public AutowiredAnnotationPostProcessor() {
         autowiredAnnotationTypes.add(Autowired.class);
         autowiredAnnotationTypes.add(Value.class);
 
@@ -49,17 +54,8 @@ public class AutowiredAnnotationBeanPostProcessor implements MergedBeanDefinitio
      * 获取bean需要注入的类
      */
     @Override
-    public void postProcessMergedBeanDefinition(RootBeanDefinition beanDefinition, Class<?> beanType, String beanName) {
-
-//        Field[] declaredFields = beanType.getDeclaredFields();
-//        List<Member> members = new ArrayList<>();
-//        for(Field field : declaredFields){
-//            Autowired annotation = field.getAnnotation(Autowired.class);
-//            if(annotation != null){
-//                members.add(field);
-//            }
-//        }
-//        beanDefinition.setMembers(members);
+    public void postProcessMergedBeanDefinition(BeanDefinition beanDefinition, Class<?> beanType, String beanName) {
+        findAutowiredMetadata(beanName,beanType,null);
     }
 
 
@@ -72,32 +68,43 @@ public class AutowiredAnnotationBeanPostProcessor implements MergedBeanDefinitio
         } catch (BeanCreatedException e) {
             throw e;
         } catch (Throwable throwable) {
-            throw new BeanAutowiredException("bean field autowired error, beanName : "+ beanName
+            throw new BeanAutowiredException("bean field autowired error, beanName : "+ beanName + " ,"
                     + throwable);
         }
-        return null;
+        return pvs;
     }
 
     private InjectionMetadata findAutowiredMetadata(String beanName, Class<?> clazz,PropertyValues pvs){
         String cacheKey = StringUtils.hasLength(beanName) ? beanName : clazz.getName();
         InjectionMetadata injectionMetadata = this.injectionMetadataCache.get(cacheKey);
         if(injectionMetadata == null){
-
+            injectionMetadata = buildAutowiredMetadata(clazz);
+            this.injectionMetadataCache.put(cacheKey,injectionMetadata);
         }
-//        List<InjectionMetadata.InjectionElement> elements = new ArrayList<>();
-//        BeanDefinition beanDefinition = this.beanFactory.getBeanDefinition(beanName);
-//        if(beanDefinition instanceof RootBeanDefinition){
-//            List<Member> members = ((RootBeanDefinition) beanDefinition).getMembers();
-//        }
-        return null;
+        return injectionMetadata;
     }
 
     private InjectionMetadata buildAutowiredMetadata(Class<?> clazz){
         Field[] fields = clazz.getDeclaredFields();
+        List<InjectionMetadata.InjectionElement> elements = new ArrayList<>();
         for(Field field : fields){
-            AnnotationAttributes autowiredAnnotationAttributes = findAutowiredAnnotationAttributes(field);
+            AnnotationAttributes annotationAttributes = findAutowiredAnnotationAttributes(field);
+            if(annotationAttributes != null){
+                if(Modifier.isStatic(field.getModifiers())){
+                    if(logger.isDebugEnabled()){
+                        logger.debug("not support static field autowired : " + field);
+                    }
+                    continue;
+                }
+                boolean required = determineRequired(annotationAttributes);
+                elements.add(new AutowiredFieldElement(field,required));
+            }
         }
-        return null;
+        return new InjectionMetadata(clazz,elements);
+    }
+
+    private boolean determineRequired(AnnotationAttributes attributes){
+        return (!attributes.containsKey(REQUIRED_KEY) || attributes.getBoolean(REQUIRED_KEY));
     }
 
     private AnnotationAttributes findAutowiredAnnotationAttributes(AnnotatedElement element){
@@ -134,7 +141,7 @@ public class AutowiredAnnotationBeanPostProcessor implements MergedBeanDefinitio
         @Override
         protected void inject(Object bean, String beanName, PropertyValues pvs) throws Throwable {
             Field field = (Field) this.member;
-            Object value = beanFactory.resolveBeanForField(beanName, field);
+            Object value = beanFactory.resolveDepend(new DependencyDescriptor(field,this.request),beanName);
             if(value == null && request){
                 throw new BeanAutowiredException("Resolve bean : " + beanName + "error, Because of " +
                         "not found beanName type is : " + field.getGenericType().getTypeName(),

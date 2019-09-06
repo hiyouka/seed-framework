@@ -1,6 +1,6 @@
 package hiyouka.seedframework.beans.annotation;
 
-import hiyouka.seedframework.beans.factory.AutowiredAnnotationBeanPostProcessor;
+import hiyouka.seedframework.beans.factory.AutowiredAnnotationPostProcessor;
 
 import java.lang.annotation.*;
 
@@ -12,7 +12,7 @@ public @interface Specify {
     /**
      * specifies the bean name
      * @see Autowired
-     * @see AutowiredAnnotationBeanPostProcessor
+     * @see AutowiredAnnotationPostProcessor
      */
     String value();
 

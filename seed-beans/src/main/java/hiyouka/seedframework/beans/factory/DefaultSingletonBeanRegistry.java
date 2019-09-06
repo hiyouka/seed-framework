@@ -50,6 +50,7 @@ public class DefaultSingletonBeanRegistry implements SingletonBeanRegistry {
         synchronized (this.singletonObjects) {
             this.singletonObjects.put(beanName, singletonObject);
             this.earlySingletonObjects.remove(beanName);
+            this.removeSingletonCurrentlyInCreation(beanName);
             this.registeredSingletons.add(beanName);
         }
     }
@@ -79,6 +80,8 @@ public class DefaultSingletonBeanRegistry implements SingletonBeanRegistry {
     }
 
 
+
+
     @Override
     public boolean containsSingleton(String beanName) {
         return this.singletonObjects.containsKey(beanName);
@@ -106,8 +109,16 @@ public class DefaultSingletonBeanRegistry implements SingletonBeanRegistry {
         }
     }
 
+    protected boolean addSingletonCurrentlyInCreation(String name){
+        return this.singletonsCurrentlyInCreation.add(name);
+    }
+
+    protected boolean removeSingletonCurrentlyInCreation(String name){
+        return this.singletonsCurrentlyInCreation.remove(name);
+    }
+
     /** 如果该bean正在被创建返回 true */
-    public boolean isSingletonCurrentlyInCreation(String beanName) {
+    protected boolean isSingletonCurrentlyInCreation(String beanName) {
         return this.singletonsCurrentlyInCreation.contains(beanName);
     }
 

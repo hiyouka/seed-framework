@@ -30,7 +30,8 @@ public class ResolverTypeUtil {
             if(genericType instanceof ParameterizedType) {
                 Type rawType = ((ParameterizedType) genericType).getRawType();
                 if(rawType instanceof Class){
-                    if(!((Class) rawType).isAssignableFrom(clazz)){
+                    if(!((Class) rawType).isAssignableFrom(clazz)
+                        ||rawType.equals(clazz)){
                         return false;
                     }
                     Type[] actualTypeArguments = ((ParameterizedType) genericType).getActualTypeArguments();

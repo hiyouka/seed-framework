@@ -248,7 +248,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
     };
 
     protected void cancelRefresh(){
-        this.active .set(false);
+        this.active.set(false);
     };
 
     protected ConfigurableEnvironment createEnvironment() {

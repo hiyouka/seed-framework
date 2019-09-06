@@ -2,9 +2,8 @@ package hiyouka.seedframework.beans.factory.config;
 
 import hiyouka.seedframework.beans.exception.BeansException;
 import hiyouka.seedframework.beans.factory.DefinitionBeanFactory;
+import hiyouka.seedframework.beans.factory.DependencyDescriptor;
 import hiyouka.seedframework.beans.factory.SingletonBeanRegistry;
-
-import java.lang.reflect.Field;
 
 /**
  * 给beanFactory添加管理忽略注册接口和给特定接口注册特定的bean功能
@@ -20,6 +19,6 @@ public interface ConfigurableDefinitionBeanFactory extends ConfigurableBeanFacto
      */
     void  preInstantiateSingletons() throws BeansException;
 
-    Object resolveBeanForField(String beanName,Field field);
+    Object resolveDepend(DependencyDescriptor dsr,String beanName);
 
 }
