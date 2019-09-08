@@ -3,6 +3,7 @@ package hiyouka.seedframework.util;
 import hiyouka.seedframework.core.io.resource.Resource;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -11,11 +12,19 @@ import java.util.Properties;
  */
 public class PropertiesLoadUtils {
 
-    public static Properties loadProperties(Resource resource){
-        Properties properties = new Properties();
+    public static Map loadProperties(Resource resource){
+        Map properties = null;
         if(resource.isReadable()){
             try {
-                properties.load(resource.getInputStream());
+                String filename = resource.getFilename();
+                if(filename.endsWith(".properties")){
+                    properties = new Properties();
+                    ((Properties) properties).load(resource.getInputStream());
+                }
+                if(filename.endsWith(".yml")){
+                    properties = new YmlProperties();
+                    ((YmlProperties) properties).load(resource.getInputStream());
+                }
             } catch (IOException e) {
                 throw new IllegalStateException("IO error in load resource : " + resource.getDescription());
             }

@@ -14,7 +14,7 @@ public class ResourcePropertySource extends MapPropertySource{
     private String resourceName;
 
     public ResourcePropertySource(String name, Resource resource) {
-        super(name, (Map)PropertiesLoadUtils.loadProperties(resource));
+        super(name, PropertiesLoadUtils.loadProperties(resource));
         this.resourceName = resource.getDescription();
     }
 

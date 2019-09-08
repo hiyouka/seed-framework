@@ -1,8 +1,12 @@
 package hiyouka.seedframework.context;
 
 import hiyouka.seedframework.beans.factory.DefaultBenFactory;
+import hiyouka.seedframework.beans.factory.paser.SpelExpressionResolver;
 import hiyouka.seedframework.context.paser.ClassPathBeanDefinitionScanner;
+import hiyouka.seedframework.core.io.resource.Resource;
 import hiyouka.seedframework.util.Assert;
+
+import java.io.IOException;
 
 /**
  * @author hiyouka
@@ -18,6 +22,26 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
         this.scanner = new ClassPathBeanDefinitionScanner(this);
         this.reader = new AnnotatedBeanDefinitionReader(this);
         getEnvironment();
+        initProjectEnvironment();
+    }
+
+    /**
+     *  init project environment form seed.yml and seed.properties
+     */
+    private void initProjectEnvironment(){
+        String[] projectProperties = super.projectProperties;
+        for(String projectProject : projectProperties){
+            Resource resource = null;
+            try {
+                resource = this.scanner.getResourcePatternResolver().getResource(projectProject);
+                if(resource.exists()){
+                    getEnvironment().loadResource(resource);
+                }
+                register(SpelExpressionResolver.class);
+            } catch (IOException e) {
+                logger.error("read properties : " + projectProject + " error ");
+            }
+        }
     }
 
     public AnnotationConfigApplicationContext(DefaultBenFactory beanFactory){

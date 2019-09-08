@@ -400,7 +400,7 @@ public class DefaultBenFactory extends AbstractBeanCreateFactory implements Conf
 
     @Override
     public Object resolveDepend(DependencyDescriptor dsr, String beanName) {
-        // todo 解决方法依赖
+        // todo 解决方法依赖注入
         Object value;
         if(DependencyDescriptor.DependencyType.AUTOWIRED.equals(dsr.getAutowiredType())){
             value = doResolveDependForAutowired(dsr,beanName);
@@ -420,7 +420,10 @@ public class DefaultBenFactory extends AbstractBeanCreateFactory implements Conf
         Annotation valAnn = dsr.getAnnotationForType(Value.class);
         String value = (String) AnnotationUtils.getAttribute("value", valAnn);
         if(StringUtils.hasText(value)){
-            System.out.println();
+            ExpressionResolver resolver = getBean(ExpressionResolver.class);
+            if(resolver != null){
+                return resolver.resolve(value);
+            }
         }
         return null;
     }

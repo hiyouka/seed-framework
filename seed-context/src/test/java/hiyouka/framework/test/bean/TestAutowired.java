@@ -3,6 +3,7 @@ package hiyouka.framework.test.bean;
 import hiyouka.seedframework.beans.annotation.Autowired;
 import hiyouka.seedframework.beans.annotation.Component;
 import hiyouka.seedframework.beans.annotation.Specify;
+import hiyouka.seedframework.beans.annotation.Value;
 
 /**
  * @author hiyouka
@@ -13,6 +14,12 @@ public class TestAutowired {
 
 //    @Autowired
 //    private TestBean1 testBean1;
+
+    @Value("${spring.aop.auto}")
+    private String auto;
+
+    @Value("#{123}")
+    private String li;
 
     @Autowired
     private TestBean1<String,Object> testBean2;
