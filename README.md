@@ -68,6 +68,7 @@ bean在创建之后初始化过程：
 ### 0.0.2-SNAPSHOT: 
 1. 支持使用@Autowired,@Value为容器注入属性。
 2. 添加InstantiationAwareBeanPostProcessor,提供在bean创建前返回bean和Bean创建后对属性处理的机会。
+3. 初始读取资源文件路径下的`seed.properties`和`seed.yml`文件,加载属性进入environment。
 
 #### Example:
 ```java

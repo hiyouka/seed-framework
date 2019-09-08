@@ -48,6 +48,8 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 
     private ResourcePatternResolver resourcePatternResolver;
 
+    protected static final String[] projectProperties = {"seed.properties","seed.yml"};
+
     public AbstractApplicationContext(){
         this.resourcePatternResolver = ResourcePatternUtils.getResourcePatternResolver(this);
     }
@@ -134,6 +136,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
         beanFactory.registerSingleton(ENVIRONMENT_BEAN_NAME,this.environment);
         beanFactory.registerSingleton(SYSTEM_ENVIRONMENT_BEAN_NAME,this.environment.getSystemEnvironment());
         beanFactory.registerSingleton(SYSTEM_PROPERTIES_BEAN_NAME,this.environment.getSystemProperties());
+
 
         //TODO: 设置忽略注册的接口以及指定接口注册指定bean
 

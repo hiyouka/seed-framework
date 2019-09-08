@@ -26,7 +26,6 @@ public class StandardEnvironment extends AbstractEnvironment {
         this.propertySources.addProperty(new MapPropertySource(SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME,getSystemProperties()));
     }
 
-
     @Override
     public void loadResource(Resource resource) {
         this.propertySources.addProperty(new ResourcePropertySource(resource.getDescription(),resource));
