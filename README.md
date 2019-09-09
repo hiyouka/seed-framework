@@ -118,6 +118,8 @@ public class TestConfiguration {
 }
 ```
 
+### 0.0.3-SNAPSHOT:
+1.  支持aop功能
 
 ## License
 
