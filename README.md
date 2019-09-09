@@ -66,7 +66,7 @@ bean在创建之后初始化过程：
 ## 更新日志
 
 ### 0.0.2-SNAPSHOT: 
-1. 支持使用@Autowired,@Value为容器注入属性。
+1. 支持使用@Autowired,@Value为容器注入属性。(目前@Value只支持注入有yml/properties文件的环境信息和#{123}表达式的默认属性)
 2. 添加InstantiationAwareBeanPostProcessor,提供在bean创建前返回bean和Bean创建后对属性处理的机会。
 3. 初始读取资源文件路径下的`seed.properties`和`seed.yml`文件,加载属性进入environment。
 
@@ -83,6 +83,13 @@ public class TestBean1<T,D> extends TestFather1<Test2,Test2>{
 @Component
 @Priority(99)
 public class TestBean2 extends TestFather1<Test1, Test1> {
+
+    @Value("${spring.aop.auto}")
+    private String propertiesKey;
+    
+    @Value("#{123}")
+    private String key;
+    
     @Autowired
     @Specify("testBeanOfManual")
     private TestBean1 testBean1;
