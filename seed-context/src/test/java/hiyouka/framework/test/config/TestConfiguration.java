@@ -1,9 +1,9 @@
 package hiyouka.framework.test.config;
 
 import hiyouka.framework.test.bean.TestBean1;
-import hiyouka.seedframework.beans.annotation.Bean;
-import hiyouka.seedframework.context.annotation.ComponentScan;
-import hiyouka.seedframework.context.annotation.Configuration;
+import seed.seedframework.beans.annotation.Bean;
+import seed.seedframework.context.annotation.ComponentScan;
+import seed.seedframework.context.annotation.Configuration;
 
 /**
  * @author hiyouka

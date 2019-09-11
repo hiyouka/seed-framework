@@ -1,7 +1,7 @@
 import hiyouka.framework.test.config.TestConfiguration;
-import hiyouka.seedframework.context.AnnotationConfigApplicationContext;
-import hiyouka.seedframework.context.ApplicationContext;
-import hiyouka.seedframework.core.env.Environment;
+import seed.seedframework.context.AnnotationConfigApplicationContext;
+import seed.seedframework.context.ApplicationContext;
+import seed.seedframework.core.env.Environment;
 import org.junit.jupiter.api.Test;
 
 import java.util.LinkedList;

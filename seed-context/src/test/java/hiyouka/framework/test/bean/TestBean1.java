@@ -1,9 +1,9 @@
 package hiyouka.framework.test.bean;
 
-import hiyouka.seedframework.beans.annotation.Autowired;
-import hiyouka.seedframework.beans.annotation.Component;
-import hiyouka.seedframework.beans.annotation.Primary;
-import hiyouka.seedframework.core.annotation.Priority;
+import seed.seedframework.beans.annotation.Autowired;
+import seed.seedframework.beans.annotation.Component;
+import seed.seedframework.beans.annotation.Primary;
+import seed.seedframework.core.annotation.Priority;
 
 /**
  * @author hiyouka
