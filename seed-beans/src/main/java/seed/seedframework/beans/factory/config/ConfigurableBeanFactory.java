@@ -1,6 +1,7 @@
 package seed.seedframework.beans.factory.config;
 
 import seed.seedframework.beans.factory.BeanFactory;
+import seed.seedframework.beans.factory.SingletonBeanRegistry;
 
 import javax.annotation.Nullable;
 
@@ -8,7 +9,7 @@ import javax.annotation.Nullable;
  * @author hiyouka
  * @since JDK 1.8
  */
-public interface ConfigurableBeanFactory extends BeanFactory {
+public interface ConfigurableBeanFactory extends BeanFactory, SingletonBeanRegistry {
 
     String SCOPE_SINGLETON = "singleton";
 
@@ -25,5 +26,7 @@ public interface ConfigurableBeanFactory extends BeanFactory {
      * return number of beanPostProcess {@link BeanPostProcessor}
      */
     int getBeanPostProcessorCount();
+
+
 
 }

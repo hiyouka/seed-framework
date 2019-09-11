@@ -9,6 +9,7 @@ import seed.seedframework.beans.definition.BeanDefinition;
 import seed.seedframework.beans.definition.BeanHolder;
 import seed.seedframework.beans.exception.*;
 import seed.seedframework.beans.factory.config.ConfigurableDefinitionBeanFactory;
+import seed.seedframework.beans.metadata.DependencyDescriptor;
 import seed.seedframework.beans.metadata.GenericMethodMetadata;
 import seed.seedframework.beans.metadata.MethodMetadata;
 import seed.seedframework.core.annotation.Priority;
@@ -17,7 +18,6 @@ import seed.seedframework.util.*;
 import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.*;
@@ -27,7 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author hiyouka
  * @since JDK 1.8
  */
-public class DefaultBenFactory extends AbstractBeanCreateFactory implements ConfigurableDefinitionBeanFactory, BeanDefinitionRegistry , Serializable {
+public class DefaultBenFactory extends AbstractAutowiredBeanCreateFactory implements ConfigurableDefinitionBeanFactory, BeanDefinitionRegistry , Serializable {
 
 
     /** 是否允许重复注册 */
@@ -246,7 +246,7 @@ public class DefaultBenFactory extends AbstractBeanCreateFactory implements Conf
     }
 
     private String determinePrimary(String[] beanNames,Class<?> requiredType){
-        String result = null;
+        String result;
         List<String> primaryBeanName = new ArrayList<>();
         Map<String,Class> types = new HashMap<>(beanNames.length);
         for(String beanName : beanNames){
@@ -428,10 +428,10 @@ public class DefaultBenFactory extends AbstractBeanCreateFactory implements Conf
         return null;
     }
 
-    private Object doResolveDependForAutowired(DependencyDescriptor dsr,String beanName){
-        Field field = dsr.getField();
-        Class<?> type = field.getType();
 
+
+    private Object doResolveDependForAutowired(DependencyDescriptor dsr,String beanName){
+        Class<?> type = dsr.getType();
         // first to get beanName from @Specify annotation
         Annotation specify = dsr.getAnnotationForType(Specify.class);
         if(specify != null){
@@ -445,14 +445,25 @@ public class DefaultBenFactory extends AbstractBeanCreateFactory implements Conf
             }
         }
 
+        // second autowired by dsr name to find bean name
+        String attributeName = dsr.getAttributeName();
+        BeanDefinition attributeBeanDefinition = getBeanDefinition(attributeName);
+        if(attributeBeanDefinition != null){
+            return this.getBean(attributeName);
+        }
+
         // if it is no generic bean
-        Type genericType = field.getGenericType();
+        Type genericType = dsr.getGenericType();
         if(genericType instanceof Class){
             return this.getBean(type);
         }
 
         String[] names = this.getBeanNamesForType(type);
         List<String> matchName = new ArrayList<>();
+        if(names.length == 1){
+            matchName.add(names[0]);
+        }
+
         for(String name : names){
             if(!isSelfReference(beanName,name)){
                 BeanDefinition beanDefinition = this.getBeanDefinition(name);
@@ -462,13 +473,13 @@ public class DefaultBenFactory extends AbstractBeanCreateFactory implements Conf
                     // have generic bean write method
                     if(metadata instanceof GenericMethodMetadata){
                         Type[] generics = ((GenericMethodMetadata) metadata).getGenerics();
-                        if(ResolverTypeUtil.fieldIsMatchOfGenerics(field,generics)){
+                        if(ResolverTypeUtil.typeIsMatchOfGenerics(dsr.getGenericType(),generics)){
                             matchName.add(name);
                             continue;
                         }
                     }
                 }
-                if(ResolverTypeUtil.isAssignableFrom(field,beanDefinition.getBeanClass())){
+                if(ResolverTypeUtil.isAssignableFrom(dsr.getGenericType(),beanDefinition.getBeanClass())){
                     matchName.add(name);
                 }
             }
@@ -492,7 +503,7 @@ public class DefaultBenFactory extends AbstractBeanCreateFactory implements Conf
     }
 
 
-    private boolean isSelfReference(String beanName, String currentBeanName){
+    protected boolean isSelfReference(String beanName, String currentBeanName){
         return (beanName != null && (beanName.equals(currentBeanName)));
     }
 

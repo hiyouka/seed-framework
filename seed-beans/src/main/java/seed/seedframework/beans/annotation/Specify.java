@@ -4,7 +4,7 @@ import seed.seedframework.beans.factory.AutowiredAnnotationPostProcessor;
 
 import java.lang.annotation.*;
 
-@Target({ElementType.FIELD})
+@Target({ElementType.FIELD,ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Specify {

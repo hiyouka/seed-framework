@@ -21,44 +21,38 @@ public class ResolverTypeUtil {
      * @param clazz 判断类
      * @return boolean
      */
-    public static boolean isAssignableFrom(AnnotatedElement element, Class clazz){
+    public static boolean isAssignableFrom(Type element, Class clazz){
         if(element instanceof Class){
-            return element.equals(clazz);
+            return ((Class) element).isAssignableFrom(clazz);
         }
-        else if(element instanceof Field){
-            Type genericType = ((Field) element).getGenericType();
-            if(genericType instanceof ParameterizedType) {
-                Type rawType = ((ParameterizedType) genericType).getRawType();
-                if(rawType instanceof Class){
-                    if(!((Class) rawType).isAssignableFrom(clazz)
+        else if(element instanceof ParameterizedType) {
+            Type rawType = ((ParameterizedType) element).getRawType();
+            if(rawType instanceof Class){
+                if(!((Class) rawType).isAssignableFrom(clazz)
                         ||rawType.equals(clazz)){
+                    return false;
+                }
+                Type[] actualTypeArguments = ((ParameterizedType) element).getActualTypeArguments();
+                Map<Class, Class[]> classMap = obtainRealTypeForClass(clazz);
+                Class[] classes = classMap.get(rawType);
+                for(int i=0; i<actualTypeArguments.length; i++){
+                    if(!actualTypeArguments[i].equals(classes[i])){
                         return false;
                     }
-                    Type[] actualTypeArguments = ((ParameterizedType) genericType).getActualTypeArguments();
-                    Map<Class, Class[]> classMap = obtainRealTypeForClass(clazz);
-                    Class[] classes = classMap.get(rawType);
-                    for(int i=0; i<actualTypeArguments.length; i++){
-                        if(!actualTypeArguments[i].equals(classes[i])){
-                            return false;
-                        }
-                    }
-                    return true;
                 }
-            }
-            else if(genericType instanceof Class){
-                return ((Class) genericType).isAssignableFrom(clazz);
+                return true;
             }
         }
         return false;
     }
 
-    public static boolean fieldIsMatchOfGenerics(Field field,Type[] generics){
-        Type genericType = field.getGenericType();
-        if(genericType instanceof Class){
+
+    public static boolean typeIsMatchOfGenerics(Type type,Type[] generics){
+        if(type instanceof Class){
             return false;
         }
-        else if(genericType instanceof ParameterizedType){
-            Type[] types = ((ParameterizedType) genericType).getActualTypeArguments();
+        else if(type instanceof ParameterizedType){
+            Type[] types = ((ParameterizedType) type).getActualTypeArguments();
             if(types.length != generics.length){
                 return false;
             }

@@ -10,6 +10,7 @@ import seed.seedframework.beans.factory.aware.BeanFactoryAware;
 import seed.seedframework.beans.factory.config.ConfigurableDefinitionBeanFactory;
 import seed.seedframework.beans.factory.config.InstantiationAwareBeanPostProcessor;
 import seed.seedframework.beans.factory.config.MergedBeanDefinitionPostProcessor;
+import seed.seedframework.beans.metadata.DependencyDescriptor;
 import seed.seedframework.beans.metadata.InjectionMetadata;
 import seed.seedframework.beans.metadata.PropertyValues;
 import seed.seedframework.common.AnnotationAttributes;

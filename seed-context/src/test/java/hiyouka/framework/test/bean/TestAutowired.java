@@ -29,6 +29,9 @@ public class TestAutowired {
     @Specify("testBean1")
     private TestFather1 testFatherPrimary;
 
+
+
+
 //    @Autowired
 //    private TestFather1<Test1,Test1> testFather1;
 //

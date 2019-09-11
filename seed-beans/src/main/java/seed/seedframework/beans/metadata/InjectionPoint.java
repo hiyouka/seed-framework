@@ -1,8 +1,8 @@
-package seed.seedframework.beans.factory;
+package seed.seedframework.beans.metadata;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 
 /**
  * @author hiyouka
@@ -10,14 +10,14 @@ import java.lang.reflect.Method;
  */
 public class InjectionPoint {
 
-    protected Method method;
+    protected MethodParameter parameter;
 
     protected Field field;
 
     protected Annotation[] fieldAnnotations;
 
-    public InjectionPoint(Method method) {
-        this.method = method;
+    public InjectionPoint(MethodParameter parameter) {
+        this.parameter = parameter;
     }
 
     public InjectionPoint(Field field) {
@@ -31,19 +31,23 @@ public class InjectionPoint {
         if(field != null){
             this.fieldAnnotations  = field.getAnnotations();
         }
-        else {
-            this.fieldAnnotations = method.getAnnotations();
+        else if(parameter != null){
+            this.fieldAnnotations = parameter.getAnnotations();
         }
 
         return this.fieldAnnotations;
     }
 
-    public Method getMethod() {
-        return method;
+    protected boolean isField(){
+        return this.field != null;
     }
 
     public Field getField() {
         return field;
+    }
+
+    public MethodParameter getParameter() {
+        return parameter;
     }
 
     public boolean hasAnnotation(Class<? extends Annotation> clazz){
@@ -64,5 +68,23 @@ public class InjectionPoint {
             }
         }
         return null;
+    }
+
+    public Type getGenericType(){
+        if(isField()){
+            return this.field.getGenericType();
+        }
+        else {
+            return this.parameter.getGenericParameterType();
+        }
+    }
+
+    public Class<?> getType(){
+        if(isField()){
+            return this.field.getType();
+        }
+        else {
+            return this.parameter.getParameterType();
+        }
     }
 }
