@@ -1,7 +1,8 @@
+import hiyouka.framework.test.bean.TestAutowiredBean;
 import hiyouka.framework.test.config.TestConfiguration;
-import hiyouka.seedframework.context.AnnotationConfigApplicationContext;
-import hiyouka.seedframework.context.ApplicationContext;
-import hiyouka.seedframework.core.env.Environment;
+import seed.seedframework.context.AnnotationConfigApplicationContext;
+import seed.seedframework.context.ApplicationContext;
+import seed.seedframework.core.env.Environment;
 import org.junit.jupiter.api.Test;
 
 import java.util.LinkedList;
@@ -22,6 +23,7 @@ public class TestClass {
 
         ApplicationContext applicationContext = new AnnotationConfigApplicationContext(TestConfiguration.class);
         Object testAutowired = applicationContext.getBean("testAutowired");
+        TestAutowiredBean bean = applicationContext.getBean(TestAutowiredBean.class);
         Environment environment = applicationContext.getEnvironment();
         String property = environment.getProperty("spring.aop.auto");
         List<String> list = new LinkedList<>();

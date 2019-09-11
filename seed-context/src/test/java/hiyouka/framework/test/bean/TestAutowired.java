@@ -1,9 +1,9 @@
 package hiyouka.framework.test.bean;
 
-import hiyouka.seedframework.beans.annotation.Autowired;
-import hiyouka.seedframework.beans.annotation.Component;
-import hiyouka.seedframework.beans.annotation.Specify;
-import hiyouka.seedframework.beans.annotation.Value;
+import seed.seedframework.beans.annotation.Autowired;
+import seed.seedframework.beans.annotation.Component;
+import seed.seedframework.beans.annotation.Specify;
+import seed.seedframework.beans.annotation.Value;
 
 /**
  * @author hiyouka
@@ -28,6 +28,9 @@ public class TestAutowired {
     @Autowired
     @Specify("testBean1")
     private TestFather1 testFatherPrimary;
+
+
+
 
 //    @Autowired
 //    private TestFather1<Test1,Test1> testFather1;
