@@ -2,8 +2,7 @@ package seed.seedframework.beans.metadata;
 
 import seed.seedframework.beans.annotation.Autowired;
 import seed.seedframework.beans.annotation.Value;
-import seed.seedframework.common.AnnotationAttributes;
-import seed.seedframework.util.AnnotatedElementUtils;
+import seed.seedframework.util.AnnotationUtils;
 
 import java.lang.reflect.Field;
 
@@ -27,12 +26,12 @@ public class DependencyDescriptor extends InjectionPoint {
     public DependencyDescriptor(MethodParameter parameter) {
         super(parameter);
         this.declaringClass = parameter.getDeclaringClass();
-        AnnotationAttributes required = AnnotatedElementUtils.getAnnotationAttributes(parameter.getParameter(), "Autowired");
-        if(required == null){
-            this.required = true;
+        Autowired annotation = parameter.getParameter().getAnnotation(Autowired.class);
+        if(annotation == null){
+            this.required = false;
         }
         else {
-            this.required = required.getBoolean("required");
+            this.required = (boolean) AnnotationUtils.getAttribute("required",annotation);
         }
         this.autowiredType = determineDependType();
         this.methodName = parameter.getMethod().getName();

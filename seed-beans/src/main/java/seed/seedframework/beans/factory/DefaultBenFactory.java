@@ -246,7 +246,11 @@ public class DefaultBenFactory extends AbstractAutowiredBeanCreateFactory implem
     }
 
     private String determinePrimary(String[] beanNames,Class<?> requiredType){
-        String result;
+        return determinePrimaryIfNecessary(beanNames,requiredType,true);
+    }
+
+    private String determinePrimaryIfNecessary(String[] beanNames,Class<?> requiredType, boolean required){
+        String result = null;
         List<String> primaryBeanName = new ArrayList<>();
         Map<String,Class> types = new HashMap<>(beanNames.length);
         for(String beanName : beanNames){
@@ -273,11 +277,10 @@ public class DefaultBenFactory extends AbstractAutowiredBeanCreateFactory implem
                 }
             }
         }
-
         if(primaryBeanName.size() == 1){
             result = primaryBeanName.get(0);
         }
-        else{
+        if(required){
             String message = null;
             if(primaryBeanName.size() > 0){
                 message = ", found "+primaryBeanName.size()+" : " + primaryBeanName;
@@ -409,9 +412,17 @@ public class DefaultBenFactory extends AbstractAutowiredBeanCreateFactory implem
             value = doResolveDependForValue(dsr,beanName);
         }
         if(value == null && dsr.isRequired()){
-            throw new BeanAutowiredException("resolve depend error of bean : " + beanName
-                        + ", field name : " + dsr.getField().getName()+", field type: "
-                        + dsr.getField().getGenericType());
+            String errorMsg = "resolve depend error of bean :" + beanName;
+            if(dsr.getField() != null){
+                errorMsg += ", field name : " + dsr.getField().getName()+", field type: "
+                        + dsr.getField().getGenericType();
+            }
+            else {
+                errorMsg += ",method : "+dsr.getDeclaringClass().getName()+"."+dsr.getMethodName()
+                         +", parameter name : " + dsr.getParameter().getParameterName()+", parameter type: "
+                         + dsr.getParameter().getGenericParameterType();
+            }
+            throw new BeanAutowiredException(errorMsg);
         }
         return value;
     }
@@ -447,15 +458,9 @@ public class DefaultBenFactory extends AbstractAutowiredBeanCreateFactory implem
 
         // second autowired by dsr name to find bean name
         String attributeName = dsr.getAttributeName();
-        BeanDefinition attributeBeanDefinition = getBeanDefinition(attributeName);
-        if(attributeBeanDefinition != null){
+        BeanDefinition attributeBeanDefinition = this.beanDefinitionMap.get(attributeName);
+        if(attributeBeanDefinition != null && type.isAssignableFrom(attributeBeanDefinition.getBeanClass())){
             return this.getBean(attributeName);
-        }
-
-        // if it is no generic bean
-        Type genericType = dsr.getGenericType();
-        if(genericType instanceof Class){
-            return this.getBean(type);
         }
 
         String[] names = this.getBeanNamesForType(type);
@@ -463,43 +468,58 @@ public class DefaultBenFactory extends AbstractAutowiredBeanCreateFactory implem
         if(names.length == 1){
             matchName.add(names[0]);
         }
-
-        for(String name : names){
-            if(!isSelfReference(beanName,name)){
-                BeanDefinition beanDefinition = this.getBeanDefinition(name);
-                // resolve Bean method generic type
-                if(beanDefinition instanceof AnnotatedGenericBeanDefinition){
-                    MethodMetadata metadata = ((AnnotatedGenericBeanDefinition) beanDefinition).getFactoryMethodMetadata();
-                    // have generic bean write method
-                    if(metadata instanceof GenericMethodMetadata){
-                        Type[] generics = ((GenericMethodMetadata) metadata).getGenerics();
-                        if(ResolverTypeUtil.typeIsMatchOfGenerics(dsr.getGenericType(),generics)){
-                            matchName.add(name);
-                            continue;
+        // if it is no generic bean
+        Type genericType = dsr.getGenericType();
+        if(genericType instanceof Class){
+            logger.trace("filed : " + attributeName + " in create bean :" + beanName + ", no generic");
+            // do some thing
+        }
+        else{
+            for(String name : names){
+                if(!isSelfReference(beanName,name)){
+                    BeanDefinition beanDefinition = this.getBeanDefinition(name);
+                    // resolve Bean method generic type
+                    if(beanDefinition instanceof AnnotatedGenericBeanDefinition){
+                        MethodMetadata metadata = ((AnnotatedGenericBeanDefinition) beanDefinition).getFactoryMethodMetadata();
+                        // have generic bean write method
+                        if(metadata instanceof GenericMethodMetadata){
+                            Type[] generics = ((GenericMethodMetadata) metadata).getGenerics();
+                            if(ResolverTypeUtil.typeIsMatchOfGenerics(dsr.getGenericType(),generics)){
+                                matchName.add(name);
+                                continue;
+                            }
                         }
                     }
+                    if(ResolverTypeUtil.isAssignableFrom(dsr.getGenericType(),beanDefinition.getBeanClass())){
+                        matchName.add(name);
+                    }
                 }
-                if(ResolverTypeUtil.isAssignableFrom(dsr.getGenericType(),beanDefinition.getBeanClass())){
+            }
+        }
+
+        // support autowired self
+        if(matchName.size() == 0){
+            for(String name : names){
+                if(isSelfReference(beanName,name)){
                     matchName.add(name);
                 }
             }
         }
-        if(matchName.size() == 0){
-            for(String name : names){
-                if(isSelfReference(beanName,name)){
-                    return this.getBean(name);
-                }
-            }
-            return null;
-        }
+
         String matchNameStr;
         if(matchName.size() == 1){
             matchNameStr = matchName.get(0);
         }else {
-
-            matchNameStr  = determinePrimary(matchName.toArray(new String[matchName.size()]), type);
+            matchNameStr  = determinePrimaryIfNecessary(matchName.toArray(new String[matchName.size()]), type,Boolean.FALSE);
         }
-        return this.getBean(matchNameStr);
+
+        if(StringUtils.hasText(matchNameStr)){
+            return this.getBean(matchNameStr);
+        }
+        else {
+            return null;
+        }
+
     }
 
 

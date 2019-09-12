@@ -120,7 +120,7 @@ public class TestConfiguration {
 
 ### 0.0.3-SNAPSHOT:
 1. 支持aop功能
-2. 修复@Bean无法创建带有参数的方法的bean(如果容器中有该类型的类则会注入，否则注入null)
+2. 修复@Bean无法创建带有参数的方法的bean(如果容器中有该类型的类则会注入, 根据参数上的@Autowired注解来判断是否需要注入,没有默认为false)
 
 ## License
 
