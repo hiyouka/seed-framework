@@ -1,7 +1,6 @@
 package hiyouka.framework.test.bean;
 
 import seed.seedframework.beans.annotation.Autowired;
-import seed.seedframework.beans.annotation.Component;
 import seed.seedframework.beans.annotation.Specify;
 import seed.seedframework.beans.annotation.Value;
 
@@ -9,7 +8,7 @@ import seed.seedframework.beans.annotation.Value;
  * @author hiyouka
  * @since JDK 1.8
  */
-@Component
+//@Component
 public class TestAutowired {
 
 //    @Autowired
@@ -24,13 +23,9 @@ public class TestAutowired {
     @Autowired
     private TestBean1<String,Object> testBean2;
 
-
     @Autowired
     @Specify("testBean1")
     private TestFather1 testFatherPrimary;
-
-
-
 
 //    @Autowired
 //    private TestFather1<Test1,Test1> testFather1;

@@ -17,6 +17,8 @@ public class ClassUtils {
     /** 内部类 */
     public static final char INNER_CLASS_SEPARATOR = '$';
 
+    public static final String CLASS_SUFFIX = ".class";
+
     /**
      * get thread ClassLoader Object
      * @param
@@ -78,6 +80,10 @@ public class ClassUtils {
         String shortName = className.substring(lastDotIndex + 1, nameEndIndex);
         shortName = shortName.replace(INNER_CLASS_SEPARATOR, PACKAGE_SEPARATOR);
         return shortName;
+    }
+
+    public static String getShortClassName(Class<?> clazz){
+        return getShortName(clazz.getName()) + CLASS_SUFFIX;
     }
 
     public static String convertResourcePathToClassName(String resourcePath) {

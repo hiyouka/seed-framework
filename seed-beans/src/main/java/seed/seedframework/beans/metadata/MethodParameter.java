@@ -1,5 +1,6 @@
 package seed.seedframework.beans.metadata;
 
+import seed.seedframework.core.asm.ClassReaderUtils;
 import seed.seedframework.util.Assert;
 
 import java.lang.annotation.Annotation;
@@ -28,6 +29,8 @@ public class MethodParameter {
     private volatile Type genericParameterType;
 
     private volatile String parameterName;
+
+    private volatile String[] parameterNames;
 
     /**
      *  -1 表示returenType
@@ -93,8 +96,11 @@ public class MethodParameter {
     }
 
     public String getParameterName() {
-        if(parameterIndex > 0 && this.getParameterName() == null){
-            parameterName = getParameter().getName();
+        if(parameterIndex > 0 && this.parameterName == null){
+            if(this.parameterNames == null){
+                parameterNames = ClassReaderUtils.getParameterNamesByAsm5(this.getDeclaringClass(),this.getMethod());
+            }
+            parameterName = parameterNames[parameterIndex];
         }
         return parameterName;
     }

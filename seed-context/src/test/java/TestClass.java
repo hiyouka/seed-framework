@@ -22,7 +22,7 @@ public class TestClass {
     public void applicationTest() throws NoSuchFieldException {
 
         ApplicationContext applicationContext = new AnnotationConfigApplicationContext(TestConfiguration.class);
-        Object testAutowired = applicationContext.getBean("testAutowired");
+//        Object testAutowired = applicationContext.getBean("testAutowired");
         TestAutowiredBean bean = applicationContext.getBean(TestAutowiredBean.class);
         Environment environment = applicationContext.getEnvironment();
         String property = environment.getProperty("spring.aop.auto");

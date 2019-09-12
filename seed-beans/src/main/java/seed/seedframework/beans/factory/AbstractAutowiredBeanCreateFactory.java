@@ -133,12 +133,8 @@ public abstract class AbstractAutowiredBeanCreateFactory extends AbstractBeanCre
     private Object[] resolveDependParameters(Method method,String beanName){
         Object[] result = new Object[method.getParameterCount()];
         for(int i=0; i<result.length; i++){
-            try{
-                result[i] =
-                        resolveDepend(new DependencyDescriptor(new MethodParameter(method, i)),beanName);
-            }catch (BeanCreatedException e){
-                result[i] = null;
-            }
+            result[i] =
+                    resolveDepend(new DependencyDescriptor(new MethodParameter(method, i)),beanName);
         }
         return result;
     }
