@@ -10,4 +10,6 @@ public interface MethodInvocation extends Invocation {
 
     Method getMethod();
 
+    Object[] getArguments();
+
 }

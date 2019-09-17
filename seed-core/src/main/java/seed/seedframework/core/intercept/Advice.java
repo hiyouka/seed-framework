@@ -4,10 +4,8 @@ package seed.seedframework.core.intercept;
  * @author hiyouka
  * @since JDK 1.8
  */
-public interface Joinpoint {
+public interface Advice {
 
-    Object getThis();
-
-    Object process() throws Throwable;
+//    Interceptor getInterceptor(Advisor advisor);
 
 }
