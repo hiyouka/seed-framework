@@ -6,6 +6,5 @@ package seed.seedframework.core.intercept;
  */
 public interface Advice {
 
-//    Interceptor getInterceptor(Advisor advisor);
 
 }
