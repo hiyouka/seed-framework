@@ -1,4 +1,4 @@
-package seed.seedframework.aop;
+package seed.seedframework.aop.proxy;
 
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;

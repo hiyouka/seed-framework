@@ -1,4 +1,4 @@
-package seed.seedframework.aop;
+package seed.seedframework.aop.proxy;
 
 /**
  * @author hiyouka
