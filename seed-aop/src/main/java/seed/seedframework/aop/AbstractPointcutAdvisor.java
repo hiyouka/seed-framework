@@ -1,6 +1,7 @@
 package seed.seedframework.aop;
 
 import seed.seedframework.aop.adapter.PointcutAdvisor;
+import seed.seedframework.aop.pointcut.Pointcut;
 import seed.seedframework.core.intercept.Advice;
 
 /**
