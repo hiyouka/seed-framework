@@ -1,4 +1,6 @@
-package seed.seedframework.aop;
+package seed.seedframework.aop.pointcut;
+
+import seed.seedframework.aop.matcher.MethodMatcher;
 
 /**
  * @author hiyouka

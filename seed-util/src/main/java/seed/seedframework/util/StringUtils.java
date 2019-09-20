@@ -12,13 +12,18 @@ public class StringUtils {
 
     public static final String FOLDER_SEPARATOR = "/";
 
-    private static final String WINDOWS_FOLDER_SEPARATOR = "\\";
+    public static final String WINDOWS_FOLDER_SEPARATOR = "\\";
+
+    public static final String ESCAPE_CHARACTER = "\\";
 
     private static final String TOP_PATH = "..";
 
     public static final String CURRENT_PATH = ".";
 
     private static final char EXTENSION_SEPARATOR = '.';
+
+    //.$|()[{^?*+\
+    public static final char[] SPECIAL_CHARACTERS = {'.','$','|','(',')','[','{','^','?','*','+','\\'};
 
     public static String[] toStringArray(Collection<String> collection) {
         return collection.toArray(new String[0]);
@@ -328,6 +333,69 @@ public class StringUtils {
             sb.append(arr[i]);
         }
         return sb.toString();
+    }
+
+    /**
+     * @param ex 需要分割字符串
+     * @param separator  分隔符
+     * @return java.lang.String[]
+     */
+    public static String[] groupBySeparator(String ex, String separator){
+        List<String> exs = new ArrayList<>();
+        char[] chars = ex.toCharArray();
+        char[] schars = separator.toCharArray();
+        StringBuilder currentChars = new StringBuilder();
+        StringBuilder currentSeparatorChars = new StringBuilder();
+        for (char aChar : chars) {
+            if (aChar == schars[currentSeparatorChars.length()]) {
+                currentSeparatorChars.append(aChar);
+            } else {
+                if(currentSeparatorChars.length() != 0){
+                    currentSeparatorChars = new StringBuilder();
+                }
+            }
+            if (currentSeparatorChars.toString().equals(separator)) {
+                if(separator.length() > 1){
+                    currentChars.delete(currentChars.length() - separator.length() + 1, currentChars.length());
+                }
+                currentSeparatorChars = new StringBuilder();
+                if (StringUtils.hasText(currentChars.toString())) {
+                    exs.add(currentChars.toString());
+                }
+                exs.add(separator);
+                currentChars = new StringBuilder();
+//                spIndex.add(i);
+            }else {
+                currentChars.append(aChar);
+            }
+        }
+        if(StringUtils.hasText(currentChars.toString())){
+            exs.add(currentChars.toString());
+        }
+        return exs.toArray(new String[0]);
+    }
+
+    public static String[] split(String origin,String regex){
+        StringBuilder realRegex = new StringBuilder();
+        char[] chars = regex.toCharArray();
+        for(char c : chars){
+            if(isSpecialCharacter(c)){
+                realRegex.append(ESCAPE_CHARACTER).append(c);
+            }
+            else {
+                realRegex.append(c);
+            }
+        }
+        return origin.split(realRegex.toString());
+    }
+
+    public static boolean isSpecialCharacter(char origin){
+        for(char c : SPECIAL_CHARACTERS){
+            if (c == origin){
+                return true;
+            }
+        }
+        return false;
     }
 
 }

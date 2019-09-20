@@ -9,6 +9,8 @@ public class ClassUtils {
 
     public static final char PACKAGE_SEPARATOR = '.';
 
+    public static final String PACKAGE_SEPARATOR_MULTIPLE = "..";
+
     public static final char PATH_SEPARATOR = '/';
 
     /** 目前还没使用cglib */

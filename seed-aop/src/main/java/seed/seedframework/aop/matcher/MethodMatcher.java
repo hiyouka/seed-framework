@@ -1,4 +1,4 @@
-package seed.seedframework.aop;
+package seed.seedframework.aop.matcher;
 
 import java.lang.reflect.Method;
 

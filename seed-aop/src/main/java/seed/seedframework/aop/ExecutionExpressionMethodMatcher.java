@@ -1,5 +1,6 @@
 package seed.seedframework.aop;
 
+import seed.seedframework.aop.matcher.MethodMatcher;
 import seed.seedframework.exception.ExpressionParseException;
 import seed.seedframework.util.ClassUtils;
 
@@ -91,6 +92,7 @@ public class ExecutionExpressionMethodMatcher implements MethodMatcher {
 
     @Override
     public boolean match(Method method) {
+//        Aspects.hasAspect()
         return false;
     }
 }
