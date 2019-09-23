@@ -10,4 +10,5 @@ import seed.seedframework.core.intercept.MethodInvocation;
 public interface AspectjMethodInvocation extends MethodInvocation, JoinPoint {
 
 
+
 }
