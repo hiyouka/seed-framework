@@ -12,15 +12,15 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class InterceptorChainMethodInvocation implements MethodInvocation {
 
-    private List<MethodInterceptor> chain = new CopyOnWriteArrayList<>();
+    protected List<MethodInterceptor> chain = new CopyOnWriteArrayList<>();
 
-    private final Method method;
+    protected final Method method;
 
-    private final Object target;
+    protected final Object target;
 
-    private final Object[] args;
+    protected final Object[] args;
 
-    private volatile int currentIndex = 0;
+    protected volatile int currentIndex = 0;
 
     public InterceptorChainMethodInvocation(Method method, Object target, Object[] args) {
         this.method = method;
@@ -78,5 +78,4 @@ public class InterceptorChainMethodInvocation implements MethodInvocation {
         }
 
     }
-
 }

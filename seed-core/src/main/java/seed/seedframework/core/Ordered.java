@@ -6,8 +6,8 @@ package seed.seedframework.core;
  */
 public class Ordered {
 
-    public static final Integer HIGHEST_LEVEL = Integer.MIN_VALUE;
+    public static final int HIGHEST_LEVEL = Integer.MIN_VALUE;
 
-    public static final Integer LOWER_LEVEL = Integer.MAX_VALUE;
+    public static final int LOWER_LEVEL = Integer.MAX_VALUE;
 
 }

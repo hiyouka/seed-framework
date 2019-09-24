@@ -1,5 +1,10 @@
 package seed.seedframework.util;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 /**
  * @author hiyouka
  * Date: 2019/1/27
@@ -135,6 +140,33 @@ public class ClassUtils {
     public static boolean isRequiredClass(Object re, Class<?> required){
         Assert.notNull(re,"compare obj must not be null");
         return re.getClass().equals(required);
+    }
+
+    public static boolean isCglibProxyClass(Class clazz){
+        return clazz != null && isCglibProxyClassName(clazz.getName());
+    }
+
+    public static boolean isCglibProxyClassName(String className) {
+        return (className != null && className.contains(CGLIB_CLASS_SEPARATOR));
+    }
+
+    public static Class[] getAllInterface(Class<?> clazz){
+        return getAllInterfacesForClassAsSet(clazz).toArray(new Class[0]);
+    }
+
+    public static Set<Class<?>> getAllInterfacesForClassAsSet(Class<?> clazz) {
+        Assert.notNull(clazz, "Class must not be null");
+        if (clazz.isInterface()) {
+            return Collections.singleton(clazz);
+        }
+        Set<Class<?>> interfaces = new LinkedHashSet<>();
+        Class<?> current = clazz;
+        while (current != null) {
+            Class<?>[] ifcs = current.getInterfaces();
+            interfaces.addAll(Arrays.asList(ifcs));
+            current = current.getSuperclass();
+        }
+        return interfaces;
     }
 
 }

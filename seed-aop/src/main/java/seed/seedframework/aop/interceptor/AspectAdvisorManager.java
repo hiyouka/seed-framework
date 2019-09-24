@@ -1,15 +1,19 @@
 package seed.seedframework.aop.interceptor;
 
 import seed.seedframework.aop.adapter.AdvisorAdapterRegister;
+import seed.seedframework.aop.adapter.PointcutAdvisor;
+import seed.seedframework.aop.matcher.MethodMatcher;
 import seed.seedframework.core.intercept.Advisor;
 import seed.seedframework.core.intercept.AdvisorManager;
-import seed.seedframework.core.intercept.Interceptor;
 import seed.seedframework.core.intercept.MethodInterceptor;
 import seed.seedframework.util.ArrayUtils;
 import seed.seedframework.util.Assert;
 
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -20,7 +24,18 @@ public class AspectAdvisorManager implements AdvisorManager {
 
     private List<Advisor> advisors = new ArrayList<>();
 
-    private Map<Method,List<Interceptor>> methodCache = new ConcurrentHashMap<>();
+    private final Class<?> targetClass;
+
+    private Map<Method,List<MethodInterceptor>> methodCache = new ConcurrentHashMap<>();
+
+    public AspectAdvisorManager(Class<?> targetClass) {
+        this.targetClass = targetClass;
+    }
+
+    public AspectAdvisorManager(Class<?> targetClass,Advisor[] advisors) {
+        this.targetClass = targetClass;
+        this.advisors = ArrayUtils.asList(advisors);
+    }
 
     @Override
     public Advisor[] getAdvisors() {
@@ -37,18 +52,30 @@ public class AspectAdvisorManager implements AdvisorManager {
         this.advisors.remove(advisor);
     }
 
-    public List<Interceptor> getAdvisorInterceptors(Method method){
-        List<Interceptor> interceptors = methodCache.get(method);
+    public List<MethodInterceptor> getAdvisorInterceptors(Method method){
+        List<MethodInterceptor> interceptors = methodCache.get(method);
         if(interceptors == null){
+            interceptors = new LinkedList<>();
             AdvisorAdapterRegister register = GlobalAdvisorAdapterRegistry.getInstance();
             for(Advisor advisor : this.advisors){
-                MethodInterceptor[] ins = register.getInterceptors(advisor);
-                interceptors.addAll(ArrayUtils.asList(ins));
+                if(advisor instanceof PointcutAdvisor){
+                    MethodMatcher matcher = ((PointcutAdvisor) advisor).getPointcut().methodMatch();
+                    boolean match = matcher.match(method);
+                    if(match){
+                        MethodInterceptor[] ins = register.getInterceptors(advisor);
+                        interceptors.addAll(ArrayUtils.asList(ins));
+                    }
+                }
+                else {
+                    // do some thing in other type advisor
+                }
             }
         }
         return interceptors;
     }
 
-
+    public Class<?> getTargetClass() {
+        return targetClass;
+    }
 
 }

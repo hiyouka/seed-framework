@@ -53,7 +53,8 @@ public class AspectJAwareAdvisorAutoProxyCreator implements InstantiationAwareBe
                     Class<?> beanClass = beanDefinition.getBeanClass();
                     Method[] methods = beanClass.getDeclaredMethods();
                     for(Method method : methods){
-                        AbstractAspectJAdvice advice = AspectJUtil.initAdvice(method);
+                        Object bean = beanFactory.getBean(name);
+                        AbstractAspectJAdvice advice = AspectJUtil.initAdvice(method,bean);
                         if(advice != null){
                             AspectJPointcutAdvisor advisor = new AspectJPointcutAdvisor(advice);
                             AnnotationAttributes attributes = AnnotatedElementUtils
@@ -62,7 +63,6 @@ public class AspectJAwareAdvisorAutoProxyCreator implements InstantiationAwareBe
                                 advisor.setOrder(attributes.getInteger("value"));
                             }
                             else {
-                                Object bean = beanFactory.getBean(name);
                                 if(bean instanceof Order){
                                     advisor.setOrder(((Order) bean).getOrder());
                                 }
