@@ -30,6 +30,7 @@
             <version>${junit.jupiter.version}</version>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-params</artifactId>
@@ -46,7 +47,7 @@
 
         <dependency>
             <groupId>seed.seedframework</groupId>
-            <artifactId>seed-core</artifactId>
+            <artifactId>seed-beans</artifactId>
             <version>${project.version}</version>
         </dependency>
 
