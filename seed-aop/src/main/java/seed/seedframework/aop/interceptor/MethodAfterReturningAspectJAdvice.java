@@ -11,18 +11,19 @@ import java.lang.reflect.Method;
  */
 public class MethodAfterReturningAspectJAdvice extends AbstractAspectJAdvice implements MethodAfterAdvice {
 
-    public MethodAfterReturningAspectJAdvice(Method aspectJMethod) {
-        super(aspectJMethod);
+
+    public MethodAfterReturningAspectJAdvice(Method aspectJMethod, Object aspectJTarget) {
+        super(aspectJMethod, aspectJTarget);
     }
 
     @Override
     protected AspectJUtil.AspectJMethodType getAspectMethodType() {
-        return null;
+        return AspectJUtil.AspectJMethodType.AFTER_RETURNING;
     }
 
     @Override
     public Object after(Object returnVal, Method method, Object[] args, Object target) {
-        return null;
+        return invokeMethodWithArgs(returnVal,method,args,target);
     }
 
 }

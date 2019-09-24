@@ -11,7 +11,7 @@ public class ExpressionParseException extends SeedCoreException {
     private static final String message = "expression parse error ";
 
     public ExpressionParseException(String expression){
-        super(expression + "," +  expression );
+        super(message + "," +  expression );
         this.expression = expression;
     }
 

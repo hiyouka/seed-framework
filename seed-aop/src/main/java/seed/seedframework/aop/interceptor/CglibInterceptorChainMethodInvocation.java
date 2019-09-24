@@ -1,5 +1,6 @@
 package seed.seedframework.aop.interceptor;
 
+import net.sf.cglib.proxy.MethodProxy;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.reflect.SourceLocation;
 import seed.seedframework.core.intercept.InterceptorChainMethodInvocation;
@@ -14,8 +15,11 @@ import java.util.List;
  */
 public class CglibInterceptorChainMethodInvocation extends InterceptorChainMethodInvocation implements  AspectjMethodInvocation{
 
-    public CglibInterceptorChainMethodInvocation(List<MethodInterceptor> chain, Method method, Object target, Object[] args) {
+    private MethodProxy methodProxy;
+
+    public CglibInterceptorChainMethodInvocation(List<MethodInterceptor> chain, Method method, Object target, Object[] args, MethodProxy methodProxy) {
         super(chain, method, target, args);
+        this.methodProxy = methodProxy;
     }
 
     @Override
@@ -56,5 +60,24 @@ public class CglibInterceptorChainMethodInvocation extends InterceptorChainMetho
     @Override
     public StaticPart getStaticPart() {
         return null;
+    }
+
+    @Override
+    public Object process() throws Throwable {
+        // if no interceptor or end
+        if(this.currentIndex == (this.chain.size())){
+            return this.methodProxy.invokeSuper(this.target, this.args);
+        }
+        MethodInterceptor currentInterceptor;
+        synchronized (this){
+            currentInterceptor = this.chain.get(this.currentIndex++);
+        }
+        if(currentInterceptor != null){
+            return currentInterceptor.invoke(this);
+        }
+        // skip
+        else {
+            return process();
+        }
     }
 }

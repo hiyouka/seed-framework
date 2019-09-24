@@ -11,18 +11,18 @@ import java.lang.reflect.Method;
  */
 public class MethodThrowingAspectJAdvice extends AbstractAspectJAdvice implements ThrowsAdvice {
 
-    public MethodThrowingAspectJAdvice(Method aspectJMethod) {
-        super(aspectJMethod);
+    public MethodThrowingAspectJAdvice(Method aspectJMethod, Object aspectJTarget) {
+        super(aspectJMethod, aspectJTarget);
     }
 
     @Override
     protected AspectJUtil.AspectJMethodType getAspectMethodType() {
-        return null;
+        return AspectJUtil.AspectJMethodType.AFTER_THROWING;
     }
 
     @Override
     public void doOfThrow(Method method, Object[] arguments, Object aThis) throws Throwable {
-
+        
     }
 
 }

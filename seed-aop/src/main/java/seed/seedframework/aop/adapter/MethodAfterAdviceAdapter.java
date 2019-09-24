@@ -6,7 +6,7 @@ import seed.seedframework.core.intercept.*;
  * @author hiyouka
  * @since JDK 1.8
  */
-public class MethodAfterAdviceAdapter implements AdvisorAdapter {
+    public class MethodAfterAdviceAdapter implements AdvisorAdapter {
 
     @Override
     public MethodInterceptor getInterceptor(Advisor advisor) {

@@ -12,13 +12,14 @@ import java.lang.reflect.Method;
  */
 public class MethodAroundAspectJAdvice extends AbstractAspectJAdvice implements MethodAroundAdvice {
 
-    public MethodAroundAspectJAdvice(Method aspectJMethod) {
-        super(aspectJMethod);
+
+    public MethodAroundAspectJAdvice(Method aspectJMethod, Object aspectJTarget) {
+        super(aspectJMethod, aspectJTarget);
     }
 
     @Override
     protected AspectJUtil.AspectJMethodType getAspectMethodType() {
-        return null;
+        return AspectJUtil.AspectJMethodType.AROUND;
     }
 
     @Override

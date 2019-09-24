@@ -48,7 +48,7 @@ public class AspectPointcut implements ExpressionPointcut {
     @Override
     public MethodMatcher methodMatch() {
         if(methodMatcher == null){
-            synchronized (this.methodMatcher){
+            synchronized (this){
                 PointcutParser pointcutParser = PointcutParser
                         .getPointcutParserSupportingSpecifiedPrimitivesAndUsingSpecifiedClassLoaderForResolution(
                                 SUPPORTED_PRIMITIVES, ClassUtils.getDefaultClassLoader());

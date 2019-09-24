@@ -77,24 +77,24 @@ public class AspectJUtil {
         BEFORE,AFTER,AFTER_RETURNING,AFTER_THROWING,AROUND
     }
 
-    public static AbstractAspectJAdvice initAdvice(Method method){
+    public static AbstractAspectJAdvice initAdvice(Method method, Object target){
         AnnotationAttributes attributes = getAspectMethodAttribute(method);
         if(attributes != null){
             Class<? extends Annotation> aClass = attributes.annotationType();
             if(aClass.equals(Before.class)){
-                return new MethodBeforeAspectJAdvice(method);
+                return new MethodBeforeAspectJAdvice(method,target);
             }
             if(aClass.equals(After.class)){
-                return new MethodAfterAspectJAdvice(method);
+                return new MethodAfterAspectJAdvice(method,target);
             }
             if(aClass.equals(AfterReturning.class)){
-                return new MethodAfterAspectJAdvice(method);
+                return new MethodAfterAspectJAdvice(method,target);
             }
             if(aClass.equals(Around.class)){
-                return new MethodAroundAspectJAdvice(method);
+                return new MethodAroundAspectJAdvice(method,target);
             }
             if(aClass.equals(AfterThrowing.class)){
-                return new MethodThrowingAspectJAdvice(method);
+                return new MethodThrowingAspectJAdvice(method,target);
             }
         }
         return null;

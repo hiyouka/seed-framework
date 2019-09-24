@@ -1,7 +1,5 @@
 package seed.seedframework.core.intercept;
 
-import java.util.List;
-
 /**
  * @author hiyouka
  * @since JDK 1.8
@@ -9,5 +7,6 @@ import java.util.List;
 public interface AdvisorManager{
 
     Advisor[] getAdvisors();
+
 
 }
