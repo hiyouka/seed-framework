@@ -9,7 +9,7 @@ import java.lang.annotation.*;
  * @author hiyouka
  * @since JDK 1.8
  */
-@Target({ElementType.FIELD,ElementType.PARAMETER})
+@Target({ElementType.FIELD,ElementType.PARAMETER,ElementType.CONSTRUCTOR})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Autowired {

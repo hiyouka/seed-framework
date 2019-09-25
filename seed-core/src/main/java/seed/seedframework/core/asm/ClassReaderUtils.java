@@ -10,6 +10,8 @@ import seed.seedframework.util.ClassUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
@@ -73,8 +75,8 @@ public class ClassReaderUtils {
     }
 
     public static String[] getParameterNamesByAsm5(Class<?> clazz,
-                                                   final Method method) {
-        final Class<?>[] parameterTypes = method.getParameterTypes();
+                                                   final Executable executable) {
+        final Class<?>[] parameterTypes = executable.getParameterTypes();
         if (parameterTypes.length == 0) {
             return new String[0];
         }
@@ -82,16 +84,26 @@ public class ClassReaderUtils {
         for (int i = 0; i < parameterTypes.length; i++) {
             types[i] = Type.getType(parameterTypes[i]);
         }
+
+
         final String[] parameterNames = new String[parameterTypes.length];
         try(InputStream is = clazz.getResourceAsStream(ClassUtils.getShortClassName(clazz))){
             ClassReader classReader = new ClassReader(is);
             classReader.accept(new ClassVisitor(Opcodes.ASM5) {
+
                 @Override
                 public MethodVisitor visitMethod(int access, String name,
                                                  String desc, String signature, String[] exceptions) {
                     // 只处理指定的方法
                     Type[] argumentTypes = Type.getArgumentTypes(desc);
-                    if (!method.getName().equals(name)
+                    String methodName = "";
+                    if(executable instanceof Method){
+                        methodName = executable.getName();
+                    }
+                    else if(executable instanceof Constructor){
+                        methodName = "<init>";
+                    }
+                    if (!methodName.equals(name)
                             || !Arrays.equals(argumentTypes, types)) {
                         return super.visitMethod(access, name, desc, signature,
                                 exceptions);
@@ -102,7 +114,7 @@ public class ClassReaderUtils {
                                                        String signature, org.objectweb.asm.Label start,
                                                        org.objectweb.asm.Label end, int index) {
                             // 非静态成员方法的第一个参数是this
-                            if (Modifier.isStatic(method.getModifiers()) && index <= parameterNames.length) {
+                            if (Modifier.isStatic(executable.getModifiers()) && index <= parameterNames.length) {
                                 parameterNames[index] = name;
                             } else if (index > 0 && index <= parameterNames.length) {
                                 parameterNames[index - 1] = name;
@@ -111,9 +123,13 @@ public class ClassReaderUtils {
                     };
                 }
             }, 0);
+
+
+
         } catch (IOException e) {
-            throw new FileReadException("getParameterNamesByAsm5 read field error");
+            throw new FileReadException("getParameterNamesByAsm5 read field error",e);
         }
+
         return parameterNames;
     }
 

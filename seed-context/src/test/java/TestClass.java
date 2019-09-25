@@ -1,14 +1,17 @@
+import hiyouka.framework.test.bean.TestAutowired;
 import hiyouka.framework.test.bean.TestAutowiredBean;
+import hiyouka.framework.test.bean.TestBean1;
+import hiyouka.framework.test.bean.TestFather1;
 import hiyouka.framework.test.config.TestConfiguration;
 import org.junit.jupiter.api.Test;
+import seed.seedframework.beans.metadata.MethodParameter;
 import seed.seedframework.context.AnnotationConfigApplicationContext;
 import seed.seedframework.context.ApplicationContext;
 import seed.seedframework.core.env.Environment;
 import seed.seedframework.core.intercept.*;
 import seed.seedframework.util.ReflectionUtils;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
+import java.lang.reflect.*;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -16,11 +19,27 @@ import java.util.List;
  * @author hiyouka
  * @since JDK 1.8
  */
-public class TestClass {
+public class  TestClass {
 
     String test = "123123";
 
 
+    @Test
+    public void testParameterName() throws NoSuchMethodException {
+        Constructor<TestAutowired> declaredConstructor = TestAutowired.class.getDeclaredConstructor(TestBean1.class);
+        TypeVariable<Constructor<TestAutowired>>[] typeParameters = declaredConstructor.getTypeParameters();
+        Parameter[] parameters = declaredConstructor.getParameters();
+        String name = parameters[0].getName();
+
+        MethodParameter methodParameter = new MethodParameter(declaredConstructor,0);
+        Method testB = TestAutowired.class.getDeclaredMethod("testB", TestFather1.class);
+        MethodParameter methodParameter1 = new MethodParameter(testB, 0);
+//        System.out.println(methodParameter.getParameterType());
+//        System.out.println(methodParameter1.getParameterType());
+        System.out.println(methodParameter.getParameterName());
+//        System.out.println(methodParameter1.getParameterName());
+
+    }
 
     @Test
     public void applicationTest() throws NoSuchFieldException {

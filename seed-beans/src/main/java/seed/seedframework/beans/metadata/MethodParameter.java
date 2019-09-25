@@ -4,9 +4,7 @@ import seed.seedframework.core.asm.ClassReaderUtils;
 import seed.seedframework.util.Assert;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
-import java.lang.reflect.Type;
+import java.lang.reflect.*;
 
 /**
  * @author hiyouka
@@ -14,7 +12,7 @@ import java.lang.reflect.Type;
  */
 public class MethodParameter {
 
-    private final Method method;
+    private final Executable executable;
 
     private final int parameterIndex;
 
@@ -32,21 +30,39 @@ public class MethodParameter {
 
     private volatile String[] parameterNames;
 
+    private final String methodName;
+
     /**
      *  -1 表示returenType
      */
     public MethodParameter(Method method, int parameterIndex){
-        this.method = method;
+        this.executable = method;
         int parameterCount = method.getParameterCount();
         if((parameterIndex < -1) || (parameterIndex > (parameterCount-1))){
             Assert.state(false,"can find parameterCount:" + parameterCount +" parameter");
         }
         this.parameterIndex = parameterIndex;
         this.declaringClass = method.getDeclaringClass();
+        this.methodName = method.getName();
     }
 
-    public Method getMethod() {
-        return method;
+    public MethodParameter(Constructor constructor, int parameterIndex) {
+        this.executable = constructor;
+        int parameterCount = constructor.getParameterCount();
+        if((parameterIndex < -1) || (parameterIndex > (parameterCount-1))){
+            Assert.state(false,"can find parameterCount:" + parameterCount +" parameter");
+        }
+        this.parameterIndex = parameterIndex;
+        this.declaringClass = constructor.getDeclaringClass();
+        this.methodName = constructor.getName();
+    }
+
+    public String getMethodName() {
+        return methodName;
+    }
+
+    public Executable getExecutable() {
+        return executable;
     }
 
     public int getParameterIndex() {
@@ -59,7 +75,7 @@ public class MethodParameter {
 
     public Parameter getParameter() {
         if(this.parameter == null && this.parameterIndex != -1){
-            parameter = this.method.getParameters()[this.parameterIndex];
+            parameter = this.executable.getParameters()[this.parameterIndex];
         }
         return parameter;
     }
@@ -74,10 +90,26 @@ public class MethodParameter {
     public Class<?> getParameterType() {
         if(this.parameterType == null){
             if(parameterIndex < 0){
-                parameterType = method.getReturnType();
+                if(this.executable instanceof Method){
+                    parameterType = ((Method)this.executable).getReturnType();
+                }
+                else if(this.executable instanceof Constructor){
+                    parameterType = this.executable.getDeclaringClass();
+                }
             }
             else {
-                parameterType = this.parameter.getType();
+                if(this.executable instanceof Method){
+                    parameterType = this.parameter.getType();
+                }
+                else if(this.executable instanceof Constructor){
+                    Type parameterizedType = this.parameter.getParameterizedType();
+                    if(parameterizedType instanceof Class){
+                        parameterType = (Class<?>)parameterizedType;
+                    }
+                    else if(parameterizedType instanceof ParameterizedType){
+                        parameterType = (Class<?>) ((ParameterizedType) parameterizedType).getRawType();
+                    }
+                }
             }
         }
         return parameterType;
@@ -86,20 +118,25 @@ public class MethodParameter {
     public Type getGenericParameterType() {
         if(this.genericParameterType == null){
             if(parameterIndex < 0){
-                genericParameterType = this.method.getGenericReturnType();
+                if(this.executable instanceof Method){
+                    genericParameterType = ((Method)this.executable).getGenericReturnType();
+                }
+                else if(this.executable instanceof Constructor){
+                    genericParameterType = ((Constructor)this.executable).getDeclaringClass();
+                }
             }
             else {
-                genericParameterType = this.method.getGenericParameterTypes()[parameterIndex];
+                genericParameterType = this.executable.getGenericParameterTypes()[parameterIndex];
             }
         }
         return genericParameterType;
     }
 
     public String getParameterName() {
-        if(parameterIndex > 0 && this.parameterName == null){
+        if(parameterIndex > -1 && this.parameterName == null){
             if(this.parameterNames == null){
-                parameterNames = ClassReaderUtils.getParameterNamesByAsm5(this.getDeclaringClass(),this.getMethod());
-            }
+                    parameterNames = ClassReaderUtils.getParameterNamesByAsm5(this.getDeclaringClass(),this.getExecutable());
+                }
             parameterName = parameterNames[parameterIndex];
         }
         return parameterName;

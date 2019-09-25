@@ -1,9 +1,8 @@
 package seed.seedframework.util;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Type;
+import java.util.*;
 
 /**
  * @author hiyouka
@@ -168,5 +167,23 @@ public class ClassUtils {
         }
         return interfaces;
     }
+
+    public static Constructor[] getConstructorByParameter(Class<?> clazz, Type... parameterType){
+        Constructor<?>[] declaredConstructors = getAllConstructorByClass(clazz);
+        List<Constructor> result = new LinkedList<>();
+        for(Constructor constructor : declaredConstructors){
+            Type[] genericParameterTypes = constructor.getGenericParameterTypes();
+            boolean match = ArrayUtils.isAllMemberMatch(parameterType, genericParameterTypes);
+            if(match){
+                result.add(constructor);
+            }
+        }
+        return result.toArray(new Constructor[0]);
+    }
+
+    public static Constructor[] getAllConstructorByClass(Class<?> clazz){
+        return clazz.getDeclaredConstructors();
+    }
+
 
 }

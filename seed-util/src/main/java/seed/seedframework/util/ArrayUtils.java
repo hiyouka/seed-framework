@@ -33,4 +33,16 @@ public class ArrayUtils {
         return resultList.toArray(copy);
     }
 
+    public static boolean isAllMemberMatch(Object[] from, Object[] to){
+        for(int i=0; i<from.length; i++){
+            if(from[i] == null && to[i] != null){
+                return false;
+            }
+            if(!from[i].equals(to[i])){
+                return false;
+            }
+        }
+        return true;
+    }
+
 }

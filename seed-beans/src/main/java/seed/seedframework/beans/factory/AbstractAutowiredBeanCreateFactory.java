@@ -3,11 +3,14 @@ package seed.seedframework.beans.factory;
 import seed.seedframework.beans.definition.AbstractBeanDefinition;
 import seed.seedframework.beans.definition.BeanDefinition;
 import seed.seedframework.beans.exception.BeanCreatedException;
+import seed.seedframework.beans.factory.config.BeanPostProcessor;
 import seed.seedframework.beans.factory.config.Initialization;
+import seed.seedframework.beans.factory.config.InstantiationAwareBeanPostProcessor;
 import seed.seedframework.beans.metadata.DependencyDescriptor;
 import seed.seedframework.beans.metadata.MethodParameter;
 import seed.seedframework.util.*;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
 /**
@@ -93,11 +96,55 @@ public abstract class AbstractAutowiredBeanCreateFactory extends AbstractBeanCre
     private Object instanceBean(String beanName, BeanDefinition beanDefinition, Object[] args) {
         validateSingletonBean(beanName,beanDefinition);
         Assert.notNull(beanDefinition.getBeanClass(),"bean : " + beanName + " beanDefinition must have beanClass");
+
+        Constructor[] constructors = determineConstructorByPostProcessor(beanDefinition.getBeanClass(), beanName);
+        if(!ArrayUtils.isEmpty(constructors)){
+            return autowiredInstanceBean(constructors,beanDefinition.getBeanClass(),beanName);
+        }
         if(ArrayUtils.isEmpty(args)){
             return BeanUtils.instanceClass(beanDefinition.getBeanClass());
         }else {
             return BeanUtils.instanceClass(BeanUtils.findConstructor(beanDefinition.getBeanClass(),args),args);
         }
+    }
+
+    private Object autowiredInstanceBean(Constructor[] constructors,Class<?> beanClass, String beanName){
+        Constructor constructorToUsed = null;
+        for(Constructor constructor : constructors){
+            Class declaringClass = constructor.getDeclaringClass();
+            if(declaringClass.equals(beanClass)){
+                // todo : design some strategy to determine autowired constructor
+                if(constructorToUsed == null){
+                    constructorToUsed = constructor;
+                }else {
+                    throw new BeanCreatedException("no primary constructor found to creat bean : "
+                    + beanName);
+                }
+            }else {
+                logger.debug("constructor not support this bean : " + beanName
+                +" , constructor : " + constructor);
+            }
+        }
+        if(constructorToUsed == null){
+            throw new BeanCreatedException("no primary constructor found to creat bean : "
+                    + beanName);
+        }
+        Object[] args = resolveDependParameters(constructorToUsed, beanName);
+        return BeanUtils.instanceClass(constructorToUsed,args);
+    }
+
+
+    private Constructor[] determineConstructorByPostProcessor(Class<?> beanClass, String beanName){
+        Constructor[] constructors = new Constructor[0];
+        for(BeanPostProcessor beanPostProcessor : getBeanPostProcessors()){
+            if(beanPostProcessor instanceof InstantiationAwareBeanPostProcessor){
+                Constructor[] cs = ((InstantiationAwareBeanPostProcessor) beanPostProcessor).determineCandidateConstructors(beanClass,beanName);
+                if(cs != null){
+                    constructors = cs;
+                }
+            }
+        }
+        return constructors;
     }
 
     /** Bean method to get bean instance  */
@@ -135,6 +182,15 @@ public abstract class AbstractAutowiredBeanCreateFactory extends AbstractBeanCre
         for(int i=0; i<result.length; i++){
             result[i] =
                     resolveDepend(new DependencyDescriptor(new MethodParameter(method, i)),beanName);
+        }
+        return result;
+    }
+
+    private Object[] resolveDependParameters(Constructor constructor, String beanName){
+        Object[] result = new Object[constructor.getParameterCount()];
+        for(int i=0; i<result.length; i++){
+            result[i] =
+                    resolveDepend(new DependencyDescriptor(new MethodParameter(constructor,i)),beanName);
         }
         return result;
     }

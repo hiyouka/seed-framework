@@ -16,6 +16,7 @@ import seed.seedframework.beans.metadata.PropertyValues;
 import seed.seedframework.common.AnnotationAttributes;
 import seed.seedframework.exception.SeedCoreException;
 import seed.seedframework.util.AnnotatedElementUtils;
+import seed.seedframework.util.ClassUtils;
 import seed.seedframework.util.ReflectionUtils;
 import seed.seedframework.util.StringUtils;
 import org.apache.commons.logging.Log;
@@ -23,6 +24,7 @@ import org.apache.commons.logging.LogFactory;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.*;
@@ -60,6 +62,18 @@ public class AutowiredAnnotationPostProcessor implements MergedBeanDefinitionPos
     }
 
 
+    @Override
+    public Constructor<?>[] determineCandidateConstructors(Class<?> beanClass, String beanName) throws BeansException {
+        List<Constructor> result = new LinkedList<>();
+        Constructor[] constructors = ClassUtils.getAllConstructorByClass(beanClass);
+        for(Constructor constructor : constructors){
+            boolean annotated = AnnotatedElementUtils.isAnnotated(constructor, Autowired.class.getName());
+            if(annotated){
+                result.add(constructor);
+            }
+        }
+        return result.toArray(new Constructor[0]);
+    }
 
     @Override
     public PropertyValues postProcessProperties(PropertyValues pvs, Object bean, String beanName) throws BeansException {
@@ -132,6 +146,8 @@ public class AutowiredAnnotationPostProcessor implements MergedBeanDefinitionPos
 
         private final boolean request;
 
+        private boolean autowiredLater;
+
 //        private volatile Object cacheFieldValue;
 
         public AutowiredFieldElement(Field field, boolean request) {
@@ -141,6 +157,10 @@ public class AutowiredAnnotationPostProcessor implements MergedBeanDefinitionPos
 
         @Override
         protected void inject(Object bean, String beanName, PropertyValues pvs) throws Throwable {
+            if(this.skip){
+                logger.debug("skip inject element of bean :" + beanName + ":" + this.member);
+                return;
+            }
             Field field = (Field) this.member;
             Object value = beanFactory.resolveDepend(new DependencyDescriptor(field,this.request),beanName);
             if(value == null && request){
@@ -151,6 +171,11 @@ public class AutowiredAnnotationPostProcessor implements MergedBeanDefinitionPos
             ReflectionUtils.makeAccessible(field);
             field.set(bean,value);
         }
+
+        public void setAutowiredLater(boolean autowiredLater) {
+            this.autowiredLater = autowiredLater;
+        }
+
     }
 
 
