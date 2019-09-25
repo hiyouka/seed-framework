@@ -319,7 +319,6 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
     public String[] getBeanNamesForType(@Nullable Class<?> type, boolean includeNonSingletons, boolean allowEagerInit) {
         return getBeanFactory().getBeanNamesForType(type,includeNonSingletons,allowEagerInit);
     }
-
     @Override
     public <T> Map<String, T> getBeansOfType(@Nullable Class<T> type) throws BeansException {
         return getBeanFactory().getBeansOfType(type);

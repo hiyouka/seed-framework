@@ -41,7 +41,7 @@ public class InjectionMetadata {
 
         protected final boolean isField;
 
-        protected volatile Boolean skip;
+        protected volatile boolean skip;
 
         public InjectionElement(Member member) {
             this.member = member;
@@ -57,7 +57,7 @@ public class InjectionMetadata {
             return member;
         }
 
-        public Boolean getSkip() {
+        public boolean isSkip() {
             return skip;
         }
     }

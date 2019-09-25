@@ -34,7 +34,7 @@ public class DependencyDescriptor extends InjectionPoint {
             this.required = (boolean) AnnotationUtils.getAttribute("required",annotation);
         }
         this.autowiredType = determineDependType();
-        this.methodName = parameter.getMethod().getName();
+        this.methodName = parameter.getMethodName();
     }
 
     public DependencyDescriptor(Field field,boolean required) {
@@ -49,7 +49,7 @@ public class DependencyDescriptor extends InjectionPoint {
         this.declaringClass = parameter.getDeclaringClass();
         this.required = required;
         this.autowiredType = determineDependType();
-        this.methodName = parameter.getMethod().getName();
+        this.methodName = parameter.getMethodName();
     }
 
 
@@ -99,4 +99,5 @@ public class DependencyDescriptor extends InjectionPoint {
         }
         return attributeName;
     }
+
 }

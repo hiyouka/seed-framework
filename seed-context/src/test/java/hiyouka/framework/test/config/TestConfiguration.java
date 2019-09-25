@@ -28,6 +28,8 @@ public class TestConfiguration {
         TestAutowiredBean testAutowiredBean = new TestAutowiredBean();
         testAutowiredBean.setTestFather(testFather1);
         testAutowiredBean.setTest1(test1);
+
+
         return  testAutowiredBean;
     }
 
