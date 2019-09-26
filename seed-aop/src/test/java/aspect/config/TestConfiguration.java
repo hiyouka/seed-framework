@@ -1,9 +1,9 @@
-package hiyouka.framework.test.config;
+package aspect.config;
 
-import hiyouka.framework.test.bean.Test1;
-import hiyouka.framework.test.bean.TestAutowiredBean;
-import hiyouka.framework.test.bean.TestBean1;
-import hiyouka.framework.test.bean.TestFather1;
+import aspect.bean.Test1;
+import aspect.bean.TestAutowiredBean;
+import aspect.bean.TestBean1;
+import aspect.bean.TestFather1;
 import seed.seedframework.beans.annotation.Autowired;
 import seed.seedframework.beans.annotation.Bean;
 import seed.seedframework.beans.annotation.Specify;
@@ -15,7 +15,7 @@ import seed.seedframework.context.annotation.Configuration;
  * @since JDK 1.8
  */
 @Configuration
-@ComponentScan("seed.framework.test")
+@ComponentScan({"aspect.bean","aspect.aop"})
 public class TestConfiguration {
 
     @Bean("testBeanOfManual")
@@ -24,13 +24,14 @@ public class TestConfiguration {
     }
 
     @Bean("testAutowiredBean")
-    public TestAutowiredBean testAutowiredBean(@Specify("testBean2") TestFather1 testFather1,@Autowired(required = false) Test1 test1){
+    public TestAutowiredBean testAutowiredBean(@Specify("testBean2") TestFather1 testFather1, @Autowired(required = false) Test1 test1){
         TestAutowiredBean testAutowiredBean = new TestAutowiredBean();
         testAutowiredBean.setTestFather(testFather1);
         testAutowiredBean.setTest1(test1);
 
-
         return  testAutowiredBean;
     }
+
+
 
 }

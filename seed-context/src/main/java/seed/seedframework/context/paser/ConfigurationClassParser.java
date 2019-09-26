@@ -36,7 +36,7 @@ public class ConfigurationClassParser {
 
     private final Log logger = LogFactory.getLog(getClass());
 
-    public static final String BEAN_ANNOTATION_CLASSNAME = "hiyouka.seedframework.beans.annotation.Bean";
+    public static final String BEAN_ANNOTATION_CLASSNAME = "seed.seedframework.beans.annotation.Bean";
 
     private final BeanDefinitionRegistry registry;
 

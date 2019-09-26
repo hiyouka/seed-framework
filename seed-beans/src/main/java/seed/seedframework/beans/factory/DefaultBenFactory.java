@@ -13,6 +13,7 @@ import seed.seedframework.beans.metadata.DependencyDescriptor;
 import seed.seedframework.beans.metadata.GenericMethodMetadata;
 import seed.seedframework.beans.metadata.MethodMetadata;
 import seed.seedframework.core.annotation.Priority;
+import seed.seedframework.exception.SeedCoreException;
 import seed.seedframework.util.*;
 
 import javax.annotation.Nullable;
@@ -281,12 +282,15 @@ public class DefaultBenFactory extends AbstractAutowiredBeanCreateFactory implem
             result = primaryBeanName.get(0);
         }
         if(required){
-            String message = null;
+            String message;
             if(primaryBeanName.size() > 0){
                 message = ", found "+primaryBeanName.size()+" : " + primaryBeanName;
+                throw new NoUniqueBeanException("not found unique bean for type : " + requiredType.getName()
+                        + (message == null ? "" : message));
             }
-            throw new NoUniqueBeanException("not found unique bean for type : " + requiredType.getName()
-                    + (message == null ? "" : message));
+            else {
+                throw new BeanNotFoundException("not found bean for type : " + requiredType.getName());
+            }
         }
         return result;
     }
@@ -404,15 +408,15 @@ public class DefaultBenFactory extends AbstractAutowiredBeanCreateFactory implem
     @Override
     public Object resolveDepend(DependencyDescriptor dsr, String beanName) {
         // todo 解决方法依赖注入
-        Object value;
+        ReturnWrapper value;
         if(DependencyDescriptor.DependencyType.AUTOWIRED.equals(dsr.getAutowiredType())){
             value = doResolveDependForAutowired(dsr,beanName);
         }
         else {
             value = doResolveDependForValue(dsr,beanName);
         }
-        if(value == null && dsr.isRequired()){
-            String errorMsg = "resolve depend error of bean :" + beanName;
+        if(!value.hasReturn() && dsr.isRequired()){
+            String errorMsg = "resolve depend error of bean :"  + beanName;
             if(dsr.getField() != null){
                 errorMsg += ", field name : " + dsr.getField().getName()+", field type: "
                         + dsr.getField().getGenericType();
@@ -422,37 +426,45 @@ public class DefaultBenFactory extends AbstractAutowiredBeanCreateFactory implem
                          +", parameter name : " + dsr.getParameter().getParameterName()+", parameter type: "
                          + dsr.getParameter().getGenericParameterType();
             }
+            errorMsg += " , cause by" + value.getErrorMessage();
             throw new BeanAutowiredException(errorMsg);
         }
-        return value;
+        return value.getValue();
     }
 
-    private Object doResolveDependForValue(DependencyDescriptor dsr,String beanName){
+
+
+    private ReturnWrapper doResolveDependForValue(DependencyDescriptor dsr,String beanName){
         Annotation valAnn = dsr.getAnnotationForType(Value.class);
         String value = (String) AnnotationUtils.getAttribute("value", valAnn);
         if(StringUtils.hasText(value)){
             ExpressionResolver resolver = getBean(ExpressionResolver.class);
             if(resolver != null){
-                return resolver.resolve(value);
+                return new ReturnWrapper(resolver.resolve(value),null);
             }
         }
-        return null;
+        return new ReturnWrapper(null," no value resolver from expression : " + value);
     }
 
 
 
-    private Object doResolveDependForAutowired(DependencyDescriptor dsr,String beanName){
+    private ReturnWrapper doResolveDependForAutowired(DependencyDescriptor dsr,String beanName){
         Class<?> type = dsr.getType();
         // first to get beanName from @Specify annotation
         Annotation specify = dsr.getAnnotationForType(Specify.class);
         if(specify != null){
             String matchBeanName = (String)AnnotationUtils.getAttribute("value", specify);
-            Class<?> beanClass = getBeanDefinition(matchBeanName).getBeanClass();
+            BeanDefinition beanDefinition = this.beanDefinitionMap.get(matchBeanName);
+            if(beanDefinition == null){
+                return new ReturnWrapper(null," not found beanDefinition " +
+                        "for @Specify assign beanName :" + matchBeanName);
+            }
+            Class<?> beanClass = beanDefinition.getBeanClass();
             if(!type.isAssignableFrom(beanClass)){
-                throw new BeanAutowiredException(" not found match bean from @Specify to specify beanName : "
-                + matchBeanName);
+                return new ReturnWrapper(null," @Specify assign beanName type :" + beanClass
+                        + " not match field type :" + type);
             }else {
-                return this.getBean(matchBeanName);
+                return getBeanReturnWrapper(matchBeanName);
             }
         }
 
@@ -460,7 +472,7 @@ public class DefaultBenFactory extends AbstractAutowiredBeanCreateFactory implem
         String attributeName = dsr.getAttributeName();
         BeanDefinition attributeBeanDefinition = this.beanDefinitionMap.get(attributeName);
         if(attributeBeanDefinition != null && type.isAssignableFrom(attributeBeanDefinition.getBeanClass())){
-            return this.getBean(attributeName);
+            return getBeanReturnWrapper(attributeName);
         }
 
         String[] names = this.getBeanNamesForType(type);
@@ -471,7 +483,7 @@ public class DefaultBenFactory extends AbstractAutowiredBeanCreateFactory implem
         // if it is no generic bean
         Type genericType = dsr.getGenericType();
         if(genericType instanceof Class){
-            logger.trace("filed : " + attributeName + " in create bean :" + beanName + ", no generic");
+            logger.trace(" filed : " + attributeName + " in create bean :" + beanName + ", no generic");
             // do some thing
         }
         else{
@@ -507,17 +519,60 @@ public class DefaultBenFactory extends AbstractAutowiredBeanCreateFactory implem
         }
 
         String matchNameStr;
-        if(matchName.size() == 1){
+        if(matchName.size() == 0){
+            return new ReturnWrapper(null," not found BeanDefinition of type : " + type);
+        }
+        else if(matchName.size() == 1){
             matchNameStr = matchName.get(0);
         }else {
             matchNameStr  = determinePrimaryIfNecessary(matchName.toArray(new String[matchName.size()]), type,Boolean.FALSE);
         }
 
         if(StringUtils.hasText(matchNameStr)){
-            return this.getBean(matchNameStr);
+            return getBeanReturnWrapper(matchNameStr);
         }
         else {
-            return null;
+            return new ReturnWrapper(null," not found unique bean for type ：" + type);
+        }
+
+    }
+
+    private ReturnWrapper getBeanReturnWrapper(String beanName){
+        ReturnWrapper wrapper;
+        try {
+            Object bean = this.getBean(beanName);
+            wrapper = new ReturnWrapper(bean,null);
+        }catch (BeansException e){
+            wrapper = new ReturnWrapper(null,e.getMessage());
+        }
+        return wrapper;
+    }
+
+
+    private static class ReturnWrapper{
+
+        private final Object value;
+
+        private final String errorMessage;
+
+        ReturnWrapper(Object value, String errorMessage) {
+            this.value = value;
+            if(!hasReturn() && StringUtils.isEmpty(errorMessage)){
+                throw new SeedCoreException("if return is null, must have errorMessage");
+            }
+            this.errorMessage = errorMessage;
+        }
+
+        Object getValue() {
+            return value;
+        }
+
+        String getErrorMessage() {
+            return errorMessage;
+        }
+
+        boolean hasReturn(){
+            return this.value != null;
         }
 
     }

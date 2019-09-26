@@ -26,6 +26,10 @@ public class AspectAdvisorManager implements AdvisorManager {
 
     private final Class<?> targetClass;
 
+    private Object target;
+
+    private Object[] args;
+
     private Map<Method,List<MethodInterceptor>> methodCache = new ConcurrentHashMap<>();
 
     public AspectAdvisorManager(Class<?> targetClass) {
@@ -36,6 +40,7 @@ public class AspectAdvisorManager implements AdvisorManager {
         this.targetClass = targetClass;
         this.advisors = ArrayUtils.asList(advisors);
     }
+
 
     @Override
     public Advisor[] getAdvisors() {
@@ -78,4 +83,19 @@ public class AspectAdvisorManager implements AdvisorManager {
         return targetClass;
     }
 
+    public Object getTarget() {
+        return target;
+    }
+
+    public void setTarget(Object target) {
+        this.target = target;
+    }
+
+    public Object[] getArgs() {
+        return args;
+    }
+
+    public void setArgs(Object[] args) {
+        this.args = args;
+    }
 }

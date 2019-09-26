@@ -20,10 +20,13 @@ public class ClassUtils {
     /** 目前还没使用cglib */
     public static final String CGLIB_CLASS_SEPARATOR = "$$";
 
+    public static final String JDK_CLASS_SEPARATOR = "$Proxy";
+
     /** 内部类 */
     public static final char INNER_CLASS_SEPARATOR = '$';
 
     public static final String CLASS_SUFFIX = ".class";
+
 
     /**
      * get thread ClassLoader Object
@@ -55,6 +58,17 @@ public class ClassUtils {
         return cl;
     }
 
+    public static Class<?> forNameSafe(String className){
+        boolean include = includeClassOnDefaultClassLoader(className);
+        Class<?> result = null;
+        if(include){
+            try {
+                result = forName(className);
+            } catch (ClassNotFoundException ignored) {}
+        }
+        return result;
+    }
+
     public static Class<?> forName(String className) throws ClassNotFoundException {
         Class<?> aClass;
         try {
@@ -63,6 +77,26 @@ public class ClassUtils {
             throw e;
         }
         return aClass;
+    }
+
+    public static boolean includeClassOnDefaultClassLoader(String className){
+        return includeClass(className,null);
+    }
+
+    public static boolean includeClass(String className, ClassLoader classLoader){
+        if(classLoader == null){
+            classLoader = ClassUtils.getDefaultClassLoader();
+        }
+        try {
+            forName(className,classLoader);
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
+    }
+
+    private static Class<?> forName(String className, ClassLoader classLoader) throws ClassNotFoundException {
+        return classLoader != null ? classLoader.loadClass(className) : Class.forName(className);
     }
 
     public static Class<?> getClass(String className){
@@ -148,6 +182,7 @@ public class ClassUtils {
     public static boolean isCglibProxyClassName(String className) {
         return (className != null && className.contains(CGLIB_CLASS_SEPARATOR));
     }
+
 
     public static Class[] getAllInterface(Class<?> clazz){
         return getAllInterfacesForClassAsSet(clazz).toArray(new Class[0]);

@@ -92,7 +92,7 @@ public class ClassPathScanningComponentProvider {
                             logger.info("scan BeanDefinition : " + bea.getBeanClassName());
                             searchBeanDefinitions.add(bea);
                         }else {
-                            logger.error("not support abstract or inner class Component class : " + bea.getBeanClassName());
+                            logger.warn("not support abstract or inner class Component class : " + bea.getBeanClassName());
                         }
                     }
                 }

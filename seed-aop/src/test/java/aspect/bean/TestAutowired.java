@@ -1,5 +1,6 @@
-package hiyouka.framework.test.bean;
+package aspect.bean;
 
+import aspect.aop.AopBefore;
 import seed.seedframework.beans.annotation.Autowired;
 import seed.seedframework.beans.annotation.Component;
 import seed.seedframework.beans.annotation.Specify;
@@ -31,16 +32,26 @@ public class TestAutowired {
     @Autowired
     private InnerClass innerClass;
 
+//    public TestAutowired(){}
+
     @Autowired
     public TestAutowired(TestBean1<String,Object> testBean2) {
         this.testBean2 = testBean2;
+
     }
 
-
-    public void testB(TestFather1 testFatherPrimary){
-        System.out.println("...");
+    @AopBefore
+    public void  testB(TestFather1 testFatherPrimary){
+        System.out.println("..." + li + auto);
     }
 
+    public void setAuto(String auto) {
+        this.auto = auto;
+    }
+
+    public void setLi(String li) {
+        this.li = li;
+    }
     //    @Autowired
 //    private TestFather1<Test1,Test1> testFather1;
 //

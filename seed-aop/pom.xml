@@ -51,6 +51,12 @@
             <version>${project.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>seed.seedframework</groupId>
+            <artifactId>seed-context</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
     </dependencies>
 
     <build>

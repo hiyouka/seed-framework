@@ -1,23 +1,25 @@
 package aspect;
 
-import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
-import org.aspectj.lang.annotation.Pointcut;
-import org.aspectj.weaver.tools.*;
+import aspect.aop.AopBefore;
+import aspect.aop.PointTest;
+import aspect.bean.TestAutowired;
+import aspect.config.TestConfiguration;
+import net.sf.cglib.proxy.Enhancer;
+import net.sf.cglib.proxy.MethodInterceptor;
+import net.sf.cglib.proxy.MethodProxy;
 import org.junit.jupiter.api.Test;
-import seed.seedframework.aop.ExecutionExpressionMethodMatcher;
 import seed.seedframework.aop.interceptor.AspectAdvisorManager;
 import seed.seedframework.aop.interceptor.AspectJPointcutAdvisor;
 import seed.seedframework.aop.interceptor.MethodBeforeAspectJAdvice;
-import seed.seedframework.aop.pointcut.AspectPointcut;
 import seed.seedframework.aop.proxy.DefaultAopProxyCreator;
-import seed.seedframework.aop.util.AspectJUtil;
-import seed.seedframework.util.ClassUtils;
+import seed.seedframework.context.AnnotationConfigApplicationContext;
+import seed.seedframework.context.ApplicationContext;
+import seed.seedframework.core.env.Environment;
 
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.util.HashSet;
-import java.util.Set;
+import java.lang.reflect.Proxy;
+import java.util.Objects;
 
 /**
  * @author hiyouka
@@ -25,58 +27,98 @@ import java.util.Set;
  */
 public class AspectTest {
 
-    private static final Set<PointcutPrimitive> SUPPORTED_PRIMITIVES = new HashSet<>();
-
-    static {
-        SUPPORTED_PRIMITIVES.add(PointcutPrimitive.EXECUTION);
-        SUPPORTED_PRIMITIVES.add(PointcutPrimitive.ARGS);
-        SUPPORTED_PRIMITIVES.add(PointcutPrimitive.REFERENCE);
-        SUPPORTED_PRIMITIVES.add(PointcutPrimitive.THIS);
-        SUPPORTED_PRIMITIVES.add(PointcutPrimitive.TARGET);
-        SUPPORTED_PRIMITIVES.add(PointcutPrimitive.WITHIN);
-        SUPPORTED_PRIMITIVES.add(PointcutPrimitive.AT_ANNOTATION);
-        SUPPORTED_PRIMITIVES.add(PointcutPrimitive.AT_WITHIN);
-        SUPPORTED_PRIMITIVES.add(PointcutPrimitive.AT_ARGS);
-        SUPPORTED_PRIMITIVES.add(PointcutPrimitive.AT_TARGET);
+    @Test
+    public void testParameterName() throws NoSuchMethodException {
+        ApplicationContext applicationContext = new AnnotationConfigApplicationContext(TestConfiguration.class);
+//        Object testAutowired = applicationContext.getBean("testAutowired");
+        TestAutowired bean = applicationContext.getBean(TestAutowired.class);
+//
+        System.out.println(bean.getClass());
+        bean.testB(null);
+        Environment environment = applicationContext.getEnvironment();
+        String property = environment.getProperty("spring.aop.auto");
+        System.out.println(property);
     }
 
-    @Aspect
-    private class AspectJTest{
+    @Test
+    public void testT(){
+//        Class<?> targetClass = this.advised.getTargetClass();
+//        return Proxy.newProxyInstance(targetClass.getClassLoader(),targetClass.getInterfaces(),new DynamicInitiatorsInvocationHandler(advised));
+        Class<TestAutowired> testAutowiredClass = TestAutowired.class;
+        TestAutowired testAutowired = new TestAutowired(null);
+        testAutowired.setAuto("213");
+        testAutowired.setLi("666");
+        Object o = Proxy.newProxyInstance(testAutowiredClass.getClassLoader(), testAutowiredClass.getInterfaces(), new TestHandler(testAutowired));
 
-        @Pointcut(value = "execution(* seed.seedframework.aop..*(..))")
-        private void point(){};
 
-        @Before("aspect.PointcutTest.point() || @annotation(aspect.AopBefore)")
-        public void before(){
-            System.out.println(">>>>>>>>>>>>>>>>before ");
+        Enhancer enhancer = new Enhancer();
+//        Callback[] callBacks = getCallBack();
+//        Class[] types = new Class[callBacks.length];
+//        for(int i=0; i<types.length; i++){
+//            types[i] = callBacks[i].getClass();
+//        }
+        enhancer.setCallbackType(TestInterceptor.class);
+
+//        enhancer.setCallbacks(callBacks);
+
+        enhancer.setCallback(new TestInterceptor(testAutowired));
+//        enhancer.setInterfaces(getInterfaces());
+        enhancer.setSuperclass(TestAutowired.class);
+        enhancer.setUseFactory(true);
+        TestAutowired o1 = (TestAutowired)enhancer.create();
+        o1.testB(null );
+        System.out.println(o1);
+    }
+
+    private class TestInterceptor implements MethodInterceptor{
+
+        private Object target;
+
+        public TestInterceptor(Object target) {
+            this.target = target;
         }
 
+        @Override
+        public Object intercept(Object o, Method method, Object[] objects, MethodProxy methodProxy) throws Throwable {
+            return methodProxy.invoke(target,objects);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            TestInterceptor that = (TestInterceptor) o;
+            return Objects.equals(target, that.target);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(target);
+        }
+
+        @Override
+        public String toString() {
+            return "TestInterceptor{" +
+                    "target=" + target +
+                    '}';
+        }
     }
 
-    public static void main(String[] args) throws NoSuchMethodException {
-        Method point = AspectJTest.class.getDeclaredMethod("point");
-        Method before = AspectJTest.class.getDeclaredMethod("before");
-        System.out.println(AspectJUtil.isAspectJMethod(point));
-        System.out.println(AspectJUtil.isAspectJMethod(before));
-        long start = System.currentTimeMillis();
-        PointcutParser pointcutParser = PointcutParser
-                .getPointcutParserSupportingSpecifiedPrimitivesAndUsingSpecifiedClassLoaderForResolution(
-                        SUPPORTED_PRIMITIVES, ClassUtils.getDefaultClassLoader());
-        //"execution(* seed.seedframework.aop..*(java.lang.reflect.Method)) || within(seed.seedframework.aop.proxy.*)"
-        PointcutParameter joinPoint = pointcutParser.createPointcutParameter("joinPoint", JoinPoint.class);
-        PointcutExpression expression = pointcutParser.parsePointcutExpression("aspect.PointcutTest.point()", AspectJTest.class, new PointcutParameter[0]);
-        Method match = ExecutionExpressionMethodMatcher.class.getDeclaredMethod("match", Method.class);
-        Method getDefaultClassLoader = ClassUtils.class.getMethod("getDefaultClassLoader");
-        ShadowMatch shadowMatch = expression.matchesMethodExecution(match);
-        ShadowMatch shadowMatch1 = expression.matchesStaticInitialization(AspectPointcut.class);
-        Method testBefore = TestAopProxy.class.getDeclaredMethod("testBefore");
-        ShadowMatch shadowMatch2 = expression.matchesMethodExecution(testBefore);
-        System.out.println(">>>>>" + shadowMatch2.alwaysMatches());
-        System.out.println(shadowMatch1.alwaysMatches());
-        boolean b = shadowMatch.alwaysMatches();
-        System.out.println(b);
-        System.out.println(System.currentTimeMillis()  - start);
+    private class TestHandler implements InvocationHandler{
+
+        public Object target;
+
+        public TestHandler(Object target) {
+            this.target = target;
+        }
+
+        @Override
+        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+            return null;
+        }
     }
+
+
 
     @Test
     public void cglibTest() throws NoSuchMethodException {
@@ -84,11 +126,12 @@ public class AspectTest {
 //        enhancer.setSuperclass(AspectJTest.class);
 //        enhancer.setCallback(new CglibAopProxy.DynamicInitiatorsInterceptor());
 //        Object o = enhancer.create();
-        Method before = AspectJTest.class.getDeclaredMethod("before");
-        MethodBeforeAspectJAdvice advice = new MethodBeforeAspectJAdvice(before,new AspectJTest());
+        Method before = PointTest.class.getDeclaredMethod("before");
+        MethodBeforeAspectJAdvice advice = new MethodBeforeAspectJAdvice(before,new PointTest());
         AspectJPointcutAdvisor advisor = new AspectJPointcutAdvisor(advice);
         AspectAdvisorManager aspectAdvisorManager = new AspectAdvisorManager(TestAopProxy.class);
         aspectAdvisorManager.addAdvisor(advisor);
+        aspectAdvisorManager.setTarget(new TestAopProxy());
 //        CglibAopProxy cglibAopProxy = new CglibAopProxy(aspectAdvisorManager);
 //        TestAopProxy proxy = (TestAopProxy) cglibAopProxy.getProxy();
 //        proxy.testBefore();

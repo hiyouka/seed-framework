@@ -29,6 +29,10 @@ public class StringUtils {
         return collection.toArray(new String[0]);
     }
 
+    public static boolean isEmpty(String str){
+        return !hasText(str);
+    }
+
     public static boolean hasText(String str) {
         return hasText((CharSequence) str);
     }

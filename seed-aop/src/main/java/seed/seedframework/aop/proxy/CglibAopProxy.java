@@ -14,6 +14,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
+ * create proxy object use cglib dynamic
  * @author hiyouka
  * @since JDK 1.8
  */
@@ -41,7 +42,19 @@ public class CglibAopProxy extends AbstractAopProxy {
         enhancer.setCallbacks(callBacks);
         enhancer.setInterfaces(getInterfaces());
         enhancer.setSuperclass(proxyClass);
-        return enhancer.create();
+
+        Object[] args = this.advised.getArgs();
+        Class[] argsType = new Class[args.length];
+        for(int i=0; i<argsType.length; i++){
+            argsType[i] = args[i].getClass();
+        }
+        if(!(args.length == 0)){
+            return enhancer.create(argsType,args);
+        }
+        else {
+            return enhancer.create();
+        }
+
     }
 
     private Callback[] getCallBack(){
@@ -70,12 +83,17 @@ public class CglibAopProxy extends AbstractAopProxy {
         public Object intercept(Object target, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
             List<seed.seedframework.core.intercept.MethodInterceptor> interceptors =
                     this.advised.getAdvisorInterceptors(method);
+            Object targetSource = target;
             Object processVal;
+            Object source = this.advised.getTarget();
+            if(source != null){
+                targetSource = source;
+            }
             if(CollectionUtils.isEmpty(interceptors)){
-                return methodProxy.invokeSuper(target,args);
+                return methodProxy.invoke(targetSource,args);
             }
             else {
-                processVal = new CglibInterceptorChainMethodInvocation(interceptors, method, target, args,methodProxy).process();
+                processVal = new CglibInterceptorChainMethodInvocation(interceptors, method, targetSource, args,methodProxy).process();
             }
             return processVal;
         }

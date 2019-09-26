@@ -1,11 +1,16 @@
 package seed.seedframework.aop.interceptor;
 
+import org.aspectj.lang.annotation.AfterReturning;
 import seed.seedframework.aop.util.AspectJUtil;
 import seed.seedframework.core.intercept.MethodAfterAdvice;
+import seed.seedframework.core.intercept.MethodAfterReturnAdviceInterceptor;
 
 import java.lang.reflect.Method;
 
 /**
+ * process after method invoke can get return pointcut
+ * {@link AfterReturning}
+ * {@link MethodAfterReturnAdviceInterceptor}
  * @author hiyouka
  * @since JDK 1.8
  */

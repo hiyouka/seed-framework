@@ -88,7 +88,7 @@ public class AspectJUtil {
                 return new MethodAfterAspectJAdvice(method,target);
             }
             if(aClass.equals(AfterReturning.class)){
-                return new MethodAfterAspectJAdvice(method,target);
+                return new MethodAfterReturningAspectJAdvice(method,target);
             }
             if(aClass.equals(Around.class)){
                 return new MethodAroundAspectJAdvice(method,target);

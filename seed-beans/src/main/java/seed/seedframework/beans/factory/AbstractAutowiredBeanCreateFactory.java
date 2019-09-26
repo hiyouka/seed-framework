@@ -12,6 +12,8 @@ import seed.seedframework.util.*;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author hiyouka
@@ -19,16 +21,23 @@ import java.lang.reflect.Method;
  */
 public abstract class AbstractAutowiredBeanCreateFactory extends AbstractBeanCreateFactory implements AutowiredSupportBeanFactory {
 
+    private final Map<String,Object[]> constructorArgsCache = new ConcurrentHashMap<>();
+
     protected Object doCreateBean(String beanName, BeanDefinition beanDefinition, Object[] args)
             throws BeanCreatedException {
         Object instance;
         try{
             addCurrentlyCreatedBean(beanName);
-            // 1. 创建初步的对象。。。
-            instance = createBeanInstance(beanName,beanDefinition,args);
+
+            // 给予提前创建bean的机会
+            instance = applyPostProcessBeforeInitialization(beanDefinition.getBeanClass(), beanName);
+            if(instance == null){
+                // 1. 创建初步的对象。。。
+                instance = createBeanInstance(beanName,beanDefinition,args);
+            }
 
             // 2. 处理需注入的bean
-            applyMergedBeanDefinitionPostProcessors(beanDefinition,beanDefinition.getBeanClass(),beanName);
+            applyMergedBeanDefinitionPostProcessors(beanDefinition,instance.getClass(),beanName);
 
             // 3. 将初步对象放入早期对象缓存
             if(beanDefinition.isSingleton()){
@@ -108,6 +117,18 @@ public abstract class AbstractAutowiredBeanCreateFactory extends AbstractBeanCre
         }
     }
 
+    private Object applyPostProcessBeforeInitialization(Class<?> clazz, String beanName){
+        for(BeanPostProcessor postProcessor : getBeanPostProcessors()){
+            if(postProcessor instanceof InstantiationAwareBeanPostProcessor){
+                Object reval = ((InstantiationAwareBeanPostProcessor) postProcessor).postProcessBeforeInstantiation(clazz,beanName);
+                if(reval != null){
+                    return reval;
+                }
+            }
+        }
+        return null;
+    }
+
     private Object autowiredInstanceBean(Constructor[] constructors,Class<?> beanClass, String beanName){
         Constructor constructorToUsed = null;
         for(Constructor constructor : constructors){
@@ -130,15 +151,29 @@ public abstract class AbstractAutowiredBeanCreateFactory extends AbstractBeanCre
                     + beanName);
         }
         Object[] args = resolveDependParameters(constructorToUsed, beanName);
+
+        // use for cglib constructor create
+        constructorArgsCache.put(beanName,args);
+
         return BeanUtils.instanceClass(constructorToUsed,args);
     }
 
+    public Object[] getConstructorArgs(String name){
+        Object[] args = this.constructorArgsCache.get(name);
+        if(args == null){
+            args = new Object[0];
+        }
+        // clear after used
+        this.constructorArgsCache.remove(name);
+        return args;
+    }
 
     private Constructor[] determineConstructorByPostProcessor(Class<?> beanClass, String beanName){
         Constructor[] constructors = new Constructor[0];
         for(BeanPostProcessor beanPostProcessor : getBeanPostProcessors()){
             if(beanPostProcessor instanceof InstantiationAwareBeanPostProcessor){
-                Constructor[] cs = ((InstantiationAwareBeanPostProcessor) beanPostProcessor).determineCandidateConstructors(beanClass,beanName);
+                Constructor[] cs = ((InstantiationAwareBeanPostProcessor) beanPostProcessor)
+                        .determineCandidateConstructors(beanClass,beanName);
                 if(cs != null){
                     constructors = cs;
                 }

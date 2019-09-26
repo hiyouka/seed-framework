@@ -63,7 +63,7 @@ public class InterceptorChainMethodInvocation implements MethodInvocation {
 
         // if no interceptor or end
         if(this.currentIndex == (this.chain.size())){
-            return ReflectionUtils.invokeMethod(method,target,args);
+            return invokeMethod(this.method,this.target,this.args);
         }
         MethodInterceptor currentInterceptor;
         synchronized (this){
@@ -78,4 +78,10 @@ public class InterceptorChainMethodInvocation implements MethodInvocation {
         }
 
     }
+
+    protected Object invokeMethod(Method method, Object target, Object... args) throws Throwable {
+        return ReflectionUtils.invokeMethod(method,target,args);
+    }
+
+
 }
