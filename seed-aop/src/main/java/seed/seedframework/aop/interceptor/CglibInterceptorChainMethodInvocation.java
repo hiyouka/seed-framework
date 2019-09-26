@@ -3,8 +3,10 @@ package seed.seedframework.aop.interceptor;
 import net.sf.cglib.proxy.MethodProxy;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.reflect.SourceLocation;
+import org.aspectj.runtime.internal.AroundClosure;
 import seed.seedframework.core.intercept.InterceptorChainMethodInvocation;
 import seed.seedframework.core.intercept.MethodInterceptor;
+import seed.seedframework.util.ClassUtils;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -63,21 +65,28 @@ public class CglibInterceptorChainMethodInvocation extends InterceptorChainMetho
     }
 
     @Override
-    public Object process() throws Throwable {
-        // if no interceptor or end
-        if(this.currentIndex == (this.chain.size())){
-            return this.methodProxy.invokeSuper(this.target, this.args);
+    protected Object invokeMethod(Method method, Object target, Object... args) throws Throwable {
+        if(ClassUtils.isCglibProxyClass(target.getClass())){
+            return this.methodProxy.invokeSuper(target,args);
         }
-        MethodInterceptor currentInterceptor;
-        synchronized (this){
-            currentInterceptor = this.chain.get(this.currentIndex++);
-        }
-        if(currentInterceptor != null){
-            return currentInterceptor.invoke(this);
-        }
-        // skip
         else {
-            return process();
+            return this.methodProxy.invoke(target, args);
         }
+    }
+
+    @Override
+    public void set$AroundClosure(AroundClosure arc) {
+
+    }
+
+    @Override
+    public Object proceed() throws Throwable {
+        return this.process();
+    }
+
+    @Override
+    public Object proceed(Object[] args) throws Throwable {
+        // todo arguments method match to invoke
+        return this.process();
     }
 }

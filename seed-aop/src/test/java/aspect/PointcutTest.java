@@ -8,7 +8,7 @@ import org.aspectj.lang.annotation.Pointcut;
  */
 public class PointcutTest {
 
-    @Pointcut(value = "execution(* seed.seedframework.aop..*(..)) || @annotation(aspect.AopBefore)")
+    @Pointcut(value = "execution(* seed.seedframework.aop..*(..)) || @annotation(aspect.aop.AopBefore)")
     public void point(){}
 
 }

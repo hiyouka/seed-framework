@@ -57,7 +57,6 @@ public class AspectPointcut implements ExpressionPointcut {
                 this.methodMatcher = new AspectMethodMatcher(pointcutExpression);
             }
         }
-
         return methodMatcher;
     }
 

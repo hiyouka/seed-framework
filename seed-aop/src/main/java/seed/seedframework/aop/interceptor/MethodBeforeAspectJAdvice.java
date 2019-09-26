@@ -1,11 +1,16 @@
 package seed.seedframework.aop.interceptor;
 
+import org.aspectj.lang.annotation.Before;
 import seed.seedframework.aop.util.AspectJUtil;
 import seed.seedframework.core.intercept.MethodBeforeAdvice;
+import seed.seedframework.core.intercept.MethodBeforeAdviceInterceptor;
 
 import java.lang.reflect.Method;
 
 /**
+ * process before method pointcut
+ * {@link Before}
+ * {@link MethodBeforeAdviceInterceptor}
  * @author hiyouka
  * @since JDK 1.8
  */

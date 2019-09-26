@@ -19,7 +19,7 @@ import java.util.Set;
  */
 public class AnnotationBeanNameGenerator implements BeanNameGenerator {
 
-    public static final String COMPONENT_ANNOTATION_CLASSNAME = "hiyouka.seedframework.beans.annotation.Component";
+    public static final String COMPONENT_ANNOTATION_CLASSNAME = "seed.seedframework.beans.annotation.Component";
 
 
 

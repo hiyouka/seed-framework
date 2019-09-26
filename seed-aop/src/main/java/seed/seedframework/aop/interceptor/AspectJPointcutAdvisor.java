@@ -15,7 +15,7 @@ import java.lang.reflect.Method;
  * @author hiyouka
  * @since JDK 1.8
  */
-public class AspectJPointcutAdvisor implements PointcutAdvisor, Order {
+public class AspectJPointcutAdvisor implements PointcutAdvisor {
 
     private AspectPointcut pointcut;
 
