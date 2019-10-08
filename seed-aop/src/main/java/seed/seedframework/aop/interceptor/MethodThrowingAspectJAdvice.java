@@ -5,6 +5,7 @@ import seed.seedframework.aop.util.AspectJUtil;
 import seed.seedframework.core.intercept.ThrowsAdvice;
 import seed.seedframework.core.intercept.ThrowsAdviceInterceptor;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
 /**
@@ -16,6 +17,8 @@ import java.lang.reflect.Method;
  */
 public class MethodThrowingAspectJAdvice extends AbstractAspectJAdvice implements ThrowsAdvice {
 
+    private static Class<? extends Annotation>  annotation = AfterThrowing.class;
+
     public MethodThrowingAspectJAdvice(Method aspectJMethod, Object aspectJTarget) {
         super(aspectJMethod, aspectJTarget);
     }
@@ -26,8 +29,13 @@ public class MethodThrowingAspectJAdvice extends AbstractAspectJAdvice implement
     }
 
     @Override
-    public void doOfThrow(Method method, Object[] arguments, Object aThis) throws Throwable {
-        invokeMethodWithArgs(null,method,arguments,aThis);
+    protected Class<? extends Annotation> getAnnotationType() {
+        return annotation;
+    }
+
+    @Override
+    public void doOfThrow(Method method, Object[] arguments, Object aThis,Throwable ex) throws Throwable {
+        invokeMethodWithArgs(method,null,ex);
     }
 
 }

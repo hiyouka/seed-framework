@@ -1,4 +1,4 @@
-package hiyouka.seedframework.web.core;
+package seed.seedframework.web.core;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,14 +1,14 @@
 package seed.seedframework.core.intercept;
 
+import java.lang.reflect.Method;
+
 /**
  * @author hiyouka
  * @since JDK 1.8
  */
 public interface MethodAroundAdvice extends AroundAdvice{
 
-    default Object around(MethodInvocation invocation) throws Throwable{
-        return invocation.process();
-    }
+    Object around(Method method, Object[] args, Object target) throws Throwable;
 
 
 

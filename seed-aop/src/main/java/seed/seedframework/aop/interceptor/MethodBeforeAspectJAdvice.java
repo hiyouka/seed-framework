@@ -5,6 +5,7 @@ import seed.seedframework.aop.util.AspectJUtil;
 import seed.seedframework.core.intercept.MethodBeforeAdvice;
 import seed.seedframework.core.intercept.MethodBeforeAdviceInterceptor;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
 /**
@@ -16,6 +17,7 @@ import java.lang.reflect.Method;
  */
 public class MethodBeforeAspectJAdvice extends AbstractAspectJAdvice implements MethodBeforeAdvice {
 
+    private static Class<? extends Annotation>  annotation = Before.class;
 
     public MethodBeforeAspectJAdvice(Method aspectJMethod, Object aspectJTarget) {
         super(aspectJMethod, aspectJTarget);
@@ -27,7 +29,12 @@ public class MethodBeforeAspectJAdvice extends AbstractAspectJAdvice implements 
     }
 
     @Override
+    protected Class<? extends Annotation> getAnnotationType() {
+        return annotation;
+    }
+
+    @Override
     public void before(Method method, Object[] args, Object target) throws Throwable {
-        invokeMethodWithArgs(null,method,args,target);
+        invokeMethodWithArgs(method,null,null);
     }
 }

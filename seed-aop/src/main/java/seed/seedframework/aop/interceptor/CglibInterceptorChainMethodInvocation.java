@@ -1,10 +1,6 @@
 package seed.seedframework.aop.interceptor;
 
 import net.sf.cglib.proxy.MethodProxy;
-import org.aspectj.lang.Signature;
-import org.aspectj.lang.reflect.SourceLocation;
-import org.aspectj.runtime.internal.AroundClosure;
-import seed.seedframework.core.intercept.InterceptorChainMethodInvocation;
 import seed.seedframework.core.intercept.MethodInterceptor;
 import seed.seedframework.util.ClassUtils;
 
@@ -15,7 +11,7 @@ import java.util.List;
  * @author hiyouka
  * @since JDK 1.8
  */
-public class CglibInterceptorChainMethodInvocation extends InterceptorChainMethodInvocation implements  AspectjMethodInvocation{
+public class CglibInterceptorChainMethodInvocation extends AspectjMethodInvocation{
 
     private MethodProxy methodProxy;
 
@@ -24,45 +20,6 @@ public class CglibInterceptorChainMethodInvocation extends InterceptorChainMetho
         this.methodProxy = methodProxy;
     }
 
-    @Override
-    public String toShortString() {
-        return null;
-    }
-
-    @Override
-    public String toLongString() {
-        return null;
-    }
-
-    @Override
-    public Object getTarget() {
-        return null;
-    }
-
-    @Override
-    public Object[] getArgs() {
-        return new Object[0];
-    }
-
-    @Override
-    public Signature getSignature() {
-        return null;
-    }
-
-    @Override
-    public SourceLocation getSourceLocation() {
-        return null;
-    }
-
-    @Override
-    public String getKind() {
-        return null;
-    }
-
-    @Override
-    public StaticPart getStaticPart() {
-        return null;
-    }
 
     @Override
     protected Object invokeMethod(Method method, Object target, Object... args) throws Throwable {
@@ -74,19 +31,4 @@ public class CglibInterceptorChainMethodInvocation extends InterceptorChainMetho
         }
     }
 
-    @Override
-    public void set$AroundClosure(AroundClosure arc) {
-
-    }
-
-    @Override
-    public Object proceed() throws Throwable {
-        return this.process();
-    }
-
-    @Override
-    public Object proceed(Object[] args) throws Throwable {
-        // todo arguments method match to invoke
-        return this.process();
-    }
 }

@@ -20,6 +20,7 @@ import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -495,14 +496,14 @@ public class DefaultBenFactory extends AbstractAutowiredBeanCreateFactory implem
                         MethodMetadata metadata = ((AnnotatedGenericBeanDefinition) beanDefinition).getFactoryMethodMetadata();
                         // have generic bean write method
                         if(metadata instanceof GenericMethodMetadata){
-                            Type[] generics = ((GenericMethodMetadata) metadata).getGenerics();
-                            if(ResolverTypeUtil.typeIsMatchOfGenerics(dsr.getGenericType(),generics)){
+                            ParameterizedType parameterizedType = ((GenericMethodMetadata) metadata).getParameterizedType();
+                            if(ResolverTypeUtil.isAssignableFrom(genericType,parameterizedType)){
                                 matchName.add(name);
                                 continue;
                             }
                         }
                     }
-                    if(ResolverTypeUtil.isAssignableFrom(dsr.getGenericType(),beanDefinition.getBeanClass())){
+                    if(ResolverTypeUtil.isAssignableFrom(genericType,beanDefinition.getBeanClass())){
                         matchName.add(name);
                     }
                 }

@@ -68,8 +68,7 @@ public class StandardAnnotationMetadata extends StandardClassMetadata implements
                     annotatedMethods.add(new StandardMethodMetadata(method));
                 }
                 else if(genericReturnType instanceof ParameterizedType){
-                    Type[] types = ((ParameterizedType) genericReturnType).getActualTypeArguments();
-                    annotatedMethods.add(new GenericMethodMetadata(method,types));
+                    annotatedMethods.add(new GenericMethodMetadata(method, (ParameterizedType) genericReturnType));
                 }
             }
         }

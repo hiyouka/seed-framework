@@ -21,7 +21,7 @@ public class ThrowsAdviceInterceptor implements MethodInterceptor {
             return invocation.process();
         }
         catch (Throwable ex){
-            this.advice.doOfThrow(invocation.getMethod(),invocation.getArguments(),invocation.getThis());
+            this.advice.doOfThrow(invocation.getMethod(),invocation.getArguments(),invocation.getThis(),ex);
             throw ex;
         }
     }

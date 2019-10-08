@@ -1,4 +1,4 @@
-package hiyouka.framework.test.bean;
+package seed.framework.test.bean;
 
 import seed.seedframework.beans.annotation.Autowired;
 import seed.seedframework.beans.annotation.Component;
@@ -23,6 +23,12 @@ public class TestAutowired {
 
     @Autowired
     private TestBean1<String,Object> testBean2;
+
+    @Autowired
+    private TestFather1<Test1,Test1> test1Test1TestFather1;
+
+    @Autowired
+    private BaseService<Test1> baseService;
 
     @Autowired
     @Specify("testBean1")

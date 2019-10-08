@@ -8,6 +8,6 @@ import java.lang.reflect.Method;
  */
 public interface ThrowsAdvice extends Advice {
 
-    void doOfThrow(Method method, Object[] arguments, Object aThis) throws Throwable;
+    void doOfThrow(Method method, Object[] arguments, Object aThis,Throwable ex) throws Throwable;
 
 }

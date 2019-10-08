@@ -17,7 +17,7 @@ public class MethodAroundAdviceInterceptor implements MethodInterceptor {
 
     @Override
     public Object invoke(MethodInvocation invocation) throws Throwable {
-        return this.advice.around(invocation);
+        return this.advice.around(invocation.getMethod(),invocation.getArguments(),invocation.getThis());
     }
 
 

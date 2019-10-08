@@ -1,5 +1,7 @@
 package aspect.aop;
 
+import aspect.bean.TestBean1;
+import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
 import seed.seedframework.beans.annotation.Component;
@@ -18,26 +20,27 @@ public class PointTest {
 
 
     @Order(5)
-    @Before("aspect.PointcutTest.point() || @annotation(aspect.aop.AopBefore)")
-    public void before(){
+    @Before(value = "aspect.PointcutTest.point() || @annotation(aspect.aop.AopBefore)",argNames = "join")
+    public void before(JoinPoint join){
         System.out.println(">>>>>>>>>>>>>>>>before ");
     }
 
     @Order(4)
-    @AfterThrowing("aspect.PointcutTest.point() || @annotation(aspect.aop.AopBefore)" )
-    public void afterThrow(){
-        System.out.println(">>>>>>>>>>>>>afterThrow");
+    @AfterThrowing(value = "aspect.PointcutTest.point() || @annotation(aspect.aop.AopBefore)" , throwing = "e",argNames = "e,joinPoint")
+    public void afterThrow(Throwable e, JoinPoint joinPoint){
+        System.out.println(">>>>>>>>>>>>>afterThrow" + e);
     }
 
     @Order(3)
     @After("aspect.PointcutTest.point() || @annotation(aspect.aop.AopBefore)")
-    public void after(){
+    public void after(JoinPoint joinPoint){
         System.out.println(">>>>>>>>>>>>>>>after");
     }
 
     @Order(2)
-    @AfterReturning("aspect.PointcutTest.point() || @annotation(aspect.aop.AopBefore)")
-    public void afterReturn(){
+    @AfterReturning(value = "aspect.PointcutTest.point() || @annotation(aspect.aop.AopBefore)", returning = "ret")
+    public void afterReturn(TestBean1<String,String> ret, JoinPoint joinPoint){
+
         System.out.println(">>>>>>>>>>>>>after Return");
     }
 
