@@ -56,7 +56,7 @@ bean在创建之后初始化过程：
 ## TODO LIST
 
 * [x] @Autowired 依赖注入功能。
-* [ ] 添加seed-aop模块使用cglib实现注解形式支持aop功能，生成代理bean。
+* [x] 添加seed-aop模块使用cglib实现注解形式支持aop功能，生成代理bean。
 * [ ] 添加seed-web模块使用netty实现web功能。
 
 ### seed-web模块
@@ -122,6 +122,57 @@ public class TestConfiguration {
 1. 支持aop功能
 2. 修复@Bean无法创建带有参数的方法的bean(如果容器中有该类型的类则会注入, 根据参数上的@Autowired注解来判断是否需要注入,没有默认为false)
 3. `@Autowired`支持构造函数(如果注入bean没有无参构造函数,需要有唯一的`@Autowired`标注的构造函数);
+
+#### Example:
+```java
+
+@Aspect
+@Component
+public class PointTest {
+
+    @Pointcut(value = "execution(* seed.seedframework.aop..*(..))")
+    private void point(){};
+
+
+    @Order(5)
+    @Before(value = "aspect.PointcutTest.point() || @annotation(aspect.aop.AopBefore)",argNames = "join")
+    public void before(JoinPoint join){
+        System.out.println(">>>>>>>>>>>>>>>>before ");
+    }
+
+    @Order(4)
+    @AfterThrowing(value = "aspect.PointcutTest.point() || @annotation(aspect.aop.AopBefore)" , throwing = "e",argNames = "e,joinPoint")
+    public void afterThrow(Throwable e, JoinPoint joinPoint){
+        System.out.println(">>>>>>>>>>>>>afterThrow" + e);
+    }
+
+    @Order(3)
+    @After("aspect.PointcutTest.point() || @annotation(aspect.aop.AopBefore)")
+    public void after(JoinPoint joinPoint){
+        System.out.println(">>>>>>>>>>>>>>>after");
+    }
+
+    @Order(2)
+    @AfterReturning(value = "aspect.PointcutTest.point() || @annotation(aspect.aop.AopBefore)", returning = "ret")
+    public void afterReturn(TestBean1<String,String> ret, JoinPoint joinPoint){
+
+        System.out.println(">>>>>>>>>>>>>after Return");
+    }
+
+    @Order(1)
+    @Around(value = "aspect.PointcutTest.point() || @annotation(aspect.aop.AopBefore)")
+    public Object around(ProceedingJoinPoint joinPoint) throws Throwable {
+        System.out.println(">>>>>>>>>>>>>>around before");
+        Object process = joinPoint.proceed();
+        System.out.println(">>>>>>>>>>>>>>>> around after");
+        return process;
+    }
+
+
+}
+
+```
+
 
 ## License
 
