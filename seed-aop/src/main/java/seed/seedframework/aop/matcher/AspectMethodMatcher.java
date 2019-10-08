@@ -17,6 +17,7 @@ public class AspectMethodMatcher implements MethodMatcher {
 
     private final PointcutExpression pointcutExpression;
 
+
     public AspectMethodMatcher(PointcutExpression pointcutExpression) {
         this.pointcutExpression = pointcutExpression;
     }
@@ -24,11 +25,17 @@ public class AspectMethodMatcher implements MethodMatcher {
     @Override
     public boolean match(Method method) {
         ShadowMatch shadowMatch = methodMatchCache.get(method);
+//        shadowMatch.matchesJoinPoint()
+
         if(shadowMatch == null){
             shadowMatch = pointcutExpression.matchesMethodExecution(method);
             methodMatchCache.put(method,shadowMatch);
         }
         return shadowMatch.alwaysMatches();
+    }
+
+    public ShadowMatch getShowMatch(Method method){
+        return this.methodMatchCache.get(method);
     }
 
 }

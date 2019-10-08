@@ -2,7 +2,7 @@ package seed.seedframework.aop.proxy;
 
 import seed.seedframework.aop.exception.AopCreateException;
 import seed.seedframework.aop.interceptor.AspectAdvisorManager;
-import seed.seedframework.core.intercept.InterceptorChainMethodInvocation;
+import seed.seedframework.aop.interceptor.AspectjMethodInvocation;
 import seed.seedframework.core.intercept.MethodInterceptor;
 import seed.seedframework.util.CollectionUtils;
 import seed.seedframework.util.ReflectionUtils;
@@ -56,7 +56,7 @@ public class JDKAopProxy extends AbstractAopProxy {
                 return ReflectionUtils.invokeMethod(method,targetSource,args);
             }
             else {
-                processVal = new InterceptorChainMethodInvocation(interceptors,method,targetSource,args){
+                processVal = new AspectjMethodInvocation(interceptors,method,targetSource,args){
                     @Override
                     protected Object invokeMethod(Method method, Object target, Object... args) {
 //                        Object originBean = BeanUtils.instanceClass(advised.getTargetClass());

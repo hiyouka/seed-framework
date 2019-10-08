@@ -18,7 +18,7 @@ public class InterceptorChainMethodInvocation implements MethodInvocation {
 
     protected final Object target;
 
-    protected final Object[] args;
+    protected Object[] args;
 
     protected volatile int currentIndex = 0;
 
@@ -53,6 +53,10 @@ public class InterceptorChainMethodInvocation implements MethodInvocation {
         return this.args;
     }
 
+    public void setArgs(Object[] args) {
+        this.args = args;
+    }
+
     @Override
     public Object getThis() {
         return this.target;
@@ -69,7 +73,7 @@ public class InterceptorChainMethodInvocation implements MethodInvocation {
         synchronized (this){
             currentInterceptor = chain.get(currentIndex++);
         }
-        if(currentInterceptor != null){
+        if(currentInterceptor != null && methodMatch(this.method,this.args)){
             return currentInterceptor.invoke(this);
         }
         // skip
@@ -77,6 +81,10 @@ public class InterceptorChainMethodInvocation implements MethodInvocation {
             return process();
         }
 
+    }
+
+    protected boolean methodMatch(Method method, Object[] args){
+        return true;
     }
 
     protected Object invokeMethod(Method method, Object target, Object... args) throws Throwable {

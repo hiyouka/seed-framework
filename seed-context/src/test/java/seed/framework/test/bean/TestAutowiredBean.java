@@ -1,4 +1,4 @@
-package hiyouka.framework.test.bean;
+package seed.framework.test.bean;
 
 /**
  * @author hiyouka

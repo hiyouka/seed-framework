@@ -1,8 +1,8 @@
-package hiyouka.framework.test.bean;
+package seed.framework.test.bean;
 
 import seed.seedframework.beans.annotation.Autowired;
 import seed.seedframework.beans.annotation.Component;
-import seed.seedframework.beans.annotation.Primary;
+import seed.seedframework.beans.annotation.Specify;
 import seed.seedframework.core.annotation.Priority;
 
 /**
@@ -10,9 +10,12 @@ import seed.seedframework.core.annotation.Priority;
  * @since JDK 1.8
  */
 @Component
-@Priority(100)
-@Primary
-public class TestBean1<T,D> extends TestFather1<Test2,Test2>{
+@Priority(99)
+public class TestBean2 extends TestFather1<Test1, Test1> {
+
+    @Autowired
+    @Specify("testBeanOfManual")
+    private TestBean1 testBean1;
 
     @Autowired
     private TestBean2 testBean2;

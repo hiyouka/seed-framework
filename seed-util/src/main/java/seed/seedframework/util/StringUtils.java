@@ -33,6 +33,10 @@ public class StringUtils {
         return !hasText(str);
     }
 
+    public static boolean notEmpty(String str){
+        return hasText(str);
+    }
+
     public static boolean hasText(String str) {
         return hasText((CharSequence) str);
     }

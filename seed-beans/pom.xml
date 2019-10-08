@@ -83,7 +83,7 @@
 
     <distributionManagement>
 
-        <!-- maven nexus hiyouka.framework.test.config -->
+        <!-- maven nexus seed.framework.test.config -->
         <repository>
             <id>hiyouka-release</id>
             <name>Release Repository of hiyouka</name>

@@ -1,9 +1,9 @@
-package hiyouka.framework.test.config;
+package seed.framework.test.config;
 
-import hiyouka.framework.test.bean.Test1;
-import hiyouka.framework.test.bean.TestAutowiredBean;
-import hiyouka.framework.test.bean.TestBean1;
-import hiyouka.framework.test.bean.TestFather1;
+import seed.framework.test.bean.Test1;
+import seed.framework.test.bean.TestAutowiredBean;
+import seed.framework.test.bean.TestBean1;
+import seed.framework.test.bean.TestFather1;
 import seed.seedframework.beans.annotation.Autowired;
 import seed.seedframework.beans.annotation.Bean;
 import seed.seedframework.beans.annotation.Specify;

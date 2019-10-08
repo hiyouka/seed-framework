@@ -4,8 +4,8 @@ import org.aspectj.lang.annotation.Around;
 import seed.seedframework.aop.util.AspectJUtil;
 import seed.seedframework.core.intercept.MethodAroundAdvice;
 import seed.seedframework.core.intercept.MethodAroundAdviceInterceptor;
-import seed.seedframework.core.intercept.MethodInvocation;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
 /**
@@ -17,6 +17,7 @@ import java.lang.reflect.Method;
  */
 public class MethodAroundAspectJAdvice extends AbstractAspectJAdvice implements MethodAroundAdvice {
 
+    private static Class<? extends Annotation>  annotation = Around.class;
 
     public MethodAroundAspectJAdvice(Method aspectJMethod, Object aspectJTarget) {
         super(aspectJMethod, aspectJTarget);
@@ -28,10 +29,13 @@ public class MethodAroundAspectJAdvice extends AbstractAspectJAdvice implements 
     }
 
     @Override
-    public Object around(MethodInvocation invocation) throws Throwable {
-        return invokeWithInvocation(invocation);
+    protected Class<? extends Annotation> getAnnotationType() {
+        return annotation;
     }
 
-
+    @Override
+    public Object around(Method method, Object[] args, Object target) throws Throwable {
+        return invokeMethodWithArgs(method,null,null);
+    }
 
 }

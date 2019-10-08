@@ -1,7 +1,7 @@
 package seed.seedframework.beans.metadata;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
+import java.lang.reflect.ParameterizedType;
 
 /**
  * @author hiyouka
@@ -9,15 +9,15 @@ import java.lang.reflect.Type;
  */
 public class GenericMethodMetadata extends StandardMethodMetadata {
 
-    private final Type[] generics;
+    private final ParameterizedType genericType;
 
-    public GenericMethodMetadata(Method introspectedMethod, Type[] generics) {
+    public GenericMethodMetadata(Method introspectedMethod, ParameterizedType genericType) {
         super(introspectedMethod);
-        this.generics = generics;
+        this.genericType = genericType;
     }
 
-    public Type[] getGenerics() {
-        return generics;
+    public ParameterizedType getParameterizedType() {
+        return genericType;
     }
 
 }

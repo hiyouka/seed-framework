@@ -41,8 +41,9 @@ public class TestAutowired {
     }
 
     @AopBefore
-    public void  testB(TestFather1 testFatherPrimary){
+    public TestBean1<String,Object> testB(TestFather1 testFatherPrimary){
         System.out.println("..." + li + auto);
+        return null;
     }
 
     public void setAuto(String auto) {

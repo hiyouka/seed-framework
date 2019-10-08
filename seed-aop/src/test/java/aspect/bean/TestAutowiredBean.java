@@ -25,4 +25,5 @@ public class TestAutowiredBean {
     public void setTest1(Test1 test1) {
         this.test1 = test1;
     }
+
 }

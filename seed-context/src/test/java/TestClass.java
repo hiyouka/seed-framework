@@ -1,8 +1,5 @@
-import hiyouka.framework.test.bean.TestAutowired;
-import hiyouka.framework.test.bean.TestAutowiredBean;
-import hiyouka.framework.test.bean.TestBean1;
-import hiyouka.framework.test.bean.TestFather1;
-import hiyouka.framework.test.config.TestConfiguration;
+import seed.framework.test.bean.*;
+import seed.framework.test.config.TestConfiguration;
 import org.junit.jupiter.api.Test;
 import seed.seedframework.beans.metadata.MethodParameter;
 import seed.seedframework.context.AnnotationConfigApplicationContext;
@@ -10,6 +7,7 @@ import seed.seedframework.context.ApplicationContext;
 import seed.seedframework.core.env.Environment;
 import seed.seedframework.core.intercept.*;
 import seed.seedframework.util.ReflectionUtils;
+import seed.seedframework.util.ResolverTypeUtil;
 
 import java.lang.reflect.*;
 import java.util.LinkedList;
@@ -25,7 +23,7 @@ public class  TestClass {
 
 
     @Test
-    public void testParameterName() throws NoSuchMethodException {
+    public void testParameterName() throws NoSuchMethodException, NoSuchFieldException {
         Constructor<TestAutowired> declaredConstructor = TestAutowired.class.getDeclaredConstructor(TestBean1.class);
         TypeVariable<Constructor<TestAutowired>>[] typeParameters = declaredConstructor.getTypeParameters();
         Parameter[] parameters = declaredConstructor.getParameters();
@@ -38,6 +36,9 @@ public class  TestClass {
 //        System.out.println(methodParameter1.getParameterType());
         System.out.println(methodParameter.getParameterName());
 //        System.out.println(methodParameter1.getParameterName());
+        Field test1Test1TestFather1 = TestAutowired.class.getDeclaredField("baseService");
+        Type genericType = test1Test1TestFather1.getGenericType();
+        System.out.println(ResolverTypeUtil.isAssignableFrom(genericType, TestBean2.class));
 
     }
 
@@ -107,13 +108,13 @@ public class  TestClass {
 
 
             @Override
-            public Object around(MethodInvocation invocation) throws Throwable {
+            public Object around(Method method, Object[] args, Object target) throws Throwable {
 //                System.out.println("method around interceptor invoke before ........");
 //                Object process = invocation.process();
 //                process = "555";
 //                System.out.println("method around interceptor invoke after ........");
                 //
-                Object[] args = new Object[]{invocation};
+                args = new Object[]{invocation};
                 return ReflectionUtils.invokeMethod(this.adviceMethod, invocation.getThis(), args);
             }
 
