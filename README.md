@@ -155,7 +155,7 @@ public class PointTest {
     @Order(2)
     @AfterReturning(value = "aspect.PointcutTest.point() || @annotation(aspect.aop.AopBefore)", returning = "ret")
     public void afterReturn(TestBean1<String,String> ret, JoinPoint joinPoint){
-
+    
         System.out.println(">>>>>>>>>>>>>after Return");
     }
 
