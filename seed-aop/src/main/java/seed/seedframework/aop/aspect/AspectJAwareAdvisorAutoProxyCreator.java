@@ -93,6 +93,7 @@ public class AspectJAwareAdvisorAutoProxyCreator implements InstantiationAwareBe
                     boolean match = pointcut.methodMatch().match(method);
                     if(match){
                         result.add(advisor);
+                        break;
                     }
                 }
             }

@@ -54,7 +54,7 @@ public abstract class AbstractAspectJAdvice implements Advice {
     protected AspectPointcut buildAspectPointcut(){
         AspectJUtil.AspectJMethodType aspectMethodType = getAspectMethodType();
         return new AspectPointcut(
-                AspectJUtil.getAspectJMethodExpression(aspectMethodType,this.aspectJMethod),null);
+                AspectJUtil.getAspectJMethodExpression(aspectMethodType,this.aspectJMethod),targetClass);
     }
 
     protected abstract AspectJUtil.AspectJMethodType getAspectMethodType();
