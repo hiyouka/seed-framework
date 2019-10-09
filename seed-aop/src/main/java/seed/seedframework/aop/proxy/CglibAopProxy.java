@@ -48,6 +48,7 @@ public class CglibAopProxy extends AbstractAopProxy {
         for(int i=0; i<argsType.length; i++){
             argsType[i] = args[i].getClass();
         }
+        logger.debug("create cglib proxy bean, type : " + advised.getTargetClass());
         if(!(args.length == 0)){
             return enhancer.create(argsType,args);
         }
