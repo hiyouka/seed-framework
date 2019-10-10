@@ -220,5 +220,13 @@ public class ClassUtils {
         return clazz.getDeclaredConstructors();
     }
 
-
+    public static boolean hasEmptyArgumentConstructor(Class<?> clazz) {
+        Constructor[] constructors = getAllConstructorByClass(clazz);
+        for(Constructor constructor : constructors){
+            if(constructor.getParameterCount() == 0){
+                return true;
+            }
+        }
+        return false;
+    }
 }

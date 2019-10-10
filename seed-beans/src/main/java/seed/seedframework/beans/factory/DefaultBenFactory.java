@@ -29,7 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author hiyouka
  * @since JDK 1.8
  */
-public class DefaultBenFactory extends AbstractAutowiredBeanCreateFactory implements ConfigurableDefinitionBeanFactory, BeanDefinitionRegistry , Serializable {
+    public class DefaultBenFactory extends AbstractAutowiredBeanCreateFactory implements ConfigurableDefinitionBeanFactory, BeanDefinitionRegistry , Serializable {
 
 
     /** 是否允许重复注册 */
@@ -78,7 +78,7 @@ public class DefaultBenFactory extends AbstractAutowiredBeanCreateFactory implem
             list.addAll(Arrays.asList(names));
         }
         list.add(name);
-        return list.toArray(new String[list.size()]);
+        return list.toArray(new String[0]);
     }
 
     @Override
@@ -134,7 +134,7 @@ public class DefaultBenFactory extends AbstractAutowiredBeanCreateFactory implem
 
     @Override
     public String[] getBeanDefinitionNames() {
-        return beanDefinitionNames.toArray(new String[beanDefinitionNames.size()]);
+        return beanDefinitionNames.toArray(new String[0]);
     }
 
     @Override
@@ -280,6 +280,11 @@ public class DefaultBenFactory extends AbstractAutowiredBeanCreateFactory implem
             }
         }
 
+        // no bean use @Primary or @priority to mark , so all match
+        if(primaryBeanName.size() == 0){
+            primaryBeanName.addAll(ArrayUtils.asList(beanNames));
+        }
+
         if(primaryBeanName.size() == 1){
             return primaryBeanName.get(0);
         }
@@ -288,7 +293,7 @@ public class DefaultBenFactory extends AbstractAutowiredBeanCreateFactory implem
         if(primaryBeanName.size() > 0){
             message = ", found "+primaryBeanName.size()+" : " + primaryBeanName;
             throw new NoUniqueBeanException("not found unique bean for type : " + requiredType.getName()
-                    + (message == null ? "" : message));
+                    +  message);
         }
         else {
             throw new BeanNotFoundException("not found bean for type : " + requiredType.getName());
@@ -372,15 +377,13 @@ public class DefaultBenFactory extends AbstractAutowiredBeanCreateFactory implem
                 }
             }
        }
-        return result.toArray(new String[result.size()]);
+        return result.toArray(new String[0]);
     }
 
     private boolean isCreateBean(String beanName,BeanDefinition beanDefinition){
         if(beanDefinition.isSingleton()){
             Object singleton = getSingleton(beanName);
-            if(singleton == null){
-                return false;
-            }
+            return singleton != null;
         }
         return true;
     }
@@ -531,7 +534,7 @@ public class DefaultBenFactory extends AbstractAutowiredBeanCreateFactory implem
             matchNameStr = matchName.get(0);
         }else {
             try{
-                matchNameStr  = determinePrimaryIfNecessary(matchName.toArray(new String[matchName.size()]),type);
+                matchNameStr  = determinePrimaryIfNecessary(matchName.toArray(new String[0]),type);
             }
             catch (BeansException ex){
                 return new ReturnWrapper(null,ex.getMessage());

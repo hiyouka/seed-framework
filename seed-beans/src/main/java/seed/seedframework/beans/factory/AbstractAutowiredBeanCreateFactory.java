@@ -12,6 +12,7 @@ import seed.seedframework.util.*;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -21,7 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public abstract class AbstractAutowiredBeanCreateFactory extends AbstractBeanCreateFactory implements AutowiredSupportBeanFactory {
 
-    private final Map<String,Object[]> constructorArgsCache = new ConcurrentHashMap<>();
+    private final Map<String,Map<Class<?>,Object>> constructorArgsCache = new ConcurrentHashMap<>();
 
     protected Object doCreateBean(String beanName, BeanDefinition beanDefinition, Object[] args)
             throws BeanCreatedException {
@@ -153,15 +154,15 @@ public abstract class AbstractAutowiredBeanCreateFactory extends AbstractBeanCre
         Object[] args = resolveDependParameters(constructorToUsed, beanName);
 
         // use for cglib constructor create
-        constructorArgsCache.put(beanName,args);
+        supportCglibCreateProxy(beanName,constructorToUsed);
 
         return BeanUtils.instanceClass(constructorToUsed,args);
     }
 
-    public Object[] getConstructorArgs(String name){
-        Object[] args = this.constructorArgsCache.get(name);
+    public Map<Class<?>,Object> getConstructorArgs(String name){
+        Map<Class<?>, Object> args = this.constructorArgsCache.get(name);
         if(args == null){
-            args = new Object[0];
+            args = new HashMap<>(0);
         }
         // clear after used
         this.constructorArgsCache.remove(name);
@@ -202,6 +203,10 @@ public abstract class AbstractAutowiredBeanCreateFactory extends AbstractBeanCre
 
         Assert.notNull(factoryMethod,"No Such Method ["+ factoryMethodName +"] from class " + bean.getClass().getName());
 
+        // if this bean only have constructor with argument
+        // create cglib proxy should set args , here set null argument
+        supportCglibCreateProxy(beanName,factoryMethod);
+
         int parameterCount = factoryMethod.getParameterCount();
         if(parameterCount == 0){
             return ReflectionUtils.invokeMethod(factoryMethod,bean);
@@ -211,6 +216,25 @@ public abstract class AbstractAutowiredBeanCreateFactory extends AbstractBeanCre
         }
 
     }
+
+    private void supportCglibCreateProxy(String beanName,Method factoryMethod){
+        Class<?> returnType = factoryMethod.getReturnType();
+        if(!ClassUtils.hasEmptyArgumentConstructor(returnType)){
+            Constructor[] constructors = ClassUtils.getAllConstructorByClass(returnType);
+            Constructor usedConstructor = constructors[0];
+            supportCglibCreateProxy(beanName,usedConstructor);
+        }
+    }
+
+    private void supportCglibCreateProxy(String beanName,Constructor constructor){
+        Class[] parameterTypes = constructor.getParameterTypes();
+        Map<Class<?>,Object> args = new HashMap<>(parameterTypes.length);
+        for(Class clazz : parameterTypes){
+            args.put(clazz,null);
+        }
+        this.constructorArgsCache.put(beanName,args);
+    }
+
 
     private Object[] resolveDependParameters(Method method,String beanName){
         Object[] result = new Object[method.getParameterCount()];
