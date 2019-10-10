@@ -78,6 +78,12 @@ public class AutowiredAnnotationPostProcessor implements MergedBeanDefinitionPos
                 result.add(constructor);
             }
         }
+        //process @import import bean, if the bean not have empty argument constructor
+        // set default constructor to create bean
+        if(result.size() == 0 && !ClassUtils.hasEmptyArgumentConstructor(beanClass)){
+            result.add(constructors[0]);
+        }
+
         return result.toArray(new Constructor[0]);
     }
 
