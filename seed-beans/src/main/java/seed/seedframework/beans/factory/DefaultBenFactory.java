@@ -29,7 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author hiyouka
  * @since JDK 1.8
  */
-public class DefaultBenFactory extends AbstractAutowiredBeanCreateFactory implements ConfigurableDefinitionBeanFactory, BeanDefinitionRegistry , Serializable {
+    public class DefaultBenFactory extends AbstractAutowiredBeanCreateFactory implements ConfigurableDefinitionBeanFactory, BeanDefinitionRegistry , Serializable {
 
 
     /** 是否允许重复注册 */
@@ -78,7 +78,7 @@ public class DefaultBenFactory extends AbstractAutowiredBeanCreateFactory implem
             list.addAll(Arrays.asList(names));
         }
         list.add(name);
-        return list.toArray(new String[list.size()]);
+        return list.toArray(new String[0]);
     }
 
     @Override
@@ -134,7 +134,7 @@ public class DefaultBenFactory extends AbstractAutowiredBeanCreateFactory implem
 
     @Override
     public String[] getBeanDefinitionNames() {
-        return beanDefinitionNames.toArray(new String[beanDefinitionNames.size()]);
+        return beanDefinitionNames.toArray(new String[0]);
     }
 
     @Override
@@ -248,11 +248,11 @@ public class DefaultBenFactory extends AbstractAutowiredBeanCreateFactory implem
     }
 
     private String determinePrimary(String[] beanNames,Class<?> requiredType){
-        return determinePrimaryIfNecessary(beanNames,requiredType,true);
+        return determinePrimaryIfNecessary(beanNames,requiredType);
     }
 
-    private String determinePrimaryIfNecessary(String[] beanNames,Class<?> requiredType, boolean required){
-        String result = null;
+    private String determinePrimaryIfNecessary(String[] beanNames,Class<?> requiredType){
+
         List<String> primaryBeanName = new ArrayList<>();
         Map<String,Class> types = new HashMap<>(beanNames.length);
         for(String beanName : beanNames){
@@ -279,21 +279,26 @@ public class DefaultBenFactory extends AbstractAutowiredBeanCreateFactory implem
                 }
             }
         }
+
+        // no bean use @Primary or @priority to mark , so all match
+        if(primaryBeanName.size() == 0){
+            primaryBeanName.addAll(ArrayUtils.asList(beanNames));
+        }
+
         if(primaryBeanName.size() == 1){
-            result = primaryBeanName.get(0);
+            return primaryBeanName.get(0);
         }
-        if(required){
-            String message;
-            if(primaryBeanName.size() > 0){
-                message = ", found "+primaryBeanName.size()+" : " + primaryBeanName;
-                throw new NoUniqueBeanException("not found unique bean for type : " + requiredType.getName()
-                        + (message == null ? "" : message));
-            }
-            else {
-                throw new BeanNotFoundException("not found bean for type : " + requiredType.getName());
-            }
+
+        String message;
+        if(primaryBeanName.size() > 0){
+            message = ", found "+primaryBeanName.size()+" : " + primaryBeanName;
+            throw new NoUniqueBeanException("not found unique bean for type : " + requiredType.getName()
+                    +  message);
         }
-        return result;
+        else {
+            throw new BeanNotFoundException("not found bean for type : " + requiredType.getName());
+        }
+
     }
 
     @Override
@@ -372,15 +377,13 @@ public class DefaultBenFactory extends AbstractAutowiredBeanCreateFactory implem
                 }
             }
        }
-        return result.toArray(new String[result.size()]);
+        return result.toArray(new String[0]);
     }
 
     private boolean isCreateBean(String beanName,BeanDefinition beanDefinition){
         if(beanDefinition.isSingleton()){
             Object singleton = getSingleton(beanName);
-            if(singleton == null){
-                return false;
-            }
+            return singleton != null;
         }
         return true;
     }
@@ -427,7 +430,7 @@ public class DefaultBenFactory extends AbstractAutowiredBeanCreateFactory implem
                          +", parameter name : " + dsr.getParameter().getParameterName()+", parameter type: "
                          + dsr.getParameter().getGenericParameterType();
             }
-            errorMsg += " , cause by" + value.getErrorMessage();
+            errorMsg += " \n Caused by: " + value.getErrorMessage();
             throw new BeanAutowiredException(errorMsg);
         }
         return value.getValue();
@@ -477,15 +480,19 @@ public class DefaultBenFactory extends AbstractAutowiredBeanCreateFactory implem
         }
 
         String[] names = this.getBeanNamesForType(type);
-        List<String> matchName = new ArrayList<>();
-        if(names.length == 1){
-            matchName.add(names[0]);
+        if(names.length == 0){
+            return new ReturnWrapper(null," not found BeanDefinition of type : " + type);
         }
+
+        List<String> matchName = new ArrayList<>();
         // if it is no generic bean
         Type genericType = dsr.getGenericType();
         if(genericType instanceof Class){
             logger.trace(" filed : " + attributeName + " in create bean :" + beanName + ", no generic");
-            // do some thing
+
+            // is need skip oneself ?
+            matchName.addAll(ArrayUtils.asList(names));
+
         }
         else{
             for(String name : names){
@@ -521,19 +528,24 @@ public class DefaultBenFactory extends AbstractAutowiredBeanCreateFactory implem
 
         String matchNameStr;
         if(matchName.size() == 0){
-            return new ReturnWrapper(null," not found BeanDefinition of type : " + type);
+            return new ReturnWrapper(null," not found match bean of type : " + genericType);
         }
         else if(matchName.size() == 1){
             matchNameStr = matchName.get(0);
         }else {
-            matchNameStr  = determinePrimaryIfNecessary(matchName.toArray(new String[matchName.size()]), type,Boolean.FALSE);
+            try{
+                matchNameStr  = determinePrimaryIfNecessary(matchName.toArray(new String[0]),type);
+            }
+            catch (BeansException ex){
+                return new ReturnWrapper(null,ex.getMessage());
+            }
         }
 
         if(StringUtils.hasText(matchNameStr)){
             return getBeanReturnWrapper(matchNameStr);
         }
         else {
-            return new ReturnWrapper(null," not found unique bean for type ：" + type);
+            return new ReturnWrapper(null," not found unique bean for type ：" + genericType);
         }
 
     }

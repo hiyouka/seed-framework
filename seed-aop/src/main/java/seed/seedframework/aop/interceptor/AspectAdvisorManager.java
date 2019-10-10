@@ -30,6 +30,8 @@ public class AspectAdvisorManager implements AdvisorManager {
 
     private Object[] args;
 
+    private Class[] argTypes;
+
     private Map<Method,List<MethodInterceptor>> methodCache = new ConcurrentHashMap<>();
 
     public AspectAdvisorManager(Class<?> targetClass) {
@@ -97,5 +99,13 @@ public class AspectAdvisorManager implements AdvisorManager {
 
     public void setArgs(Object[] args) {
         this.args = args;
+    }
+
+    public Class[] getArgTypes() {
+        return argTypes;
+    }
+
+    public void setArgTypes(Class[] argTypes) {
+        this.argTypes = argTypes;
     }
 }

@@ -66,6 +66,12 @@ public class AutowiredAnnotationPostProcessor implements MergedBeanDefinitionPos
     public Constructor<?>[] determineCandidateConstructors(Class<?> beanClass, String beanName) throws BeansException {
         List<Constructor> result = new LinkedList<>();
         Constructor[] constructors = ClassUtils.getAllConstructorByClass(beanClass);
+
+        if(constructors.length == 1){
+            if(constructors[0].getParameterCount() != 0){
+                return constructors;
+            }
+        }
         for(Constructor constructor : constructors){
             boolean annotated = AnnotatedElementUtils.isAnnotated(constructor, Autowired.class.getName());
             if(annotated){

@@ -31,7 +31,7 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
     private void initProjectEnvironment(){
         String[] projectProperties = super.projectProperties;
         for(String projectProject : projectProperties){
-            Resource resource = null;
+            Resource resource;
             try {
                 resource = this.scanner.getResourcePatternResolver().getResource(projectProject);
                 if(resource.exists()){

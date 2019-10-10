@@ -28,6 +28,7 @@ public class JDKAopProxy extends AbstractAopProxy {
     @Override
     public Object getProxy() {
         Class<?> targetClass = this.advised.getTargetClass();
+        logger.debug("create jdk proxy bean, type : " + targetClass);
         return Proxy.newProxyInstance(targetClass.getClassLoader(),targetClass.getInterfaces(),
                 new DynamicInitiatorsInvocationHandler(advised));
     }

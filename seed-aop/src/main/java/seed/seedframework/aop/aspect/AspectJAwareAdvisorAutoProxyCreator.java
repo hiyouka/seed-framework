@@ -22,9 +22,7 @@ import seed.seedframework.core.intercept.Advisor;
 import seed.seedframework.util.AnnotatedElementUtils;
 
 import java.lang.reflect.Method;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -63,8 +61,9 @@ public class AspectJAwareAdvisorAutoProxyCreator implements InstantiationAwareBe
             AspectAdvisorManager aspectAdvisorManager = new AspectAdvisorManager(bean.getClass(),advisors);
             aspectAdvisorManager.setTarget(bean);
             if(this.beanFactory instanceof AbstractAutowiredBeanCreateFactory){
-                Object[] args = ((AbstractAutowiredBeanCreateFactory) this.beanFactory).getConstructorArgs(beanName);
-                aspectAdvisorManager.setArgs(args);
+                Map<Class<?>, Object> constructorArgs = ((AbstractAutowiredBeanCreateFactory) this.beanFactory).getConstructorArgs(beanName);
+                aspectAdvisorManager.setArgs(constructorArgs.values().toArray());
+                aspectAdvisorManager.setArgTypes(constructorArgs.keySet().toArray(new Class[0]));
             }
             Object proxy = proxyCreator.createAopProxy(aspectAdvisorManager).getProxy();
             BeanDefinition beanDefinition = this.beanFactory.getBeanDefinition(beanName);
