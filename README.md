@@ -59,10 +59,6 @@ bean在创建之后初始化过程：
 * [x] 添加seed-aop模块使用cglib实现注解形式支持aop功能，生成代理bean。
 * [ ] 添加seed-web模块使用netty实现web功能。
 
-### seed-web模块
-
-    HttpDispatcher 进行任务的调度分发。
-    
 ## 更新日志
 
 ### 0.0.2-SNAPSHOT: 
