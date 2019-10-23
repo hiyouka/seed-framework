@@ -43,15 +43,23 @@
 
 ### bean lifecycle
 
-bean在创建之后初始化过程：
-1. beanPostProcessor 的前置处理方法。
+bean生命周期： 
+1. InstantiationAwareBeanPostProcessor提供实例化bean之前创建bean的机会。
 
-2. 初始化方法执行: 先执行实现Initialization接口的afterPropertiesSet方法，之后执行bean的init方法(@Bean initMethod属性或者在
+2. 如果未创建bean则实例化bean。
+
+3. MergedBeanDefinitionPostProcessor提供BeanDefinition修改(在AutowiredAnnotationPostProcessor用于查找bean的依赖信息)。
+
+4. populateInstance填充bean的依赖属性。
+
+5. beanPostProcessor 的前置处理方法。
+
+6. 初始化方法执行: 先执行实现Initialization接口的afterPropertiesSet方法，之后执行bean的init方法(@Bean initMethod属性或者在
 类中的方法上添加@InitMethod注解)
 
-3. beanPostProcessor 的后置处理方法
+7. beanPostProcessor 的后置处理方法
 
-4. bean销毁时调用destroy方法(@DestroyMethod或@Bean(destroyMethod)指定销毁方法)
+8. bean销毁时调用destroy方法(@DestroyMethod或@Bean(destroyMethod)指定销毁方法)
 
 ## TODO LIST
 
