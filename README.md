@@ -125,7 +125,7 @@ public class TestConfiguration {
 ### 0.0.3-SNAPSHOT:
 1. 支持aop功能
 2. 修复@Bean无法创建带有参数的方法的bean(如果容器中有该类型的类则会注入, 根据参数上的@Autowired注解来判断是否需要注入,没有默认为false)
-3. `@Autowired`支持构造函数(如果注入bean没有无参构造函数,需要有唯一的`@Autowired`标注的构造函数);
+3. `@Autowired`支持构造函数(如果注入bean没有无参构造函数,默认选择第一个构造函数来注入生成bean);
 
 #### Example:
 ```java
