@@ -101,6 +101,5 @@
             <url>http://47.100.213.49:8001/repository/hiyouka-snapshot/</url>
         </snapshotRepository>
 
-
     </distributionManagement>
 </project>
