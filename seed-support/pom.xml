@@ -5,9 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>seed.seedframework</groupId>
-    <artifactId>seed-context</artifactId>
+    <artifactId>seed-support</artifactId>
     <version>0.0.3-SNAPSHOT</version>
-
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -16,19 +15,23 @@
         <junit.jupiter.version>5.4.2</junit.jupiter.version>
     </properties>
 
+
     <dependencies>
+
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
             <version>${junit.jupiter.version}</version>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-params</artifactId>
             <version>${junit.jupiter.version}</version>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
@@ -41,6 +44,13 @@
             <artifactId>seed-beans</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <!--        <dependency>-->
+        <!--            <groupId>seed.seedframework</groupId>-->
+        <!--            <artifactId>seed-context</artifactId>-->
+        <!--            <version>${project.version}</version>-->
+        <!--        </dependency>-->
+
     </dependencies>
 
     <build>
@@ -82,16 +92,16 @@
     <distributionManagement>
 
         <!-- maven nexus seed.framework.test.config -->
-<!--        <repository>-->
-<!--            <id>hiyouka-release</id>-->
-<!--            <name>Release Repository of hiyouka</name>-->
-<!--            <url>http://47.100.213.49:8001/repository/hiyouka-release/</url>-->
-<!--        </repository>-->
-<!--        <snapshotRepository>-->
-<!--            <id>hiyouka-snapshot</id>-->
-<!--            <name>Snapshot Repository of hiyouka</name>-->
-<!--            <url>http://47.100.213.49:8001/repository/hiyouka-snapshot/</url>-->
-<!--        </snapshotRepository>-->
+        <!--        <repository>-->
+        <!--            <id>hiyouka-release</id>-->
+        <!--            <name>Release Repository of hiyouka</name>-->
+        <!--            <url>http://47.100.213.49:8001/repository/hiyouka-release/</url>-->
+        <!--        </repository>-->
+        <!--        <snapshotRepository>-->
+        <!--            <id>hiyouka-snapshot</id>-->
+        <!--            <name>Snapshot Repository of hiyouka</name>-->
+        <!--            <url>http://47.100.213.49:8001/repository/hiyouka-snapshot/</url>-->
+        <!--        </snapshotRepository>-->
 
         <repository>
             <id>github</id>
@@ -100,5 +110,6 @@
         </repository>
 
     </distributionManagement>
+
 
 </project>

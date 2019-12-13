@@ -90,17 +90,22 @@
     <distributionManagement>
 
         <!-- maven nexus seed.framework.test.config -->
-        <repository>
-            <id>hiyouka-release</id>
-            <name>Release Repository of hiyouka</name>
-            <url>http://47.100.213.49:8001/repository/hiyouka-release/</url>
-        </repository>
-        <snapshotRepository>
-            <id>hiyouka-snapshot</id>
-            <name>Snapshot Repository of hiyouka</name>
-            <url>http://47.100.213.49:8001/repository/hiyouka-snapshot/</url>
-        </snapshotRepository>
+<!--        <repository>-->
+<!--            <id>hiyouka-release</id>-->
+<!--            <name>Release Repository of hiyouka</name>-->
+<!--            <url>http://47.100.213.49:8001/repository/hiyouka-release/</url>-->
+<!--        </repository>-->
+<!--        <snapshotRepository>-->
+<!--            <id>hiyouka-snapshot</id>-->
+<!--            <name>Snapshot Repository of hiyouka</name>-->
+<!--            <url>http://47.100.213.49:8001/repository/hiyouka-snapshot/</url>-->
+<!--        </snapshotRepository>-->
 
+        <repository>
+            <id>github</id>
+            <name>GitHub OWNER Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/OWNER/REPOSITORY</url>
+        </repository>
 
     </distributionManagement>
 </project>

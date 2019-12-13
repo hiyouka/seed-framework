@@ -251,6 +251,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 
     protected void destroyBeans(){
         // todo 清除缓存, 删除所有创建对象
+        this.getBeanFactory();
     };
 
     protected void cancelRefresh(){

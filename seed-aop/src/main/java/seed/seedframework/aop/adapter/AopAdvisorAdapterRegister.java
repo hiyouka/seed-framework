@@ -27,7 +27,6 @@ public class AopAdvisorAdapterRegister implements AdvisorAdapterRegister {
     @Override
     public void addAdapter(AdvisorAdapter adapter) {
         Assert.notNull(adapter,"adapter must not null");
-
     }
 
     @Override

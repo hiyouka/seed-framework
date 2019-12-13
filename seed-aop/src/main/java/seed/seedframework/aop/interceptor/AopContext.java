@@ -15,9 +15,7 @@ public class AopContext {
     }
 
     public static void setCurrentMethodInvocation(MethodInvocation invocation){
-        if(currentInvocation.get() == null){
             currentInvocation.set(invocation);
-        }
     }
 
 }
