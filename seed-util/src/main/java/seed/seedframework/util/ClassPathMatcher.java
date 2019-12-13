@@ -126,21 +126,6 @@ public class ClassPathMatcher implements ExpressionMatcher<Class<?>>{
         return false;
     }
 
-    public static void main(String[] args) {
-        boolean b = testPath("*.com.seed.*.service..Service.class", "com.seed.seedframework.service.test.service.Service.class");
-        System.out.println(b);
-//        String[] split = "*.com".split("\\.");
-//        String[] strings = "*\\.com".split("\\\\");
-//        String reg = "22.23";
-//        String[] split3 = StringUtils.split(reg, ".");
-//        String[] split2 = reg.split("}");
-//        String[] split1 = split("123)555", reg);
-//        System.out.println(split1);
-//        System.out.println(split);
-//        test("*.com..seed.ServiceClass",null);
-//        System.out.println(isMatch("*1*2*3*4","1ew2erw3wer4"));
-    }
-
     static String[] split(String origin,String reg){
         return origin.split(reg);
     }

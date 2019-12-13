@@ -20,6 +20,7 @@
         <slf4j.version>1.7.25</slf4j.version>
         <log4j-to-slf4j.version>2.11.1</log4j-to-slf4j.version>
         <logback.version>1.2.3</logback.version>
+        <github.global.server>github</github.global.server>
     </properties>
 
     <dependencies>
@@ -118,24 +119,61 @@
                     </execution>
                 </executions>
             </plugin>
+<!--            <plugin>-->
+<!--                <artifactId>maven-deploy-plugin</artifactId>-->
+<!--                <version>2.8.1</version>-->
+<!--                <configuration>-->
+<!--                    <altDeploymentRepository>internal.repo::default::file://${project.build.directory}/mvn-repo</altDeploymentRepository>-->
+<!--                </configuration>-->
+<!--            </plugin>-->
+<!--            <plugin>-->
+<!--                <groupId>com.github.github</groupId>-->
+<!--                <artifactId>site-maven-plugin</artifactId>-->
+<!--                <version >0.12</version>-->
+<!--                <configuration>-->
+<!--                    <message >Maven artifacts for ${project.version}</message>-->
+<!--                    <noJekyll>true</noJekyll>-->
+<!--                    <outputDirectory>${project.build.directory}/mvn-repo</outputDirectory>&lt;!&ndash;本地jar地址&ndash;&gt;-->
+<!--                    <branch>refs/heads/mvn-repo</branch>&lt;!&ndash;分支的名称&ndash;&gt;-->
+<!--                    <merge>true</merge>-->
+<!--                    <includes>-->
+<!--                        <include>**/*</include>-->
+<!--                    </includes>-->
+<!--                    <repositoryName>maven-repository</repositoryName>&lt;!&ndash;对应github上创建的仓库名称 name&ndash;&gt;-->
+<!--                    <repositoryOwner>hiyouka</repositoryOwner>&lt;!&ndash;github 仓库所有者即登录用户名&ndash;&gt;-->
+<!--                </configuration>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <goals>-->
+<!--                            <goal>site</goal>-->
+<!--                        </goals>-->
+<!--                        <phase>deploy</phase>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
         </plugins>
     </build>
-
 
     <distributionManagement>
 
         <!-- maven nexus seed.framework.test.config -->
-        <repository>
-            <id>hiyouka-release</id>
-            <name>Release Repository of hiyouka</name>
-            <url>http://47.100.213.49:8001/repository/hiyouka-release/</url>
-        </repository>
-        <snapshotRepository>
-            <id>hiyouka-snapshot</id>
-            <name>Snapshot Repository of hiyouka</name>
-            <url>http://47.100.213.49:8001/repository/hiyouka-snapshot/</url>
-        </snapshotRepository>
+<!--        <repository>-->
+<!--            <id>hiyouka-release</id>-->
+<!--            <name>Release Repository of hiyouka</name>-->
+<!--            <url>http://47.100.213.49:8001/repository/hiyouka-release/</url>-->
+<!--        </repository>-->
+<!--        <snapshotRepository>-->
+<!--            <id>hiyouka-snapshot</id>-->
+<!--            <name>Snapshot Repository of hiyouka</name>-->
+<!--            <url>http://47.100.213.49:8001/repository/hiyouka-snapshot/</url>-->
+<!--        </snapshotRepository>-->
 
+        <!-- use github repository-->
+        <repository>
+            <id>github</id>
+            <name>GitHub OWNER Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/hiyouka/repository</url>
+        </repository>
 
     </distributionManagement>
 
